@@ -45,8 +45,9 @@ enum GameMode { PLAYING, WON, LOST }
 
 @export_group("Atmosphere")
 @export_range(0.0, 0.25, 0.005) var background_drift_speed := 0.045
-@export_range(0.0, 1.5, 0.01) var background_glow_strength := 0.72
-@export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.006
+@export_range(0.0, 1.5, 0.01) var background_glow_strength := 0.86
+@export_range(0.0, 1.0, 0.01) var background_mote_strength := 0.36
+@export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.004
 
 @export_group("Audio")
 @export_range(-30.0, 0.0, 0.5) var sfx_volume_db := -8.0
@@ -128,6 +129,7 @@ func _create_background() -> void:
 	shader_material.shader = TWILIGHT_SHADER
 	shader_material.set_shader_parameter("drift_speed", background_drift_speed)
 	shader_material.set_shader_parameter("glow_strength", background_glow_strength)
+	shader_material.set_shader_parameter("mote_strength", background_mote_strength)
 	shader_material.set_shader_parameter("grain_strength", background_grain_strength)
 	background.material = shader_material
 	add_child(background)
@@ -584,19 +586,22 @@ func _draw() -> void:
 
 
 func _draw_header() -> void:
-	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), Color(0.01, 0.03, 0.09, 0.44), 38.0, _with_alpha(MINT, 0.24), 2.0)
+	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 3.0)
 	draw_texture_rect(MASCOT, Rect2(49.0, 36.0, 106.0, 106.0), false)
 	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
 	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 124.0), 20, _with_alpha(CREAM, 0.72))
 
 	var level_rect := Rect2(681.0, 54.0, 154.0, 68.0)
-	_draw_panel(level_rect, _with_alpha(CREAM, 0.14), 34.0, _with_alpha(CREAM, 0.22), 2.0)
-	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 22, CREAM)
+	_rounded_rect(Rect2(level_rect.position + Vector2(0.0, 5.0), level_rect.size), _with_alpha(INK, 0.16), 34.0)
+	_draw_panel(level_rect, _with_alpha(PLUM, 0.88), 34.0, _with_alpha(CREAM, 0.64), 2.0)
+	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 22, INK)
 
 	var progress_rect := Rect2(75.0, 168.0, 365.0, 72.0)
 	var hearts_rect := Rect2(462.0, 168.0, 363.0, 72.0)
-	_draw_panel(progress_rect, CREAM, 36.0, _with_alpha(MINT, 0.44), 2.0)
-	_draw_panel(hearts_rect, CREAM, 36.0, _with_alpha(CORAL, 0.38), 2.0)
+	_rounded_rect(Rect2(progress_rect.position + Vector2(0.0, 5.0), progress_rect.size), _with_alpha(INK, 0.12), 36.0)
+	_rounded_rect(Rect2(hearts_rect.position + Vector2(0.0, 5.0), hearts_rect.size), _with_alpha(INK, 0.12), 36.0)
+	_draw_panel(progress_rect, CREAM, 36.0, _with_alpha(MINT, 0.48), 2.0)
+	_draw_panel(hearts_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 2.0)
 	draw_circle(Vector2(118.0, 204.0), 28.0, _with_alpha(MINT, 0.20))
 	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, MINT)
 	_draw_text_left("%d / %d  CATS SEATED" % [_cat_count(), grid_size], Vector2(158.0, 214.0), 24, INK)
@@ -612,9 +617,16 @@ func _draw_header() -> void:
 
 func _draw_rule_cards() -> void:
 	var labels := ["ONE PER COLOR", "ONE PER LINE", "GIVE THEM SPACE"]
+	var accents := [MINT, SKY, CORAL]
+	var pulse := 0.0
+	if pulse_time > 0.0:
+		pulse = sin((pulse_time / maxf(rule_pulse_duration, 0.001)) * PI)
 	for index in range(3):
 		var card := Rect2(75.0 + float(index) * 255.0, 263.0, 235.0, 68.0)
-		_draw_panel(card, _with_alpha(CREAM, 0.97), 30.0, _with_alpha(CREAM, 0.48), 2.0)
+		var accent: Color = accents[index]
+		var card_fill := CREAM.lerp(accent, pulse * 0.12)
+		_rounded_rect(Rect2(card.position + Vector2(0.0, 5.0), card.size), _with_alpha(INK, 0.10), 30.0)
+		_draw_panel(card, _with_alpha(card_fill, 0.98), 30.0, _with_alpha(accent, 0.44 + pulse * 0.30), 2.0)
 		var icon_center := Vector2(card.position.x + 37.0, card.position.y + 34.0)
 		if index == 0:
 			_draw_color_icon(icon_center)
@@ -622,7 +634,7 @@ func _draw_rule_cards() -> void:
 			_draw_line_icon(icon_center)
 		else:
 			_draw_space_icon(icon_center)
-		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 41.0), 18, INK_SOFT)
+		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 42.0), 19, INK_SOFT)
 
 
 func _draw_board() -> void:
@@ -644,10 +656,12 @@ func _draw_board() -> void:
 		var region := int(puzzle["regions"][cell])
 		var tile_color := region_colors[region % region_colors.size()]
 		if cell == hover_cell and game_mode == GameMode.PLAYING:
-			tile_color = tile_color.lightened(0.055)
+			tile_color = tile_color.lightened(0.075)
 		if cell == error_cell and error_time > 0.0:
 			tile_color = tile_color.lerp(CORAL, 0.30 + 0.24 * sin(animation_clock * 34.0))
 		_rounded_rect(tile_rect, tile_color, tile_radius)
+		if cell == hover_cell and game_mode == GameMode.PLAYING and cell != error_cell:
+			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CREAM, 0.84), 3.0)
 		if cell == error_cell and error_time > 0.0:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92), 4.0)
 
@@ -657,6 +671,16 @@ func _draw_board() -> void:
 		if cell == pulse_cell and pulse_time > 0.0:
 			var ring_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
 			draw_arc(tile_rect.get_center(), slot * (0.28 + ring_phase * 0.15), 0.0, TAU, 40, _with_alpha(CREAM, (1.0 - ring_phase) * 0.78), 4.0, true)
+			if ring_phase > 0.16:
+				var echo_phase := (ring_phase - 0.16) / 0.84
+				draw_arc(tile_rect.get_center(), slot * (0.18 + echo_phase * 0.30), 0.0, TAU, 40, _with_alpha(GOLD, (1.0 - echo_phase) * 0.54), 2.5, true)
+
+		if cell == pending_cell and game_mode == GameMode.PLAYING:
+			var pending_ratio := clampf(pending_time / maxf(double_tap_window, 0.001), 0.0, 1.0)
+			var pending_phase := 1.0 - pending_ratio
+			var pending_alpha := 0.68 + sin(animation_clock * 10.0) * 0.12
+			draw_arc(tile_rect.get_center(), slot * (0.32 + pending_phase * 0.035), 0.0, TAU, 40, _with_alpha(CREAM, pending_alpha), 3.5, true)
+			draw_circle(tile_rect.get_center(), slot * 0.035, _with_alpha(MINT, 0.38 + pending_phase * 0.26))
 
 		if cell_states[cell] == CellState.MARKED:
 			var mark_scale := 1.0
@@ -697,17 +721,18 @@ func _draw_board() -> void:
 
 
 func _draw_region_boundaries(board_rect: Rect2, slot: float) -> void:
-	var boundary_color := _with_alpha(INK, 0.22)
+	var boundary_color := _with_alpha(INK, 0.30)
+	var boundary_width := clampf(slot * 0.028, 2.5, 4.2)
 	for row in range(grid_size):
 		for column in range(grid_size):
 			var cell := row * grid_size + column
 			var region := int(puzzle["regions"][cell])
 			if column < grid_size - 1 and int(puzzle["regions"][cell + 1]) != region:
 				var x := board_rect.position.x + float(column + 1) * slot
-				draw_line(Vector2(x, board_rect.position.y + float(row) * slot + 7.0), Vector2(x, board_rect.position.y + float(row + 1) * slot - 7.0), boundary_color, 3.0, true)
+				draw_line(Vector2(x, board_rect.position.y + float(row) * slot + 7.0), Vector2(x, board_rect.position.y + float(row + 1) * slot - 7.0), boundary_color, boundary_width, true)
 			if row < grid_size - 1 and int(puzzle["regions"][cell + grid_size]) != region:
 				var y := board_rect.position.y + float(row + 1) * slot
-				draw_line(Vector2(board_rect.position.x + float(column) * slot + 7.0, y), Vector2(board_rect.position.x + float(column + 1) * slot - 7.0, y), boundary_color, 3.0, true)
+				draw_line(Vector2(board_rect.position.x + float(column) * slot + 7.0, y), Vector2(board_rect.position.x + float(column + 1) * slot - 7.0, y), boundary_color, boundary_width, true)
 
 
 func _draw_footer() -> void:
@@ -719,22 +744,25 @@ func _draw_footer() -> void:
 		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.98), 22.0, _with_alpha(CORAL if error_time > 0.0 else MINT, 0.62), 2.0)
 		_draw_text_center(instruction, instruction_rect, 18, INK)
 	else:
-		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(CREAM, 0.82))
+		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(CREAM, 0.94))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
-	_draw_text_center(_difficulty_label(), Rect2(250.0, 1326.0, 400.0, 32.0), 16, _with_alpha(CREAM, 0.60))
+	_draw_text_center(_difficulty_label(), Rect2(250.0, 1326.0, 400.0, 32.0), 16, _with_alpha(CREAM, 0.74))
 
 
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
 	var hovered := rect.has_point(pointer_base) and game_mode == GameMode.PLAYING
-	var fill := _with_alpha(CREAM, 0.98 if enabled else 0.62)
+	var fill := _with_alpha(CREAM, 0.98 if enabled else 0.52)
 	if hovered and enabled:
 		fill = Color.WHITE
-	_rounded_rect(Rect2(rect.position + Vector2(0.0, 7.0), rect.size), Color(0.0, 0.0, 0.0, 0.16), 40.0)
-	_draw_panel(rect, fill, 40.0, _with_alpha(MINT if hovered else CREAM, 0.62), 2.0)
+	var shadow_alpha := 0.16 if enabled else 0.07
+	var border_color := MINT if hovered and enabled else (CREAM if enabled else INK_SOFT)
+	var border_alpha := 0.62 if enabled else 0.16
+	_rounded_rect(Rect2(rect.position + Vector2(0.0, 7.0), rect.size), Color(0.0, 0.0, 0.0, shadow_alpha), 40.0)
+	_draw_panel(rect, fill, 40.0, _with_alpha(border_color, border_alpha), 2.0)
 	var icon_center := Vector2(rect.position.x + 58.0, rect.get_center().y)
-	draw_circle(icon_center, 25.0, _with_alpha(MINT if enabled else INK_SOFT, 0.20))
+	draw_circle(icon_center, 25.0, _with_alpha(MINT if enabled else INK_SOFT, 0.20 if enabled else 0.10))
 	if icon == "undo":
 		draw_arc(icon_center, 17.0, -2.5, 2.15, 28, INK_SOFT, 4.0, true)
 		draw_colored_polygon(PackedVector2Array([

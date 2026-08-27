@@ -1,17 +1,19 @@
 shader_type canvas_item;
 render_mode unshaded;
 
-uniform vec4 top_ink : source_color = vec4(0.035, 0.090, 0.170, 1.0);
-uniform vec4 bottom_ink : source_color = vec4(0.110, 0.135, 0.265, 1.0);
-uniform vec4 lavender_glow : source_color = vec4(0.560, 0.470, 0.820, 1.0);
-uniform vec4 mint_glow : source_color = vec4(0.520, 0.850, 0.760, 1.0);
-uniform vec4 coral_glow : source_color = vec4(0.950, 0.620, 0.590, 1.0);
-uniform vec4 star_color : source_color = vec4(1.0, 0.965, 0.855, 1.0);
+uniform vec4 top_dusk : source_color = vec4(0.310, 0.373, 0.475, 1.0);
+uniform vec4 bottom_dusk : source_color = vec4(0.380, 0.357, 0.475, 1.0);
+uniform vec4 lavender_glow : source_color = vec4(0.788, 0.725, 0.898, 1.0);
+uniform vec4 mint_glow : source_color = vec4(0.659, 0.863, 0.796, 1.0);
+uniform vec4 coral_glow : source_color = vec4(0.949, 0.647, 0.620, 1.0);
+uniform vec4 gold_glow : source_color = vec4(0.961, 0.851, 0.557, 1.0);
+uniform vec4 paper_glow : source_color = vec4(0.953, 0.922, 0.867, 1.0);
+uniform vec4 mote_color : source_color = vec4(1.0, 0.976, 0.941, 1.0);
 uniform float drift_speed : hint_range(0.0, 0.25, 0.005) = 0.045;
-uniform float glow_strength : hint_range(0.0, 1.5, 0.01) = 0.72;
-uniform float star_strength : hint_range(0.0, 1.0, 0.01) = 0.52;
-uniform float grain_strength : hint_range(0.0, 0.03, 0.001) = 0.006;
-uniform float vignette_strength : hint_range(0.0, 0.5, 0.01) = 0.18;
+uniform float glow_strength : hint_range(0.0, 1.5, 0.01) = 0.86;
+uniform float mote_strength : hint_range(0.0, 1.0, 0.01) = 0.36;
+uniform float grain_strength : hint_range(0.0, 0.03, 0.001) = 0.004;
+uniform float vignette_strength : hint_range(0.0, 0.5, 0.01) = 0.14;
 
 float hash21(vec2 p) {
 	return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -42,37 +44,49 @@ float soft_blob(vec2 uv, vec2 center, vec2 scale_value) {
 
 void fragment() {
 	vec2 uv = UV;
-	float t = TIME * drift_speed;
-	float vertical = smoothstep(0.0, 1.0, uv.y);
-	vec3 col = mix(top_ink.rgb, bottom_ink.rgb, vertical);
+	float phase = TIME * drift_speed * 6.283185;
+	float vertical = smoothstep(-0.08, 1.08, uv.y);
+	vec3 col = mix(top_dusk.rgb, bottom_dusk.rgb, vertical);
 
-	float flow_a = value_noise(uv * vec2(2.4, 2.0) + vec2(t * 0.13, -t * 0.08));
-	float flow_b = value_noise(uv * vec2(2.0, 2.7) + vec2(-t * 0.09, t * 0.11));
-	float ribbon_y_a = 0.22 + sin(uv.x * 4.2 + t * 1.4) * 0.045 + (flow_a - 0.5) * 0.15;
-	float ribbon_y_b = 0.78 + sin(uv.x * 3.2 - t * 1.1) * 0.055 + (flow_b - 0.5) * 0.14;
-	float ribbon_a = exp(-pow((uv.y - ribbon_y_a) / 0.14, 2.0));
-	float ribbon_b = exp(-pow((uv.y - ribbon_y_b) / 0.16, 2.0));
-	col += lavender_glow.rgb * ribbon_a * glow_strength * 0.070;
-	col += mint_glow.rgb * ribbon_b * glow_strength * 0.065;
+	float flow_a = value_noise(uv * vec2(2.35, 2.05) + vec2(phase * 0.10, -phase * 0.07));
+	float flow_b = value_noise(uv * vec2(2.05, 2.65) + vec2(-phase * 0.08, phase * 0.09));
+	float ribbon_y_a = 0.20 + sin(uv.x * 4.2 + phase * 0.42) * 0.052 + (flow_a - 0.5) * 0.14;
+	float ribbon_y_b = 0.79 + sin(uv.x * 3.3 - phase * 0.34) * 0.062 + (flow_b - 0.5) * 0.13;
+	float ribbon_a = exp(-pow((uv.y - ribbon_y_a) / 0.16, 2.0));
+	float ribbon_b = exp(-pow((uv.y - ribbon_y_b) / 0.18, 2.0));
+	col = mix(col, lavender_glow.rgb, ribbon_a * glow_strength * 0.13);
+	col = mix(col, mint_glow.rgb, ribbon_b * glow_strength * 0.11);
 
-	vec2 mint_center = vec2(0.10 + sin(t * 0.8) * 0.025, 0.70);
-	vec2 coral_center = vec2(0.90, 0.24 + cos(t * 0.7) * 0.025);
-	col += mint_glow.rgb * soft_blob(uv, mint_center, vec2(0.38, 0.32)) * glow_strength * 0.055;
-	col += coral_glow.rgb * soft_blob(uv, coral_center, vec2(0.34, 0.28)) * glow_strength * 0.050;
+	float board_halo = soft_blob(uv, vec2(0.50, 0.57), vec2(0.67, 0.56));
+	col = mix(col, paper_glow.rgb, board_halo * glow_strength * 0.10);
 
-	vec2 star_grid = uv * vec2(44.0, 70.0) + vec2(t * 0.10, -t * 0.035);
-	vec2 star_cell = floor(star_grid);
-	vec2 star_local = fract(star_grid) - 0.5;
-	vec2 star_offset = (hash22(star_cell + vec2(9.3, 4.7)) - 0.5) * 0.66;
-	float star_seed = hash21(star_cell + vec2(41.0, 17.0));
-	float star_mask = step(0.955, star_seed);
-	float star_shape = 1.0 - smoothstep(0.025, 0.080, length(star_local - star_offset));
-	float twinkle = 0.58 + 0.42 * sin(TIME * (0.65 + star_seed * 1.15) + star_seed * 6.283185);
-	col += star_color.rgb * star_mask * star_shape * twinkle * star_strength * 0.32;
+	vec2 mint_center = vec2(0.08 + sin(phase * 0.30) * 0.035, 0.68);
+	vec2 coral_center = vec2(0.92, 0.25 + cos(phase * 0.28) * 0.035);
+	float mint_blob = soft_blob(uv, mint_center, vec2(0.36, 0.32));
+	float coral_blob = soft_blob(uv, coral_center, vec2(0.34, 0.30));
+	col = mix(col, mint_glow.rgb, mint_blob * glow_strength * 0.085);
+	col = mix(col, coral_glow.rgb, coral_blob * glow_strength * 0.080);
+
+	float veil_wave = sin((uv.x * 0.72 + uv.y) * 7.0 - phase * 0.30 + (flow_a - 0.5) * 0.9);
+	float veil = smoothstep(0.58, 0.98, veil_wave) * smoothstep(0.02, 0.24, uv.y) * (1.0 - smoothstep(0.78, 0.99, uv.y));
+	col = mix(col, gold_glow.rgb, veil * glow_strength * 0.032);
+
+	vec2 mote_grid = uv * vec2(18.0, 28.0) + vec2(phase * 0.075, -phase * 0.032);
+	vec2 mote_cell = floor(mote_grid);
+	vec2 mote_local = fract(mote_grid) - 0.5;
+	vec2 mote_offset = (hash22(mote_cell + vec2(9.3, 4.7)) - 0.5) * 0.64;
+	float mote_seed = hash21(mote_cell + vec2(41.0, 17.0));
+	float mote_mask = step(0.93, mote_seed);
+	float mote_distance = length(mote_local - mote_offset);
+	float mote_soft = 1.0 - smoothstep(0.035, 0.15, mote_distance);
+	float mote_core = 1.0 - smoothstep(0.010, 0.045, mote_distance);
+	float twinkle = 0.58 + 0.42 * sin(TIME * (0.62 + mote_seed * 0.74) + mote_seed * 6.283185);
+	float mote_amount = mote_mask * (mote_soft * 0.10 + mote_core * 0.55) * twinkle * mote_strength;
+	col = mix(col, mote_color.rgb, clamp(mote_amount, 0.0, 0.30));
 
 	float grain = hash21(floor(FRAGCOORD.xy)) - 0.5;
 	col += grain * grain_strength;
-	float vignette = smoothstep(0.34, 0.82, distance(uv, vec2(0.5)));
-	col *= 1.0 - vignette * vignette_strength;
-	COLOR = vec4(col, 1.0);
+	float vignette = smoothstep(0.36, 0.80, distance(uv, vec2(0.5)));
+	col = mix(col, top_dusk.rgb * 0.82, vignette * vignette_strength);
+	COLOR = vec4(clamp(col, vec3(0.0), vec3(1.0)), 1.0);
 }
