@@ -1,0 +1,9 @@
+{
+  "allowEditorControl": true,
+  "allowProjectSettingsWrites": false,
+  "allowResourceWrites": true,
+  "allowSceneWrites": true,
+  "allowScriptWrites": true,
+  "autoSnapshot": true,
+  "safetyMode": "autopilot"
+}

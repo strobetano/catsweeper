@@ -1,0 +1,13 @@
+# Godot 4+ specific ignores
+.godot/
+/android/
+
+# Godot Vibe OS generated state
+.godot-vibe/action_log.jsonl
+.godot-vibe/brain/
+.godot-vibe/brain.lock*/
+.godot-vibe/write.lock*/
+.godot-vibe/inbox/
+.godot-vibe/loop/
+.godot-vibe/snapshots/
+.godot-vibe/studio/
