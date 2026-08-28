@@ -31,23 +31,27 @@ enum GameMode { PLAYING, WON, LOST }
 
 @export_group("Feel")
 @export_range(0.12, 0.45, 0.01) var double_tap_window := 0.28
-@export_range(0.08, 0.35, 0.01) var mark_pop_duration := 0.14
-@export_range(0.10, 0.45, 0.01) var cat_pop_duration := 0.24
-@export_range(0.15, 0.60, 0.01) var rule_pulse_duration := 0.40
-@export_range(0.12, 0.50, 0.01) var shake_duration := 0.24
+@export_range(0.08, 0.35, 0.01) var mark_pop_duration := 0.20
+@export_range(0.10, 0.45, 0.01) var cat_pop_duration := 0.32
+@export_range(0.15, 0.60, 0.01) var rule_pulse_duration := 0.50
+@export_range(0.12, 0.50, 0.01) var shake_duration := 0.30
 @export_range(2.0, 18.0, 0.5) var shake_strength := 6.0
-@export_range(0.25, 1.20, 0.05) var board_intro_duration := 0.55
-@export_range(0.8, 3.0, 0.05) var cartoon_overshoot := 2.0
+@export_range(0.25, 1.20, 0.05) var board_intro_duration := 0.72
+@export_range(0.8, 3.0, 0.05) var cartoon_overshoot := 1.65
+@export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.32
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
-@export_range(0.6, 2.0, 0.05) var celebration_duration := 1.15
+@export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
 @export_range(250.0, 650.0, 10.0) var particle_gravity := 430.0
 @export_range(6, 24, 1) var place_sparkle_count := 14
 @export_range(36, 96, 2) var win_confetti_count := 64
 
+@export_group("Style")
+@export_range(1.0, 1.6, 0.05) var border_weight := 1.25
+
 @export_group("Atmosphere")
-@export_range(0.0, 0.25, 0.005) var background_drift_speed := 0.045
-@export_range(0.0, 1.5, 0.01) var background_glow_strength := 0.86
-@export_range(0.0, 1.0, 0.01) var background_mote_strength := 0.36
+@export_range(0.0, 0.25, 0.005) var background_drift_speed := 0.065
+@export_range(0.0, 1.5, 0.01) var background_glow_strength := 1.0
+@export_range(0.0, 1.0, 0.01) var background_mote_strength := 0.44
 @export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.004
 
 @export_group("Audio")
@@ -207,6 +211,7 @@ func _start_level(index: int) -> void:
 func _process(delta: float) -> void:
 	animation_clock += delta
 	intro_time = minf(intro_time + delta, board_intro_duration)
+	self_modulate = Color(1.0, 1.0, 1.0, _smooth_fade(intro_time / maxf(board_intro_duration, 0.001)))
 	if game_mode == GameMode.PLAYING:
 		elapsed_time += delta
 	elif game_mode == GameMode.WON:
@@ -518,12 +523,13 @@ func _spawn_place_sparkles(origin: Vector2, color: Color) -> void:
 	for index in range(place_sparkle_count):
 		var angle := TAU * float(index) / float(place_sparkle_count) + randf_range(-0.14, 0.14)
 		var speed := randf_range(80.0, 165.0)
+		var lifetime := randf_range(0.38, 0.64)
 		particles.append({
 			"kind": "place",
 			"pos": origin,
 			"vel": Vector2.from_angle(angle) * speed,
-			"life": randf_range(0.38, 0.64),
-			"max_life": 0.64,
+			"life": lifetime,
+			"max_life": lifetime,
 			"color": color.lightened(0.16),
 			"size": randf_range(4.0, 7.5),
 			"spin": randf_range(0.0, TAU),
@@ -551,12 +557,13 @@ func _spawn_win_confetti() -> void:
 	var palette := [MINT, CORAL, GOLD, SKY, PLUM, CREAM]
 	for index in range(win_confetti_count):
 		var origin := Vector2(randf_range(80.0, 820.0), randf_range(300.0, 570.0))
+		var lifetime := randf_range(1.45, 2.45)
 		particles.append({
 			"kind": "win",
 			"pos": origin,
 			"vel": Vector2(randf_range(-165.0, 165.0), randf_range(-480.0, -180.0)),
-			"life": randf_range(1.45, 2.45),
-			"max_life": 2.45,
+			"life": lifetime,
+			"max_life": lifetime,
 			"color": palette[index % palette.size()],
 			"size": randf_range(5.0, 9.0),
 			"spin": randf_range(0.0, TAU),
@@ -568,7 +575,8 @@ func _draw() -> void:
 	_update_canvas_transform()
 	var shake := Vector2.ZERO
 	if shake_time > 0.0:
-		var strength := shake_strength * (shake_time / maxf(shake_duration, 0.001))
+		var shake_phase := 1.0 - shake_time / maxf(shake_duration, 0.001)
+		var strength := shake_strength * _smooth_pulse(shake_phase)
 		shake = Vector2(sin(animation_clock * 67.0), cos(animation_clock * 51.0) * 0.45) * strength
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 	_draw_header()
@@ -610,8 +618,8 @@ func _draw_header() -> void:
 		var heart_color := CORAL if index < hearts else Color("#DDD7CC")
 		if error_time > 0.0 and index == hearts:
 			var fade_phase := 1.0 - error_time / maxf(shake_duration, 0.001)
-			heart_radius *= 1.0 + sin(fade_phase * PI) * 0.28
-			heart_color = CORAL.lerp(Color("#DDD7CC"), fade_phase)
+			heart_radius *= 1.0 + _smooth_pulse(fade_phase) * 0.28
+			heart_color = CORAL.lerp(Color("#DDD7CC"), _smooth_fade(fade_phase))
 		_draw_heart(Vector2(565.0 + float(index) * 72.0, 204.0), heart_radius, heart_color)
 
 
@@ -620,7 +628,8 @@ func _draw_rule_cards() -> void:
 	var accents := [MINT, SKY, CORAL]
 	var pulse := 0.0
 	if pulse_time > 0.0:
-		pulse = sin((pulse_time / maxf(rule_pulse_duration, 0.001)) * PI)
+		var pulse_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
+		pulse = _smooth_pulse(pulse_phase)
 	for index in range(3):
 		var card := Rect2(75.0 + float(index) * 255.0, 263.0, 235.0, 68.0)
 		var accent: Color = accents[index]
@@ -641,7 +650,7 @@ func _draw_board() -> void:
 	var board_rect := _animated_board_rect()
 	var tray := board_rect.grow(18.0)
 	_rounded_rect(Rect2(tray.position + Vector2(0.0, 11.0), tray.size), Color(0.005, 0.012, 0.04, 0.24), 44.0)
-	_draw_panel(tray, CREAM, 44.0, _with_alpha(INK, 0.16), 5.0)
+	_draw_panel(tray, CREAM, 44.0, _with_alpha(INK, 0.24), 5.0)
 
 	var slot := board_rect.size.x / float(grid_size)
 	var gap := 9.0 if grid_size <= 6 else 8.0
@@ -655,63 +664,79 @@ func _draw_board() -> void:
 		)
 		var region := int(puzzle["regions"][cell])
 		var tile_color := region_colors[region % region_colors.size()]
+		var error_envelope := 0.0
 		if cell == hover_cell and game_mode == GameMode.PLAYING:
 			tile_color = tile_color.lightened(0.075)
 		if cell == error_cell and error_time > 0.0:
-			tile_color = tile_color.lerp(CORAL, 0.30 + 0.24 * sin(animation_clock * 34.0))
+			var error_phase := 1.0 - error_time / maxf(shake_duration, 0.001)
+			error_envelope = _smooth_pulse(error_phase)
+			tile_color = tile_color.lerp(CORAL, (0.30 + 0.12 * sin(animation_clock * 34.0)) * error_envelope)
 		_rounded_rect(tile_rect, tile_color, tile_radius)
 		if cell == hover_cell and game_mode == GameMode.PLAYING and cell != error_cell:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CREAM, 0.84), 5.0)
 		if cell == error_cell and error_time > 0.0:
-			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92), 6.0)
+			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92 * error_envelope), 6.0)
 
 		if pulse_time > 0.0 and _shares_rule(cell, pulse_cell):
-			var pulse_alpha := sin((pulse_time / maxf(rule_pulse_duration, 0.001)) * PI) * 0.17
+			var pulse_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
+			var pulse_alpha := _smooth_pulse(pulse_phase) * 0.17
 			_rounded_rect(tile_rect.grow(-4.0), Color(1.0, 1.0, 1.0, pulse_alpha), maxf(8.0, tile_radius - 4.0))
 		if cell == pulse_cell and pulse_time > 0.0:
 			var ring_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
-			draw_arc(tile_rect.get_center(), slot * (0.28 + ring_phase * 0.15), 0.0, TAU, 40, _with_alpha(CREAM, (1.0 - ring_phase) * 0.78), 5.0, true)
+			var ring_motion := _smooth_fade(ring_phase)
+			draw_arc(tile_rect.get_center(), slot * (0.28 + ring_motion * 0.15), 0.0, TAU, 40, _with_alpha(CREAM, _smooth_pulse(ring_phase) * 0.78), 5.0, true)
 			if ring_phase > 0.16:
 				var echo_phase := (ring_phase - 0.16) / 0.84
-				draw_arc(tile_rect.get_center(), slot * (0.18 + echo_phase * 0.30), 0.0, TAU, 40, _with_alpha(GOLD, (1.0 - echo_phase) * 0.54), 4.0, true)
+				var echo_motion := _smooth_fade(echo_phase)
+				draw_arc(tile_rect.get_center(), slot * (0.18 + echo_motion * 0.30), 0.0, TAU, 40, _with_alpha(GOLD, _smooth_pulse(echo_phase) * 0.54), 4.0, true)
 
 		if cell == pending_cell and game_mode == GameMode.PLAYING:
 			var pending_ratio := clampf(pending_time / maxf(double_tap_window, 0.001), 0.0, 1.0)
 			var pending_phase := 1.0 - pending_ratio
-			var pending_alpha := 0.68 + sin(animation_clock * 10.0) * 0.12
-			draw_arc(tile_rect.get_center(), slot * (0.32 + pending_phase * 0.035), 0.0, TAU, 40, _with_alpha(CREAM, pending_alpha), 5.0, true)
-			draw_circle(tile_rect.get_center(), slot * 0.035, _with_alpha(MINT, 0.38 + pending_phase * 0.26))
+			var pending_motion := _smooth_fade(pending_phase)
+			var pending_alpha := _smooth_pulse(pending_phase) * 0.80
+			draw_arc(tile_rect.get_center(), slot * (0.32 + pending_motion * 0.035), 0.0, TAU, 40, _with_alpha(CREAM, pending_alpha), 5.0, true)
+			draw_circle(tile_rect.get_center(), slot * 0.035, _with_alpha(MINT, pending_alpha * 0.72))
 
 		if cell_states[cell] == CellState.MARKED:
 			var mark_scale := 1.0
+			var mark_alpha := 1.0
 			if mark_pops.has(cell):
 				var mark_phase := clampf(float(mark_pops[cell]) / maxf(mark_pop_duration, 0.001), 0.0, 1.0)
+				var mark_motion := _smooth_fade(mark_phase)
 				mark_scale = lerpf(0.46, 1.0, _cartoon_settle(mark_phase))
-				draw_arc(tile_rect.get_center(), slot * (0.12 + mark_phase * 0.16), 0.0, TAU, 32, _with_alpha(CREAM, (1.0 - mark_phase) * 0.72), 4.5, true)
-			_draw_whisker_mark(tile_rect.get_center(), slot * 0.23 * mark_scale, _with_alpha(INK, 0.80))
+				mark_alpha = mark_motion
+				draw_arc(tile_rect.get_center(), slot * (0.12 + mark_motion * 0.16), 0.0, TAU, 32, _with_alpha(CREAM, _smooth_pulse(mark_phase) * 0.72), 4.5, true)
+			_draw_whisker_mark(tile_rect.get_center(), slot * 0.23 * mark_scale, _with_alpha(INK, 0.80 * mark_alpha))
 		elif cell_states[cell] == CellState.CAT:
 			var pop_scale := 1.0
 			var pop_phase := 1.0
+			var cat_alpha := 1.0
 			if cat_pops.has(cell):
 				pop_phase = clampf(float(cat_pops[cell]) / maxf(cat_pop_duration, 0.001), 0.0, 1.0)
+				var pop_motion := _smooth_fade(pop_phase)
+				var pop_envelope := _smooth_pulse(pop_phase)
 				pop_scale = lerpf(0.55, 1.0, _cartoon_settle(pop_phase))
-				draw_circle(tile_rect.get_center(), slot * (0.18 + pop_phase * 0.09), _with_alpha(CREAM, (1.0 - pop_phase) * 0.18))
-				draw_arc(tile_rect.get_center(), slot * (0.24 + pop_phase * 0.17), 0.0, TAU, 40, _with_alpha(CREAM, (1.0 - pop_phase) * 0.88), maxf(5.0, slot * 0.045), true)
+				cat_alpha = pop_motion
+				draw_circle(tile_rect.get_center(), slot * (0.18 + pop_motion * 0.09), _with_alpha(CREAM, pop_envelope * 0.18))
+				draw_arc(tile_rect.get_center(), slot * (0.24 + pop_motion * 0.17), 0.0, TAU, 40, _with_alpha(CREAM, pop_envelope * 0.88), maxf(5.0, slot * 0.045), true)
 			if game_mode == GameMode.WON:
 				var row_delay := float(row) * celebration_stagger
 				if win_time > row_delay:
 					var bob_phase := clampf((win_time - row_delay) / maxf(celebration_duration, 0.001), 0.0, 1.0)
-					pop_scale *= 1.0 + sin(bob_phase * PI * 2.0) * 0.07 * (1.0 - bob_phase)
-					tile_rect.position.y -= sin(bob_phase * PI) * 9.0
+					var bob_envelope := _smooth_pulse(bob_phase)
+					pop_scale *= 1.0 + sin(bob_phase * PI * 2.0) * 0.07 * bob_envelope
+					tile_rect.position.y -= bob_envelope * 9.0
 			var accent := region_colors[region % region_colors.size()].darkened(0.10)
-			_draw_cat(tile_rect.get_center(), slot * 0.31, pop_scale, accent)
+			_draw_cat(tile_rect.get_center(), slot * 0.31, pop_scale, accent, cat_alpha)
 			if given_cells.has(cell):
 				draw_arc(tile_rect.get_center(), slot * 0.35, 0.0, TAU, 40, _with_alpha(GOLD, 0.92), 5.5, true)
 
 	_draw_region_boundaries(board_rect, slot)
 
 	if game_mode == GameMode.WON:
-		var sweep_x := lerpf(board_rect.position.x - 120.0, board_rect.end.x + 120.0, clampf(win_time / maxf(celebration_duration, 0.001), 0.0, 1.0))
+		var sweep_phase := _smooth_fade(win_time / maxf(celebration_duration, 0.001))
+		var sweep_x := lerpf(board_rect.position.x - 120.0, board_rect.end.x + 120.0, sweep_phase)
 		draw_colored_polygon(PackedVector2Array([
 			Vector2(sweep_x - 75.0, board_rect.position.y),
 			Vector2(sweep_x - 15.0, board_rect.position.y),
@@ -721,19 +746,26 @@ func _draw_board() -> void:
 
 
 func _draw_region_boundaries(board_rect: Rect2, slot: float) -> void:
-	var boundary_color := _with_alpha(INK, 0.44)
-	var boundary_width := clampf(slot * 0.045, 4.5, 6.5)
+	var boundary_color := _with_alpha(INK, 0.50)
+	var boundary_width := clampf(slot * 0.050, 5.5, 7.5)
 	for row in range(grid_size):
 		for column in range(grid_size):
 			var cell := row * grid_size + column
 			var region := int(puzzle["regions"][cell])
 			if column < grid_size - 1 and int(puzzle["regions"][cell + 1]) != region:
 				var x := board_rect.position.x + float(column + 1) * slot
-				draw_line(Vector2(x, board_rect.position.y + float(row) * slot + 7.0), Vector2(x, board_rect.position.y + float(row + 1) * slot - 7.0), boundary_color, boundary_width, true)
+				var vertical_start := Vector2(x, board_rect.position.y + float(row) * slot + 7.0)
+				var vertical_finish := Vector2(x, board_rect.position.y + float(row + 1) * slot - 7.0)
+				draw_line(vertical_start, vertical_finish, boundary_color, boundary_width, true)
+				draw_circle(vertical_start, boundary_width * 0.5, boundary_color)
+				draw_circle(vertical_finish, boundary_width * 0.5, boundary_color)
 			if row < grid_size - 1 and int(puzzle["regions"][cell + grid_size]) != region:
 				var y := board_rect.position.y + float(row + 1) * slot
-				draw_line(Vector2(board_rect.position.x + float(column) * slot + 7.0, y), Vector2(board_rect.position.x + float(column + 1) * slot - 7.0, y), boundary_color, boundary_width, true)
-
+				var horizontal_start := Vector2(board_rect.position.x + float(column) * slot + 7.0, y)
+				var horizontal_finish := Vector2(board_rect.position.x + float(column + 1) * slot - 7.0, y)
+				draw_line(horizontal_start, horizontal_finish, boundary_color, boundary_width, true)
+				draw_circle(horizontal_start, boundary_width * 0.5, boundary_color)
+				draw_circle(horizontal_finish, boundary_width * 0.5, boundary_color)
 
 func _draw_footer() -> void:
 	var instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
@@ -741,8 +773,9 @@ func _draw_footer() -> void:
 		instruction = toast_text
 	var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
 	if toast_time > 0.0:
-		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.98), 22.0, _with_alpha(CORAL if error_time > 0.0 else MINT, 0.62), 4.0)
-		_draw_text_center(instruction, instruction_rect, 18, INK)
+		var toast_alpha := _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
+		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.98 * toast_alpha), 22.0, _with_alpha(CORAL if error_time > 0.0 else MINT, 0.62 * toast_alpha), 4.0)
+		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(INK, toast_alpha))
 	else:
 		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(CREAM, 0.94))
 
@@ -781,7 +814,7 @@ func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> vo
 
 
 func _draw_win_overlay() -> void:
-	var alpha := clampf((win_time - 0.28) / 0.36, 0.0, 1.0)
+	var alpha := _smooth_fade((win_time - celebration_stagger * 4.0) / maxf(ui_fade_duration, 0.001))
 	if alpha <= 0.0:
 		return
 	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), Color(0.015, 0.035, 0.09, 0.62 * alpha))
@@ -806,30 +839,32 @@ func _draw_win_overlay() -> void:
 	_draw_text_center("%d calm hearts left" % hearts, Rect2(220.0, 835.0, 460.0, 40.0), 18, _with_alpha(CORAL.darkened(0.18), alpha))
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
-	_rounded_rect(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0)
+	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
 	var button_text := "PLAY AGAIN" if level_index >= PuzzleBook.LEVELS.size() - 1 else "NEXT ROOM"
 	_draw_text_center(button_text, MODAL_BUTTON_RECT, 28, _with_alpha(INK, alpha))
 
 
 func _draw_loss_overlay() -> void:
-	var alpha := clampf(loss_time / 0.32, 0.0, 1.0)
+	var alpha := _smooth_fade(loss_time / maxf(ui_fade_duration, 0.001))
 	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), Color(0.015, 0.035, 0.09, 0.64 * alpha))
 	var modal := Rect2(110.0, 420.0, 680.0, 620.0)
 	_rounded_rect(Rect2(modal.position + Vector2(0.0, 15.0), modal.size), Color(0.0, 0.0, 0.0, 0.24 * alpha), 50.0)
 	_draw_panel(modal, _with_alpha(CREAM, alpha), 50.0, _with_alpha(CORAL, 0.68 * alpha), 6.0)
-	_draw_cat(Vector2(450.0, 600.0), 98.0, 1.0, CORAL)
+	var loss_cat_scale := lerpf(0.78, 1.0, _cartoon_settle(alpha))
+	_draw_cat(Vector2(450.0, 600.0), 98.0, loss_cat_scale, CORAL, alpha)
 	_draw_text_center("PAWS. RESET.", Rect2(160.0, 720.0, 580.0, 70.0), 42, _with_alpha(INK, alpha))
 	_draw_text_center("The cafe is still cozy. Try the sweep again.", Rect2(160.0, 798.0, 580.0, 48.0), 20, _with_alpha(INK_SOFT, alpha))
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
-	_rounded_rect(MODAL_BUTTON_RECT, _with_alpha(CORAL, alpha), 46.0)
+	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(CORAL, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
 	_draw_text_center("TRY AGAIN", MODAL_BUTTON_RECT, 28, _with_alpha(INK, alpha))
 
 
 func _draw_particles() -> void:
 	for particle in particles:
 		var life_ratio := clampf(float(particle["life"]) / float(particle["max_life"]), 0.0, 1.0)
+		var particle_progress := 1.0 - life_ratio
 		var color: Color = particle["color"]
-		color.a *= minf(1.0, life_ratio * 2.2)
+		color.a *= _smooth_pulse(particle_progress)
 		var pos: Vector2 = particle["pos"]
 		var particle_size := float(particle["size"])
 		var direction := Vector2.from_angle(float(particle["spin"]))
@@ -856,50 +891,57 @@ func _draw_particles() -> void:
 			draw_circle(pos + direction * confetti_half, confetti_width * 0.5, color)
 
 
-func _draw_cat(center: Vector2, radius: float, scale_value: float, accent: Color) -> void:
+func _draw_cat(center: Vector2, radius: float, scale_value: float, accent: Color, opacity: float = 1.0) -> void:
 	var radius_scaled := radius * scale_value
+	var cream := _with_alpha(CREAM, opacity)
+	var caramel := _with_alpha(CARAMEL, opacity)
+	var coral := _with_alpha(CORAL, opacity)
+	var ink := _with_alpha(INK, opacity)
+	var ink_soft := _with_alpha(INK_SOFT, opacity)
+	var white := _with_alpha(Color.WHITE, opacity)
+	var accent_color := _with_alpha(accent, opacity)
 	var shadow_center := center + Vector2(0.0, radius_scaled * 0.13)
-	draw_circle(shadow_center, radius_scaled * 0.92, Color(0.04, 0.05, 0.09, 0.24))
+	draw_circle(shadow_center, radius_scaled * 0.92, Color(0.04, 0.05, 0.09, 0.24 * opacity))
 	var ear_y := center.y - radius_scaled * 0.48
 	draw_colored_polygon(PackedVector2Array([
 		center + Vector2(-radius_scaled * 0.72, -radius_scaled * 0.12),
 		center + Vector2(-radius_scaled * 0.50, -radius_scaled * 0.98),
 		center + Vector2(-radius_scaled * 0.12, -radius_scaled * 0.48)
-	]), CREAM)
+	]), cream)
 	draw_colored_polygon(PackedVector2Array([
 		center + Vector2(radius_scaled * 0.72, -radius_scaled * 0.12),
 		center + Vector2(radius_scaled * 0.50, -radius_scaled * 0.98),
 		center + Vector2(radius_scaled * 0.12, -radius_scaled * 0.48)
-	]), CARAMEL)
+	]), caramel)
 	draw_colored_polygon(PackedVector2Array([
 		Vector2(center.x - radius_scaled * 0.56, ear_y),
 		Vector2(center.x - radius_scaled * 0.48, center.y - radius_scaled * 0.78),
 		Vector2(center.x - radius_scaled * 0.28, center.y - radius_scaled * 0.47)
-	]), _with_alpha(CORAL, 0.56))
+	]), _with_alpha(coral, 0.56))
 	draw_colored_polygon(PackedVector2Array([
 		Vector2(center.x + radius_scaled * 0.56, ear_y),
 		Vector2(center.x + radius_scaled * 0.48, center.y - radius_scaled * 0.78),
 		Vector2(center.x + radius_scaled * 0.28, center.y - radius_scaled * 0.47)
-	]), _with_alpha(CORAL, 0.56))
-	draw_circle(center, radius_scaled * 0.74, CREAM)
-	draw_circle(center + Vector2(radius_scaled * 0.30, -radius_scaled * 0.18), radius_scaled * 0.40, CARAMEL)
-	draw_circle(center + Vector2(-radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, INK)
-	draw_circle(center + Vector2(radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, INK)
-	draw_circle(center + Vector2(-radius_scaled * 0.23, -radius_scaled * 0.15), radius_scaled * 0.04, Color.WHITE)
-	draw_circle(center + Vector2(radius_scaled * 0.31, -radius_scaled * 0.15), radius_scaled * 0.04, Color.WHITE)
+	]), _with_alpha(coral, 0.56))
+	draw_circle(center, radius_scaled * 0.74, cream)
+	draw_circle(center + Vector2(radius_scaled * 0.30, -radius_scaled * 0.18), radius_scaled * 0.40, caramel)
+	draw_circle(center + Vector2(-radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, ink)
+	draw_circle(center + Vector2(radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, ink)
+	draw_circle(center + Vector2(-radius_scaled * 0.23, -radius_scaled * 0.15), radius_scaled * 0.04, white)
+	draw_circle(center + Vector2(radius_scaled * 0.31, -radius_scaled * 0.15), radius_scaled * 0.04, white)
 	draw_colored_polygon(PackedVector2Array([
 		center + Vector2(-radius_scaled * 0.09, radius_scaled * 0.09),
 		center + Vector2(radius_scaled * 0.09, radius_scaled * 0.09),
 		center + Vector2(0.0, radius_scaled * 0.19)
-	]), CORAL)
-	draw_arc(center + Vector2(-radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 0.2, 1.55, 10, INK_SOFT, maxf(2.4, radius_scaled * 0.055), true)
-	draw_arc(center + Vector2(radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 1.58, 2.95, 10, INK_SOFT, maxf(2.4, radius_scaled * 0.055), true)
+	]), coral)
+	draw_arc(center + Vector2(-radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 0.2, 1.55, 10, ink_soft, maxf(2.4, radius_scaled * 0.055), true)
+	draw_arc(center + Vector2(radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 1.58, 2.95, 10, ink_soft, maxf(2.4, radius_scaled * 0.055), true)
 	for side in [-1.0, 1.0]:
 		for whisker in range(2):
 			var start := center + Vector2(side * radius_scaled * 0.42, radius_scaled * (0.12 + float(whisker) * 0.12))
 			var finish := center + Vector2(side * radius_scaled * 0.88, radius_scaled * (0.05 + float(whisker) * 0.17))
-			draw_line(start, finish, _with_alpha(INK_SOFT, 0.7), maxf(2.0, radius_scaled * 0.045), true)
-	draw_arc(center + Vector2(0.0, radius_scaled * 0.50), radius_scaled * 0.35, 0.05, PI - 0.05, 20, accent, maxf(3.0, radius_scaled * 0.105), true)
+			draw_line(start, finish, _with_alpha(ink_soft, 0.7), maxf(2.0, radius_scaled * 0.045), true)
+	draw_arc(center + Vector2(0.0, radius_scaled * 0.50), radius_scaled * 0.35, 0.05, PI - 0.05, 20, accent_color, maxf(3.0, radius_scaled * 0.105), true)
 
 
 func _draw_whisker_mark(center: Vector2, radius: float, color: Color) -> void:
@@ -981,15 +1023,26 @@ func _scale_rect(rect: Rect2, amount: float) -> Rect2:
 	return Rect2(rect.get_center() - scaled_size * 0.5, scaled_size)
 
 
+func _smooth_fade(progress: float) -> float:
+	var t := clampf(progress, 0.0, 1.0)
+	return t * t * (3.0 - 2.0 * t)
+
+
+func _smooth_pulse(progress: float) -> float:
+	var t := _smooth_fade(progress)
+	return 4.0 * t * (1.0 - t)
+
+
 func _cartoon_settle(progress: float) -> float:
-	var t := clampf(progress, 0.0, 1.0) - 1.0
+	var t := _smooth_fade(progress) - 1.0
 	return 1.0 + (cartoon_overshoot + 1.0) * t * t * t + cartoon_overshoot * t * t
 
 
 func _draw_panel(rect: Rect2, fill: Color, radius: float, border: Color, border_width: float) -> void:
-	if border_width > 0.0 and border.a > 0.0:
+	var weighted_width := border_width * border_weight
+	if weighted_width > 0.0 and border.a > 0.0:
 		_rounded_rect(rect, border, radius)
-		_rounded_rect(rect.grow(-border_width), fill, maxf(1.0, radius - border_width))
+		_rounded_rect(rect.grow(-weighted_width), fill, maxf(1.0, radius - weighted_width))
 	else:
 		_rounded_rect(rect, fill, radius)
 

@@ -9,9 +9,9 @@ uniform vec4 coral_glow : source_color = vec4(0.949, 0.647, 0.620, 1.0);
 uniform vec4 gold_glow : source_color = vec4(0.961, 0.851, 0.557, 1.0);
 uniform vec4 paper_glow : source_color = vec4(0.953, 0.922, 0.867, 1.0);
 uniform vec4 mote_color : source_color = vec4(1.0, 0.976, 0.941, 1.0);
-uniform float drift_speed : hint_range(0.0, 0.25, 0.005) = 0.045;
-uniform float glow_strength : hint_range(0.0, 1.5, 0.01) = 0.86;
-uniform float mote_strength : hint_range(0.0, 1.0, 0.01) = 0.36;
+uniform float drift_speed : hint_range(0.0, 0.25, 0.005) = 0.065;
+uniform float glow_strength : hint_range(0.0, 1.5, 0.01) = 1.0;
+uniform float mote_strength : hint_range(0.0, 1.0, 0.01) = 0.44;
 uniform float grain_strength : hint_range(0.0, 0.03, 0.001) = 0.004;
 uniform float vignette_strength : hint_range(0.0, 0.5, 0.01) = 0.14;
 
@@ -50,26 +50,28 @@ void fragment() {
 
 	float flow_a = value_noise(uv * vec2(2.35, 2.05) + vec2(phase * 0.10, -phase * 0.07));
 	float flow_b = value_noise(uv * vec2(2.05, 2.65) + vec2(-phase * 0.08, phase * 0.09));
-	float ribbon_y_a = 0.20 + sin(uv.x * 4.2 + phase * 0.42) * 0.052 + (flow_a - 0.5) * 0.14;
-	float ribbon_y_b = 0.79 + sin(uv.x * 3.3 - phase * 0.34) * 0.062 + (flow_b - 0.5) * 0.13;
+	float breathe_a = 0.80 + 0.20 * (0.5 + 0.5 * sin(phase * 1.05));
+	float breathe_b = 0.80 + 0.20 * (0.5 + 0.5 * sin(phase * 0.86 + 2.1));
+	float ribbon_y_a = 0.20 + sin(uv.x * 4.2 + phase * 0.78) * 0.052 + (flow_a - 0.5) * 0.14;
+	float ribbon_y_b = 0.79 + sin(uv.x * 3.3 - phase * 0.66) * 0.062 + (flow_b - 0.5) * 0.13;
 	float ribbon_a = exp(-pow((uv.y - ribbon_y_a) / 0.16, 2.0));
 	float ribbon_b = exp(-pow((uv.y - ribbon_y_b) / 0.18, 2.0));
-	col = mix(col, lavender_glow.rgb, ribbon_a * glow_strength * 0.13);
-	col = mix(col, mint_glow.rgb, ribbon_b * glow_strength * 0.11);
+	col = mix(col, lavender_glow.rgb, ribbon_a * glow_strength * 0.16 * breathe_a);
+	col = mix(col, mint_glow.rgb, ribbon_b * glow_strength * 0.14 * breathe_b);
 
 	float board_halo = soft_blob(uv, vec2(0.50, 0.57), vec2(0.67, 0.56));
-	col = mix(col, paper_glow.rgb, board_halo * glow_strength * 0.10);
+	col = mix(col, paper_glow.rgb, board_halo * glow_strength * 0.13 * mix(breathe_a, breathe_b, 0.5));
 
-	vec2 mint_center = vec2(0.08 + sin(phase * 0.30) * 0.035, 0.68);
-	vec2 coral_center = vec2(0.92, 0.25 + cos(phase * 0.28) * 0.035);
+	vec2 mint_center = vec2(0.08 + sin(phase * 0.62) * 0.035, 0.68);
+	vec2 coral_center = vec2(0.92, 0.25 + cos(phase * 0.56) * 0.035);
 	float mint_blob = soft_blob(uv, mint_center, vec2(0.36, 0.32));
 	float coral_blob = soft_blob(uv, coral_center, vec2(0.34, 0.30));
-	col = mix(col, mint_glow.rgb, mint_blob * glow_strength * 0.085);
-	col = mix(col, coral_glow.rgb, coral_blob * glow_strength * 0.080);
+	col = mix(col, mint_glow.rgb, mint_blob * glow_strength * 0.105 * breathe_b);
+	col = mix(col, coral_glow.rgb, coral_blob * glow_strength * 0.100 * breathe_a);
 
-	float veil_wave = sin((uv.x * 0.72 + uv.y) * 7.0 - phase * 0.30 + (flow_a - 0.5) * 0.9);
+	float veil_wave = sin((uv.x * 0.72 + uv.y) * 7.0 - phase * 0.58 + (flow_a - 0.5) * 0.9);
 	float veil = smoothstep(0.58, 0.98, veil_wave) * smoothstep(0.02, 0.24, uv.y) * (1.0 - smoothstep(0.78, 0.99, uv.y));
-	col = mix(col, gold_glow.rgb, veil * glow_strength * 0.032);
+	col = mix(col, gold_glow.rgb, veil * glow_strength * 0.042 * breathe_a);
 
 	vec2 mote_grid = uv * vec2(18.0, 28.0) + vec2(phase * 0.075, -phase * 0.032);
 	vec2 mote_cell = floor(mote_grid);
