@@ -18,6 +18,9 @@ const UNDO_RECT := Rect2(75.0, 1210.0, 355.0, 88.0)
 const RESTART_RECT := Rect2(470.0, 1210.0, 355.0, 88.0)
 const MODAL_BUTTON_RECT := Rect2(210.0, 930.0, 480.0, 102.0)
 const SAVE_PATH := "user://catsweeper.cfg"
+const TUTORIAL_GIVEN_CELL := 0
+const TUTORIAL_MARK_CELL := 1
+const TUTORIAL_CAT_CELL := 7
 
 const INK := Color("#1D2942")
 const INK_SOFT := Color("#46516A")
@@ -33,6 +36,7 @@ const PLUM := Color("#C9B9E5")
 enum CellState { EMPTY, MARKED, CAT }
 enum GameMode { PLAYING, WON, LOST }
 enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
+enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 
 @export_group("Feel")
 @export_range(0.12, 0.45, 0.01) var double_tap_window := 0.28
@@ -44,6 +48,8 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(0.25, 1.20, 0.05) var board_intro_duration := 0.72
 @export_range(0.8, 3.0, 0.05) var cartoon_overshoot := 1.65
 @export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.32
+@export_range(0.4, 3.0, 0.05) var tutorial_pulse_speed := 1.35
+@export_range(1.0, 4.0, 0.1) var tutorial_success_duration := 2.6
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
 @export_range(0.1, 1.5, 0.05) var cat_idle_speed := 0.65
@@ -92,6 +98,7 @@ var cell_states: Array[int] = []
 var given_cells: Dictionary = {}
 var hearts := 3
 var game_mode := GameMode.PLAYING
+var tutorial_step := TutorialStep.OFF
 var history: Array[Dictionary] = []
 var elapsed_time := 0.0
 
@@ -211,12 +218,12 @@ func _start_level(index: int) -> void:
 	cat_pops.clear()
 	mark_pops.clear()
 	particles.clear()
-	if level_index == 0:
-		toast_text = "One seat is found. Sweep the impossible seats first."
-		toast_time = 5.0
-	else:
-		toast_text = ""
-		toast_time = 0.0
+	tutorial_step = TutorialStep.MARK_SEAT if level_index == 0 else TutorialStep.OFF
+	toast_text = ""
+	toast_time = 0.0
+	if tutorial_step == TutorialStep.MARK_SEAT:
+		pulse_cell = TUTORIAL_GIVEN_CELL
+		pulse_time = rule_pulse_duration
 	queue_redraw()
 
 
@@ -411,6 +418,8 @@ func _toggle_mark(cell: int) -> void:
 		_play_sound(mark_player, randf_range(0.96, 1.06))
 	else:
 		_play_sound(mark_player, 0.88)
+	if new_state == CellState.MARKED:
+		_update_tutorial_progress(cell, false)
 
 
 func _paint_mark(cell: int) -> void:
@@ -423,6 +432,7 @@ func _paint_mark(cell: int) -> void:
 	cell_states[cell] = CellState.MARKED
 	mark_pops[cell] = 0.0
 	_play_sound(mark_player, randf_range(0.94, 1.08))
+	_update_tutorial_progress(cell, false)
 
 
 func _try_place_cat(cell: int) -> void:
@@ -446,6 +456,7 @@ func _try_place_cat(cell: int) -> void:
 		pulse_time = rule_pulse_duration
 		_spawn_place_sparkles(_cell_center(cell), region_colors[int(puzzle["regions"][cell]) % region_colors.size()])
 		_play_sound(place_player, 0.96 + float(_cat_count()) * 0.035)
+		_update_tutorial_progress(cell, true)
 		if _cat_count() == grid_size:
 			_complete_level()
 	else:
@@ -463,6 +474,29 @@ func _try_place_cat(cell: int) -> void:
 			game_mode = GameMode.LOST
 			loss_time = 0.0
 			pending_cell = -1
+
+
+func _update_tutorial_progress(action_cell: int, placed_cat: bool) -> void:
+	if level_index != 0 or game_mode != GameMode.PLAYING or tutorial_step == TutorialStep.OFF:
+		return
+	if tutorial_step == TutorialStep.MARK_SEAT and not placed_cat and action_cell == TUTORIAL_MARK_CELL and cell_states[action_cell] == CellState.MARKED:
+		tutorial_step = TutorialStep.PLACE_CAT
+		pulse_cell = TUTORIAL_CAT_CELL
+		pulse_time = rule_pulse_duration
+	if tutorial_step == TutorialStep.PLACE_CAT and cell_states[TUTORIAL_CAT_CELL] == CellState.CAT:
+		tutorial_step = TutorialStep.OFF
+		toast_text = "PURRFECT! USE THE THREE RULES TO FINISH THE ROOM."
+		toast_time = tutorial_success_duration
+
+
+func _tutorial_target_cell() -> int:
+	if level_index != 0 or game_mode != GameMode.PLAYING:
+		return -1
+	if tutorial_step == TutorialStep.MARK_SEAT:
+		return TUTORIAL_MARK_CELL
+	if tutorial_step == TutorialStep.PLACE_CAT:
+		return TUTORIAL_CAT_CELL
+	return -1
 
 
 func _wrong_reason(cell: int) -> String:
@@ -702,6 +736,7 @@ func _draw_board() -> void:
 	var slot := board_rect.size.x / float(grid_size)
 	var gap := 9.0 if grid_size <= 6 else 8.0
 	var tile_radius := minf(24.0, slot * 0.22)
+	var tutorial_target := _tutorial_target_cell()
 	for cell in range(cell_states.size()):
 		var row := cell / grid_size
 		var column := cell % grid_size
@@ -723,6 +758,13 @@ func _draw_board() -> void:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CREAM, 0.84), 5.0)
 		if cell == error_cell and error_time > 0.0:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92 * error_envelope), 6.0)
+
+		if cell == tutorial_target:
+			var tutorial_wave := 0.5 + 0.5 * sin(animation_clock * tutorial_pulse_speed * TAU)
+			var tutorial_accent := MINT if tutorial_step == TutorialStep.MARK_SEAT else GOLD
+			var tutorial_rect := tile_rect.grow(-3.0 - tutorial_wave * 1.5)
+			_draw_panel(tutorial_rect, _with_alpha(CREAM, 0.10 + tutorial_wave * 0.08), maxf(8.0, tile_radius - 3.0), _with_alpha(tutorial_accent, 0.74 + tutorial_wave * 0.22), 6.0)
+			draw_arc(tile_rect.get_center(), slot * (0.31 + tutorial_wave * 0.025), 0.0, TAU, 40, _with_alpha(CREAM, 0.34 + tutorial_wave * 0.24), 3.0, true)
 
 		if pulse_time > 0.0 and _shares_rule(cell, pulse_cell):
 			var pulse_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
@@ -814,26 +856,46 @@ func _draw_region_boundaries(board_rect: Rect2, slot: float) -> void:
 				draw_circle(horizontal_finish, boundary_width * 0.5, boundary_color)
 
 func _draw_footer() -> void:
-	var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
-	var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
-	var toast_alpha := 0.0
-	if toast_time > 0.0:
-		toast_alpha = _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
-	var border_color := MINT
-	if error_time > 0.0:
-		border_color = MINT.lerp(CORAL, toast_alpha)
-	_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 4.0), instruction_rect.size), _with_alpha(INK, 0.12), 22.0)
-	_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 22.0, _with_alpha(border_color, 0.62), 4.0)
-	if toast_alpha < 1.0:
-		_draw_text_center(base_instruction, instruction_rect, 18, _with_alpha(INK, 1.0 - toast_alpha))
-	if toast_alpha > 0.0:
-		_draw_text_center(toast_text, instruction_rect, 18, _with_alpha(INK, toast_alpha))
+	if toast_time <= 0.0 and _tutorial_target_cell() >= 0:
+		_draw_tutorial_prompt()
+	else:
+		var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
+		var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
+		var toast_alpha := 0.0
+		if toast_time > 0.0:
+			toast_alpha = _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
+		var border_color := MINT
+		if error_time > 0.0:
+			border_color = MINT.lerp(CORAL, toast_alpha)
+		_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 4.0), instruction_rect.size), _with_alpha(INK, 0.12), 22.0)
+		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 22.0, _with_alpha(border_color, 0.62), 4.0)
+		if toast_alpha < 1.0:
+			_draw_text_center(base_instruction, instruction_rect, 18, _with_alpha(INK, 1.0 - toast_alpha))
+		if toast_alpha > 0.0:
+			_draw_text_center(toast_text, instruction_rect, 18, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
 	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
 	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
 	_draw_text_center(_difficulty_label(), difficulty_rect, 16, _with_alpha(CREAM, 0.88))
+
+
+func _draw_tutorial_prompt() -> void:
+	var prompt_rect := Rect2(75.0, 1137.0, 750.0, 60.0)
+	var accent := MINT if tutorial_step == TutorialStep.MARK_SEAT else GOLD
+	var step_label := "1 / 2" if tutorial_step == TutorialStep.MARK_SEAT else "2 / 2"
+	var message := "TAP THE GLOWING SEAT TO MARK IT IMPOSSIBLE"
+	if tutorial_step == TutorialStep.PLACE_CAT:
+		message = "NICE! DOUBLE-TAP THE GLOWING SEAT FOR A CAT"
+	_rounded_rect(Rect2(prompt_rect.position + Vector2(0.0, 5.0), prompt_rect.size), _with_alpha(INK, 0.16), 28.0)
+	_draw_panel(prompt_rect, _with_alpha(CREAM, 0.98), 28.0, _with_alpha(accent, 0.78), 5.0)
+	var badge_rect := Rect2(prompt_rect.position + Vector2(12.0, 10.0), Vector2(96.0, 40.0))
+	_draw_panel(badge_rect, accent, 20.0, _with_alpha(INK, 0.16), 3.0)
+	_draw_text_center(step_label, badge_rect, 17, INK)
+	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 19, INK)
+
+
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
 	var hovered := rect.has_point(pointer_base) and game_mode == GameMode.PLAYING
 	var fill := _with_alpha(CREAM, 0.98 if enabled else 0.52)

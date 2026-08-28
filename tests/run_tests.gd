@@ -39,6 +39,33 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game._count_solutions(game.puzzle) == 1, "first room has one solution")
 	_expect(game._cat_count() == 1, "tutorial starts with one locked cat")
 
+	_expect(game.tutorial_step == game.TutorialStep.MARK_SEAT, "first room starts the two-step tutorial")
+	_expect(game._tutorial_target_cell() == game.TUTORIAL_MARK_CELL, "tutorial first highlights its mark seat")
+	_expect(game.given_cells.has(game.TUTORIAL_GIVEN_CELL), "tutorial reuses the locked opening cat")
+	_expect(game._shares_rule(game.TUTORIAL_MARK_CELL, game.TUTORIAL_GIVEN_CELL), "tutorial mark seat is visibly impossible")
+	_expect(int(game.puzzle["solution"][1]) == game.TUTORIAL_CAT_CELL % game.grid_size, "tutorial cat seat matches the real solution")
+
+	game.intro_time = game.board_intro_duration
+	var tutorial_mark_position: Vector2 = game._cell_center(game.TUTORIAL_MARK_CELL)
+	game._begin_pointer(tutorial_mark_position, false)
+	_expect(game.pending_cell == game.TUTORIAL_MARK_CELL and game.cell_states[game.TUTORIAL_MARK_CELL] == game.CellState.EMPTY, "tutorial single tap waits for double-tap window")
+	game._process(game.double_tap_window + 0.01)
+	_expect(game.cell_states[game.TUTORIAL_MARK_CELL] == game.CellState.MARKED and game.tutorial_step == game.TutorialStep.PLACE_CAT, "tutorial single tap marks and advances")
+	_expect(game._tutorial_target_cell() == game.TUTORIAL_CAT_CELL, "tutorial then highlights its cat seat")
+
+	var tutorial_cat_position: Vector2 = game._cell_center(game.TUTORIAL_CAT_CELL)
+	game._begin_pointer(tutorial_cat_position, false)
+	game._begin_pointer(tutorial_cat_position, false)
+	_expect(game.cell_states[game.TUTORIAL_CAT_CELL] == game.CellState.CAT and game.tutorial_step == game.TutorialStep.OFF, "tutorial double-tap places the cat and finishes")
+	_expect(game.hearts == 3 and game.toast_time == game.tutorial_success_duration, "tutorial finishes with praise and no penalty")
+
+	game._start_level(1)
+	_expect(game.tutorial_step == game.TutorialStep.OFF and game._tutorial_target_cell() == -1, "later rooms do not repeat the tutorial")
+	game._start_level(0)
+	game._paint_mark(game.TUTORIAL_MARK_CELL)
+	_expect(game.tutorial_step == game.TutorialStep.PLACE_CAT, "drag marking also advances the tutorial")
+	game._start_level(0)
+
 	game.intro_time = 0.0
 	var opening_rect: Rect2 = game._animated_board_rect()
 	_expect(game._cell_at(opening_rect.position + Vector2(1.0, 1.0)) == 0, "opening board hit-test follows its animation")
