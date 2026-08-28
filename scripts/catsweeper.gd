@@ -34,7 +34,7 @@ const SKY := Color("#AFCEE8")
 const PLUM := Color("#C9B9E5")
 
 enum CellState { EMPTY, MARKED, CAT }
-enum GameMode { PLAYING, WON, LOST }
+enum GameMode { PLAYING, WON }
 enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 
@@ -96,7 +96,6 @@ var puzzle: Dictionary
 var grid_size := 5
 var cell_states: Array[int] = []
 var given_cells: Dictionary = {}
-var hearts := 3
 var game_mode := GameMode.PLAYING
 var tutorial_step := TutorialStep.OFF
 var history: Array[Dictionary] = []
@@ -122,7 +121,6 @@ var error_cell := -1
 var error_time := 0.0
 var shake_time := 0.0
 var win_time := 0.0
-var loss_time := 0.0
 var toast_text := ""
 var toast_time := 0.0
 var cat_pops: Dictionary = {}
@@ -199,7 +197,6 @@ func _start_level(index: int) -> void:
 		var cell := int(given_cell)
 		given_cells[cell] = true
 		cell_states[cell] = CellState.CAT
-	hearts = 3
 	game_mode = GameMode.PLAYING
 	history.clear()
 	elapsed_time = 0.0
@@ -214,7 +211,6 @@ func _start_level(index: int) -> void:
 	error_time = 0.0
 	shake_time = 0.0
 	win_time = 0.0
-	loss_time = 0.0
 	cat_pops.clear()
 	mark_pops.clear()
 	particles.clear()
@@ -242,10 +238,8 @@ func _process(delta: float) -> void:
 	self_modulate = Color(1.0, 1.0, 1.0, _smooth_fade(intro_time / maxf(board_intro_duration, 0.001)))
 	if game_mode == GameMode.PLAYING:
 		elapsed_time += delta
-	elif game_mode == GameMode.WON:
-		win_time += delta
 	else:
-		loss_time += delta
+		win_time += delta
 
 	if pending_cell >= 0:
 		pending_time -= delta
@@ -344,7 +338,7 @@ func _begin_pointer(base_position: Vector2, system_double_click: bool) -> void:
 
 func _finish_pointer() -> void:
 	if drag_active and not drag_changes.is_empty():
-		history.append({"changes": drag_changes.duplicate(true), "hearts": hearts})
+		history.append({"changes": drag_changes.duplicate(true)})
 	drag_active = false
 	drag_changes.clear()
 	drag_seen.clear()
@@ -360,11 +354,6 @@ func _handle_ui_press(base_position: Vector2) -> bool:
 				_start_level(0)
 			else:
 				_start_level(level_index + 1)
-			return true
-		return false
-	if game_mode == GameMode.LOST:
-		if loss_time >= 0.35 and MODAL_BUTTON_RECT.has_point(base_position):
-			_start_level(level_index)
 			return true
 		return false
 	if UNDO_RECT.has_point(base_position):
@@ -411,8 +400,12 @@ func _toggle_mark(cell: int) -> void:
 	var new_state := CellState.MARKED
 	if old_state == CellState.MARKED or old_state == CellState.CAT:
 		new_state = CellState.EMPTY
-	_push_history_change(cell, old_state, hearts)
+	_push_history_change(cell, old_state)
 	cell_states[cell] = new_state
+	if old_state == CellState.CAT:
+		error_cell = -1
+		error_time = 0.0
+		shake_time = 0.0
 	if new_state == CellState.MARKED:
 		mark_pops[cell] = 0.0
 		_play_sound(mark_player, randf_range(0.96, 1.06))
@@ -439,41 +432,58 @@ func _try_place_cat(cell: int) -> void:
 	if game_mode != GameMode.PLAYING or given_cells.has(cell):
 		return
 	if cell_states[cell] == CellState.CAT:
-		_push_history_change(cell, CellState.CAT, hearts)
+		_push_history_change(cell, CellState.CAT)
 		cell_states[cell] = CellState.EMPTY
+		error_cell = -1
+		error_time = 0.0
+		shake_time = 0.0
 		_play_sound(mark_player, 0.84)
 		return
 
-	var row := cell / grid_size
-	var column := cell % grid_size
-	var correct := int(puzzle["solution"][row]) == column
-	var old_state := cell_states[cell]
-	_push_history_change(cell, old_state, hearts)
-	if correct:
-		cell_states[cell] = CellState.CAT
-		cat_pops[cell] = 0.0
-		pulse_cell = cell
-		pulse_time = rule_pulse_duration
-		_spawn_place_sparkles(_cell_center(cell), region_colors[int(puzzle["regions"][cell]) % region_colors.size()])
-		_play_sound(place_player, 0.96 + float(_cat_count()) * 0.035)
-		_update_tutorial_progress(cell, true)
-		if _cat_count() == grid_size:
-			_complete_level()
-	else:
-		cell_states[cell] = CellState.MARKED
-		mark_pops[cell] = 0.0
-		hearts -= 1
+	if _cat_count() >= grid_size:
 		error_cell = cell
 		error_time = shake_duration
 		shake_time = shake_duration
-		toast_text = _wrong_reason(cell)
+		toast_text = "All cats are seated. Move one before adding another."
 		toast_time = 2.4
 		_spawn_error_sparks(_cell_center(cell))
 		_play_sound(error_player, randf_range(0.92, 1.02))
-		if hearts <= 0:
-			game_mode = GameMode.LOST
-			loss_time = 0.0
-			pending_cell = -1
+		return
+
+	var old_state := cell_states[cell]
+	_push_history_change(cell, old_state)
+	cell_states[cell] = CellState.CAT
+	error_cell = -1
+	cat_pops[cell] = 0.0
+	pulse_cell = cell
+	pulse_time = rule_pulse_duration
+	_spawn_place_sparkles(_cell_center(cell), region_colors[int(puzzle["regions"][cell]) % region_colors.size()])
+	_play_sound(place_player, 0.96 + float(_cat_count()) * 0.035)
+	_update_tutorial_progress(cell, true)
+	if _cat_count() == grid_size:
+		_validate_full_layout(cell)
+
+
+func _validate_full_layout(preferred_cell: int) -> void:
+	var cells_to_check: Array[int] = []
+	if preferred_cell >= 0 and cell_states[preferred_cell] == CellState.CAT:
+		cells_to_check.append(preferred_cell)
+	for cell in range(cell_states.size()):
+		if cell_states[cell] == CellState.CAT and cell != preferred_cell:
+			cells_to_check.append(cell)
+	for cell in cells_to_check:
+		var reason := _wrong_reason(cell)
+		if reason.is_empty():
+			continue
+		error_cell = cell
+		error_time = shake_duration
+		shake_time = shake_duration
+		toast_text = reason
+		toast_time = 2.4
+		_spawn_error_sparks(_cell_center(cell))
+		_play_sound(error_player, randf_range(0.92, 1.02))
+		return
+	_complete_level()
 
 
 func _update_tutorial_progress(action_cell: int, placed_cat: bool) -> void:
@@ -504,26 +514,23 @@ func _wrong_reason(cell: int) -> String:
 	var column := cell % grid_size
 	var region := int(puzzle["regions"][cell])
 	for other in range(cell_states.size()):
-		if cell_states[other] != CellState.CAT:
+		if other == cell or cell_states[other] != CellState.CAT:
 			continue
 		var other_row := other / grid_size
 		var other_column := other % grid_size
+		if abs(other_row - row) <= 1 and abs(other_column - column) <= 1:
+			return "Cats cannot touch, even diagonally."
 		if other_row == row:
 			return "That row already has a cat."
 		if other_column == column:
 			return "That column already has a cat."
-		if abs(other_row - row) <= 1 and abs(other_column - column) <= 1:
-			return "Too close—cats need a quiet seat around them."
 		if int(puzzle["regions"][other]) == region:
 			return "That color already has its cat."
-	return "That choice leaves another cat without a seat."
+	return ""
 
 
-func _push_history_change(cell: int, old_state: int, old_hearts: int) -> void:
-	history.append({
-		"changes": [{"cell": cell, "state": old_state}],
-		"hearts": old_hearts
-	})
+func _push_history_change(cell: int, old_state: int) -> void:
+	history.append({"changes": [{"cell": cell, "state": old_state}]})
 
 
 func _undo() -> void:
@@ -534,9 +541,7 @@ func _undo() -> void:
 	var action: Dictionary = history.pop_back()
 	for change in action["changes"]:
 		cell_states[int(change["cell"])] = int(change["state"])
-	hearts = int(action["hearts"])
-	if game_mode == GameMode.LOST:
-		game_mode = GameMode.PLAYING
+	error_cell = -1
 	error_time = 0.0
 	shake_time = 0.0
 	toast_text = "Last sweep restored."
@@ -643,8 +648,6 @@ func _draw() -> void:
 	_draw_footer()
 	if game_mode == GameMode.WON:
 		_draw_win_overlay()
-	elif game_mode == GameMode.LOST:
-		_draw_loss_overlay()
 	_draw_particles()
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -686,26 +689,22 @@ func _draw_header() -> void:
 	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 22, INK)
 
 	var progress_rect := Rect2(75.0, 168.0, 365.0, 72.0)
-	var hearts_rect := Rect2(462.0, 168.0, 363.0, 72.0)
+	var guidance_rect := Rect2(462.0, 168.0, 363.0, 72.0)
 	_rounded_rect(Rect2(progress_rect.position + Vector2(0.0, 5.0), progress_rect.size), _with_alpha(INK, 0.12), 36.0)
-	_rounded_rect(Rect2(hearts_rect.position + Vector2(0.0, 5.0), hearts_rect.size), _with_alpha(INK, 0.12), 36.0)
+	_rounded_rect(Rect2(guidance_rect.position + Vector2(0.0, 5.0), guidance_rect.size), _with_alpha(INK, 0.12), 36.0)
 	_draw_panel(progress_rect, CREAM, 36.0, _with_alpha(MINT, 0.48), 4.0)
-	_draw_panel(hearts_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 4.0)
+	_draw_panel(guidance_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 4.0)
 	draw_circle(Vector2(118.0, 204.0), 28.0, _with_alpha(MINT, 0.20))
 	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, _cat_pose())
 	_draw_text_left("%d / %d  CATS SEATED" % [_cat_count(), grid_size], Vector2(158.0, 214.0), 24, INK)
-	for index in range(3):
-		var heart_radius := 19.0
-		var heart_color := CORAL if index < hearts else Color("#DDD7CC")
-		if error_time > 0.0 and index == hearts:
-			var fade_phase := 1.0 - error_time / maxf(shake_duration, 0.001)
-			heart_radius *= 1.0 + _smooth_pulse(fade_phase) * 0.28
-			heart_color = CORAL.lerp(Color("#DDD7CC"), _smooth_fade(fade_phase))
-		_draw_heart(Vector2(565.0 + float(index) * 72.0, 204.0), heart_radius, heart_color)
+	draw_circle(Vector2(505.0, 204.0), 28.0, _with_alpha(CORAL, 0.18))
+	_draw_space_icon(Vector2(505.0, 204.0))
+	var guidance := "MOVE ONE CAT TO FIX" if _cat_count() == grid_size and error_cell >= 0 else "PLACE ALL CATS FIRST"
+	_draw_text_left(guidance, Vector2(543.0, 212.0), 20, INK)
 
 
 func _draw_rule_cards() -> void:
-	var labels := ["ONE PER COLOR", "ONE PER LINE", "GIVE THEM SPACE"]
+	var labels := ["ONE PER COLOR", "ONE PER LINE", "NO CATS TOUCHING"]
 	var accents := [MINT, SKY, CORAL]
 	var pulse := 0.0
 	if pulse_time > 0.0:
@@ -945,27 +944,12 @@ func _draw_win_overlay() -> void:
 	_draw_cat(mascot_center, 118.0, mascot_scale, CatPose.HAPPY, alpha)
 	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 42, _with_alpha(INK, alpha))
 	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 46.0), 21, _with_alpha(INK_SOFT, alpha))
-	_draw_text_center("%d calm hearts left" % hearts, Rect2(220.0, 835.0, 460.0, 40.0), 18, _with_alpha(CORAL.darkened(0.18), alpha))
+	_draw_text_center("Every cat follows all three rules", Rect2(220.0, 835.0, 460.0, 40.0), 18, _with_alpha(CORAL.darkened(0.18), alpha))
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
 	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
 	var button_text := "PLAY AGAIN" if level_index >= PuzzleBook.LEVELS.size() - 1 else "NEXT ROOM"
 	_draw_text_center(button_text, MODAL_BUTTON_RECT, 28, _with_alpha(INK, alpha))
-
-
-func _draw_loss_overlay() -> void:
-	var alpha := _smooth_fade(loss_time / maxf(ui_fade_duration, 0.001))
-	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), Color(0.015, 0.035, 0.09, 0.64 * alpha))
-	var modal := Rect2(110.0, 420.0, 680.0, 620.0)
-	_rounded_rect(Rect2(modal.position + Vector2(0.0, 15.0), modal.size), Color(0.0, 0.0, 0.0, 0.24 * alpha), 50.0)
-	_draw_panel(modal, _with_alpha(CREAM, alpha), 50.0, _with_alpha(CORAL, 0.68 * alpha), 6.0)
-	var loss_cat_scale := lerpf(0.78, 1.0, _cartoon_settle(alpha))
-	_draw_cat(Vector2(450.0, 600.0), 98.0, loss_cat_scale, CatPose.WORRIED, alpha)
-	_draw_text_center("PAWS. RESET.", Rect2(160.0, 720.0, 580.0, 70.0), 42, _with_alpha(INK, alpha))
-	_draw_text_center("The cafe is still cozy. Try the sweep again.", Rect2(160.0, 798.0, 580.0, 48.0), 20, _with_alpha(INK_SOFT, alpha))
-	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
-	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(CORAL, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
-	_draw_text_center("TRY AGAIN", MODAL_BUTTON_RECT, 28, _with_alpha(INK, alpha))
 
 
 func _draw_particles() -> void:
@@ -1003,7 +987,7 @@ func _draw_particles() -> void:
 func _cat_pose(cell: int = -1) -> int:
 	if game_mode == GameMode.WON:
 		return CatPose.HAPPY
-	if game_mode == GameMode.LOST or error_time > 0.0:
+	if error_time > 0.0:
 		return CatPose.WORRIED
 	if cell >= 0 and given_cells.has(cell):
 		return CatPose.SLEEPY
@@ -1062,16 +1046,6 @@ func _draw_whisker_mark(center: Vector2, radius: float, color: Color) -> void:
 	for endpoint in [a_start, a_end, b_start, b_end]:
 		draw_circle(endpoint, width * 0.5, color)
 	draw_circle(center, maxf(2.0, radius * 0.15), _with_alpha(CREAM, 0.78))
-
-
-func _draw_heart(center: Vector2, radius: float, color: Color) -> void:
-	draw_circle(center + Vector2(-radius * 0.36, -radius * 0.18), radius * 0.48, color)
-	draw_circle(center + Vector2(radius * 0.36, -radius * 0.18), radius * 0.48, color)
-	draw_colored_polygon(PackedVector2Array([
-		center + Vector2(-radius * 0.78, -radius * 0.08),
-		center + Vector2(radius * 0.78, -radius * 0.08),
-		center + Vector2(0.0, radius * 0.95)
-	]), color)
 
 
 func _draw_color_icon(center: Vector2) -> void:

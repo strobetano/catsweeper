@@ -34,6 +34,7 @@ func _run_deferred() -> void:
 
 func _run_gameplay_checks(game: Node) -> void:
 	var saved_unlock: int = game.unlocked_level
+	game.unlocked_level = 0
 	game._start_level(0)
 	_expect(game.grid_size == 5, "first room is 5x5")
 	_expect(game._count_solutions(game.puzzle) == 1, "first room has one solution")
@@ -57,7 +58,7 @@ func _run_gameplay_checks(game: Node) -> void:
 	game._begin_pointer(tutorial_cat_position, false)
 	game._begin_pointer(tutorial_cat_position, false)
 	_expect(game.cell_states[game.TUTORIAL_CAT_CELL] == game.CellState.CAT and game.tutorial_step == game.TutorialStep.OFF, "tutorial double-tap places the cat and finishes")
-	_expect(game.hearts == 3 and game.toast_time == game.tutorial_success_duration, "tutorial finishes with praise and no penalty")
+	_expect(game.toast_time == game.tutorial_success_duration, "tutorial finishes with praise")
 
 	game._start_level(1)
 	_expect(game.tutorial_step == game.TutorialStep.OFF and game._tutorial_target_cell() == -1, "later rooms do not repeat the tutorial")
@@ -84,16 +85,25 @@ func _run_gameplay_checks(game: Node) -> void:
 	var wrong_column: int = (int(game.puzzle["solution"][wrong_row]) + 1) % game.grid_size
 	var wrong_cell: int = wrong_row * game.grid_size + wrong_column
 	game._try_place_cat(wrong_cell)
-	_expect(game.hearts == 2, "wrong cat costs one heart")
-	_expect(game.cell_states[wrong_cell] == 1, "wrong cat becomes a mark")
+	_expect(game.cell_states[wrong_cell] == game.CellState.CAT, "a wrong cat stays seated before the board is full")
+	_expect(game.game_mode == game.GameMode.PLAYING and game.unlocked_level == 0, "an incomplete board does not advance")
 	game._undo()
-	_expect(game.hearts == 3 and game.cell_states[wrong_cell] == 0, "undo restores a mistake")
+	_expect(game.cell_states[wrong_cell] == game.CellState.EMPTY, "undo removes the freely placed cat")
 
 	for row in range(game.grid_size):
-		var solution_cell: int = row * game.grid_size + int(game.puzzle["solution"][row])
-		if not game.given_cells.has(solution_cell):
-			game._try_place_cat(solution_cell)
-	_expect(game.game_mode == 1, "placing every cat wins the room")
+		var placement_cell: int = row * game.grid_size + int(game.puzzle["solution"][row])
+		if row == wrong_row:
+			placement_cell = wrong_cell
+		if not game.given_cells.has(placement_cell):
+			game._try_place_cat(placement_cell)
+	_expect(game.game_mode == game.GameMode.PLAYING, "a full wrong board stays playable")
+	_expect(game._cat_count() == game.grid_size and game.unlocked_level == 0, "a full wrong board keeps every cat and does not unlock the next room")
+	_expect(game.error_cell >= 0 and not game.toast_text.is_empty(), "a full wrong board explains what to fix")
+
+	game._try_place_cat(wrong_cell)
+	var correct_cell: int = wrong_row * game.grid_size + int(game.puzzle["solution"][wrong_row])
+	game._try_place_cat(correct_cell)
+	_expect(game.game_mode == game.GameMode.WON, "correcting the full board wins the room")
 	_expect(game._cat_count() == game.grid_size, "win keeps every cat visible")
 	_expect(game.unlocked_level == 1, "win unlocks the next room")
 
@@ -102,7 +112,7 @@ func _run_gameplay_checks(game: Node) -> void:
 
 	var final_level: int = game.PuzzleBook.LEVELS.size() - 1
 	game.level_index = final_level
-	game.game_mode = 1
+	game.game_mode = game.GameMode.WON
 	game.win_time = 0.55
 	game.unlocked_level = final_level
 	var modal_point: Vector2 = game.MODAL_BUTTON_RECT.position + game.MODAL_BUTTON_RECT.size * 0.5
