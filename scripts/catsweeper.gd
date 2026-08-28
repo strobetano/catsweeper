@@ -468,7 +468,7 @@ func _try_place_cat(cell: int) -> void:
 		error_cell = cell
 		error_time = shake_duration
 		shake_time = shake_duration
-		toast_text = "All cats are seated. Move one before adding another."
+		toast_text = "ALL CATS ARE SEATED — MOVE ONE FIRST"
 		toast_time = 2.4
 		_spawn_error_sparks(_cell_center(cell))
 		_play_sound(error_player, randf_range(0.92, 1.02))
@@ -520,7 +520,7 @@ func _update_tutorial_progress(action_cell: int, placed_cat: bool) -> void:
 		pulse_time = rule_pulse_duration
 	if tutorial_step == TutorialStep.PLACE_CAT and cell_states[TUTORIAL_CAT_CELL] == CellState.CAT:
 		tutorial_step = TutorialStep.OFF
-		toast_text = "PURRFECT! USE THE THREE RULES TO FINISH THE ROOM."
+		toast_text = "PURRFECT! NOW USE THE THREE RULES."
 		toast_time = tutorial_success_duration
 
 
@@ -730,12 +730,12 @@ func _draw_header() -> void:
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
 	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
 	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
-	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 124.0), 23, _with_alpha(CREAM, 0.76))
+	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 127.0), 28, _with_alpha(CREAM, 0.82))
 
 	var level_rect := Rect2(681.0, 54.0, 154.0, 68.0)
 	_rounded_rect(Rect2(level_rect.position + Vector2(0.0, 5.0), level_rect.size), _with_alpha(INK, 0.16), 34.0)
 	_draw_panel(level_rect, _with_alpha(PLUM, 0.88), 34.0, _with_alpha(CREAM, 0.64), 4.0)
-	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 24, INK)
+	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 28, INK)
 
 	var progress_rect := Rect2(75.0, 168.0, 365.0, 72.0)
 	var guidance_rect := Rect2(462.0, 168.0, 363.0, 72.0)
@@ -745,15 +745,15 @@ func _draw_header() -> void:
 	_draw_panel(guidance_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 4.0)
 	draw_circle(Vector2(118.0, 204.0), 28.0, _with_alpha(MINT, 0.20))
 	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, _cat_pose())
-	_draw_text_left("%d / %d  CATS SEATED" % [_cat_count(), grid_size], Vector2(158.0, 214.0), 24, INK)
+	_draw_text_left("%d / %d  CATS" % [_cat_count(), grid_size], Vector2(158.0, 217.0), 30, INK)
 	draw_circle(Vector2(505.0, 204.0), 28.0, _with_alpha(CORAL, 0.18))
 	_draw_space_icon(Vector2(505.0, 204.0))
-	var guidance := "MOVE ONE CAT TO FIX" if _cat_count() == grid_size and error_cell >= 0 else "PLACE ALL CATS FIRST"
-	_draw_text_left(guidance, Vector2(543.0, 213.0), 23, INK)
+	var guidance := "MOVE ONE CAT" if _cat_count() == grid_size and error_cell >= 0 else "SEAT ALL CATS"
+	_draw_text_left(guidance, Vector2(543.0, 217.0), 30, INK)
 
 
 func _draw_rule_cards() -> void:
-	var labels := ["1 PER COLOR", "1 PER LINE", "KEEP APART"]
+	var labels := ["1 / COLOR", "1 / LINE", "NO TOUCH"]
 	var accents := [MINT, SKY, CORAL]
 	var pulse := 0.0
 	if pulse_time > 0.0:
@@ -772,7 +772,7 @@ func _draw_rule_cards() -> void:
 			_draw_line_icon(icon_center)
 		else:
 			_draw_space_icon(icon_center)
-		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 43.0), 23, INK_SOFT)
+		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 46.0), 30, INK_SOFT)
 
 
 func _draw_board() -> void:
@@ -908,7 +908,7 @@ func _draw_footer() -> void:
 		_draw_tutorial_prompt()
 	else:
 		var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP TO PLACE"
-		var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
+		var instruction_rect := Rect2(90.0, 1137.0, 720.0, 60.0)
 		var toast_alpha := 0.0
 		if toast_time > 0.0:
 			toast_alpha = _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
@@ -916,33 +916,33 @@ func _draw_footer() -> void:
 				var error_intro := 1.0 - error_time / maxf(shake_duration, 0.001)
 				toast_alpha *= _smooth_fade(error_intro)
 		var border_color := CORAL if error_cell >= 0 and toast_time > 0.0 else MINT
-		_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 4.0), instruction_rect.size), _with_alpha(INK, 0.12), 22.0)
-		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 22.0, _with_alpha(border_color, 0.62), 4.0)
+		_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 5.0), instruction_rect.size), _with_alpha(INK, 0.12), 28.0)
+		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 28.0, _with_alpha(border_color, 0.62), 4.0)
 		if toast_alpha < 1.0:
-			_draw_text_center(base_instruction, instruction_rect, 22, _with_alpha(INK, 1.0 - toast_alpha))
+			_draw_text_center(base_instruction, instruction_rect, 30, _with_alpha(INK, 1.0 - toast_alpha))
 		if toast_alpha > 0.0:
-			_draw_text_center(toast_text, instruction_rect, 22, _with_alpha(INK, toast_alpha))
+			_draw_text_center(toast_text, instruction_rect, 30, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
 	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
 	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
-	_draw_text_center(_difficulty_label(), difficulty_rect, 21, _with_alpha(CREAM, 0.90))
+	_draw_text_center(_difficulty_label(), difficulty_rect, 26, _with_alpha(CREAM, 0.92))
 
 
 func _draw_tutorial_prompt() -> void:
 	var prompt_rect := Rect2(75.0, 1137.0, 750.0, 60.0)
 	var accent := MINT if tutorial_step == TutorialStep.MARK_SEAT else GOLD
 	var step_label := "1 / 2" if tutorial_step == TutorialStep.MARK_SEAT else "2 / 2"
-	var message := "TAP THE GLOWING SEAT TO MARK IT IMPOSSIBLE"
+	var message := "TAP GLOWING SEAT TO RULE IT OUT"
 	if tutorial_step == TutorialStep.PLACE_CAT:
-		message = "NICE! DOUBLE-TAP THE GLOWING SEAT FOR A CAT"
+		message = "DOUBLE-TAP GLOWING SEAT FOR A CAT"
 	_rounded_rect(Rect2(prompt_rect.position + Vector2(0.0, 5.0), prompt_rect.size), _with_alpha(INK, 0.16), 28.0)
 	_draw_panel(prompt_rect, _with_alpha(CREAM, 0.98), 28.0, _with_alpha(accent, 0.78), 5.0)
 	var badge_rect := Rect2(prompt_rect.position + Vector2(12.0, 10.0), Vector2(96.0, 40.0))
 	_draw_panel(badge_rect, accent, 20.0, _with_alpha(INK, 0.16), 3.0)
-	_draw_text_center(step_label, badge_rect, 20, INK)
-	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 22, INK)
+	_draw_text_center(step_label, badge_rect, 26, INK)
+	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 28, INK)
 
 
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
@@ -971,7 +971,7 @@ func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> vo
 			icon_center + Vector2(20.0, 2.0),
 			icon_center + Vector2(8.0, -5.0)
 		]), INK_SOFT)
-	_draw_text_center(label, Rect2(rect.position.x + 74.0, rect.position.y, rect.size.x - 90.0, rect.size.y), 26, INK if enabled else _with_alpha(INK, 0.48))
+	_draw_text_center(label, Rect2(rect.position.x + 74.0, rect.position.y, rect.size.x - 90.0, rect.size.y), 30, INK if enabled else _with_alpha(INK, 0.48))
 
 
 func _draw_full_board_feedback() -> void:
@@ -998,7 +998,7 @@ func _draw_full_board_feedback() -> void:
 	draw_circle(Vector2(245.0, 645.0), 67.0, _with_alpha(CORAL, 0.16 * alpha))
 	_draw_cat(Vector2(245.0, 645.0), 50.0, 1.0, CatPose.WORRIED, alpha)
 	_draw_text_center("SO CLOSE!", Rect2(315.0, 575.0, 385.0, 64.0), 42, _with_alpha(INK, alpha))
-	_draw_text_center("MOVE THE GLOWING CAT", Rect2(300.0, 646.0, 420.0, 56.0), 24, _with_alpha(CORAL.darkened(0.20), alpha))
+	_draw_text_center("MOVE THE GLOWING CAT", Rect2(300.0, 646.0, 420.0, 56.0), 28, _with_alpha(CORAL.darkened(0.20), alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
@@ -1030,8 +1030,8 @@ func _draw_win_overlay() -> void:
 	var mascot_scale := lerpf(0.68, 1.0, _cartoon_settle(mascot_phase))
 	_draw_cat(mascot_center, 118.0, mascot_scale, CatPose.HAPPY, alpha)
 	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 46, _with_alpha(INK, alpha))
-	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 48.0), 24, _with_alpha(INK_SOFT, alpha))
-	_draw_text_center("Every cat follows all three rules", Rect2(180.0, 838.0, 540.0, 44.0), 23, _with_alpha(CORAL.darkened(0.18), alpha))
+	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 48.0), 28, _with_alpha(INK_SOFT, alpha))
+	_draw_text_center("Every cat follows all three rules", Rect2(180.0, 838.0, 540.0, 44.0), 28, _with_alpha(CORAL.darkened(0.18), alpha))
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
 	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
