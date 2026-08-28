@@ -3,6 +3,10 @@ extends Control
 const PuzzleBook = preload("res://scripts/puzzles.gd")
 const TWILIGHT_SHADER = preload("res://shaders/twilight.gdshader")
 const CAT_ATLAS = preload("res://assets/art/catsweeper_chibi_states.png")
+const UI_FONT = preload("res://assets/fonts/Fredoka-SemiBold.ttf")
+const WALLPAPER_FAR = preload("res://assets/art/backgrounds/rooftop_far.png")
+const WALLPAPER_MID = preload("res://assets/art/backgrounds/rooftop_mid.png")
+const WALLPAPER_NEAR = preload("res://assets/art/backgrounds/rooftop_near.png")
 const MARK_SOUND_PATH := "res://assets/audio/mark.ogg"
 const PLACE_SOUND_PATH := "res://assets/audio/place.ogg"
 const ERROR_SOUND_PATH := "res://assets/audio/error.ogg"
@@ -56,7 +60,10 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(0.0, 0.25, 0.005) var background_drift_speed := 0.065
 @export_range(0.0, 1.5, 0.01) var background_glow_strength := 1.0
 @export_range(0.0, 1.0, 0.01) var background_mote_strength := 0.44
-@export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.004
+@export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.005
+@export_range(0.0, 36.0, 1.0) var wallpaper_parallax_strength := 18.0
+@export_range(1.0, 12.0, 0.25) var wallpaper_follow_speed := 5.0
+@export_range(0.0, 12.0, 0.5) var wallpaper_idle_sway := 5.0
 
 @export_group("Audio")
 @export_range(-30.0, 0.0, 0.5) var sfx_volume_db := -8.0
@@ -100,6 +107,7 @@ var drag_changes: Array[Dictionary] = []
 var drag_seen: Dictionary = {}
 
 var animation_clock := 0.0
+var wallpaper_parallax := Vector2.ZERO
 var intro_time := 0.0
 var pulse_cell := -1
 var pulse_time := 0.0
@@ -119,7 +127,7 @@ var validation_solution_count := 0
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	ui_font = ThemeDB.fallback_font
+	ui_font = UI_FONT
 	_create_background()
 	_create_audio_players()
 	_load_progress()
@@ -214,6 +222,15 @@ func _start_level(index: int) -> void:
 
 func _process(delta: float) -> void:
 	animation_clock += delta
+	var pointer_ratio := Vector2.ZERO
+	if Rect2(Vector2.ZERO, BASE_SIZE).has_point(pointer_base):
+		pointer_ratio = pointer_base / BASE_SIZE * 2.0 - Vector2.ONE
+	var target_parallax := Vector2(
+		clampf(pointer_ratio.x, -1.0, 1.0),
+		clampf(pointer_ratio.y, -1.0, 1.0)
+	)
+	var follow_amount := 1.0 - exp(-wallpaper_follow_speed * delta)
+	wallpaper_parallax += (target_parallax - wallpaper_parallax) * follow_amount
 	intro_time = minf(intro_time + delta, board_intro_duration)
 	self_modulate = Color(1.0, 1.0, 1.0, _smooth_fade(intro_time / maxf(board_intro_duration, 0.001)))
 	if game_mode == GameMode.PLAYING:
@@ -583,6 +600,7 @@ func _draw() -> void:
 		var strength := shake_strength * _smooth_pulse(shake_phase)
 		shake = Vector2(sin(animation_clock * 67.0), cos(animation_clock * 51.0) * 0.45) * strength
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
+	_draw_wallpaper()
 	_draw_header()
 	_draw_rule_cards()
 	draw_set_transform(canvas_offset + shake * canvas_scale, 0.0, Vector2.ONE * canvas_scale)
@@ -597,7 +615,32 @@ func _draw() -> void:
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 
+func _draw_wallpaper() -> void:
+	var intro_ratio := _smooth_fade(intro_time / maxf(board_intro_duration, 0.001))
+	var scene_phase := animation_clock * background_drift_speed * TAU + float(level_index) * 0.73
+	var idle_motion := Vector2(
+		sin(scene_phase),
+		cos(scene_phase * 0.73)
+	) * wallpaper_idle_sway
+	var camera_motion := -wallpaper_parallax * wallpaper_parallax_strength + idle_motion
+	var reveal_motion := Vector2(0.0, (1.0 - intro_ratio) * 18.0)
+	_draw_wallpaper_layer(WALLPAPER_FAR, camera_motion + reveal_motion, 0.20, 0.72)
+	_draw_wallpaper_layer(WALLPAPER_MID, camera_motion + reveal_motion, 0.52, 0.78)
+	_draw_wallpaper_layer(WALLPAPER_NEAR, camera_motion + reveal_motion, 1.0, 0.86)
+
+
+func _draw_wallpaper_layer(texture: Texture2D, motion: Vector2, depth: float, opacity: float) -> void:
+	var texture_size := texture.get_size()
+	var cover_scale := maxf(BASE_SIZE.x / texture_size.x, BASE_SIZE.y / texture_size.y) * 1.06
+	var draw_size := texture_size * cover_scale
+	var draw_position := (BASE_SIZE - draw_size) * 0.5 + motion * depth
+	draw_texture_rect(texture, Rect2(draw_position, draw_size), false, _with_alpha(Color.WHITE, opacity))
+
+
 func _draw_header() -> void:
+	var title_panel := Rect2(28.0, 20.0, 638.0, 138.0)
+	_rounded_rect(Rect2(title_panel.position + Vector2(0.0, 7.0), title_panel.size), _with_alpha(INK, 0.18), 44.0)
+	_draw_panel(title_panel, _with_alpha(INK, 0.58), 44.0, _with_alpha(CREAM, 0.28), 4.0)
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
 	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
 	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
@@ -771,22 +814,26 @@ func _draw_region_boundaries(board_rect: Rect2, slot: float) -> void:
 				draw_circle(horizontal_finish, boundary_width * 0.5, boundary_color)
 
 func _draw_footer() -> void:
-	var instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
-	if toast_time > 0.0:
-		instruction = toast_text
+	var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
 	var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
+	var toast_alpha := 0.0
 	if toast_time > 0.0:
-		var toast_alpha := _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
-		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.98 * toast_alpha), 22.0, _with_alpha(CORAL if error_time > 0.0 else MINT, 0.62 * toast_alpha), 4.0)
-		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(INK, toast_alpha))
-	else:
-		_draw_text_center(instruction, instruction_rect, 18, _with_alpha(CREAM, 0.94))
+		toast_alpha = _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
+	var border_color := MINT
+	if error_time > 0.0:
+		border_color = MINT.lerp(CORAL, toast_alpha)
+	_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 4.0), instruction_rect.size), _with_alpha(INK, 0.12), 22.0)
+	_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 22.0, _with_alpha(border_color, 0.62), 4.0)
+	if toast_alpha < 1.0:
+		_draw_text_center(base_instruction, instruction_rect, 18, _with_alpha(INK, 1.0 - toast_alpha))
+	if toast_alpha > 0.0:
+		_draw_text_center(toast_text, instruction_rect, 18, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
-	_draw_text_center(_difficulty_label(), Rect2(250.0, 1326.0, 400.0, 32.0), 16, _with_alpha(CREAM, 0.74))
-
-
+	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
+	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
+	_draw_text_center(_difficulty_label(), difficulty_rect, 16, _with_alpha(CREAM, 0.88))
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
 	var hovered := rect.has_point(pointer_base) and game_mode == GameMode.PLAYING
 	var fill := _with_alpha(CREAM, 0.98 if enabled else 0.52)
