@@ -2,7 +2,7 @@ extends Control
 
 const PuzzleBook = preload("res://scripts/puzzles.gd")
 const TWILIGHT_SHADER = preload("res://shaders/twilight.gdshader")
-const MASCOT = preload("res://assets/art/catsweeper_mascot.png")
+const CAT_ATLAS = preload("res://assets/art/catsweeper_chibi_states.png")
 const MARK_SOUND_PATH := "res://assets/audio/mark.ogg"
 const PLACE_SOUND_PATH := "res://assets/audio/place.ogg"
 const ERROR_SOUND_PATH := "res://assets/audio/error.ogg"
@@ -28,6 +28,7 @@ const PLUM := Color("#C9B9E5")
 
 enum CellState { EMPTY, MARKED, CAT }
 enum GameMode { PLAYING, WON, LOST }
+enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 
 @export_group("Feel")
 @export_range(0.12, 0.45, 0.01) var double_tap_window := 0.28
@@ -41,6 +42,9 @@ enum GameMode { PLAYING, WON, LOST }
 @export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.32
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
+@export_range(0.1, 1.5, 0.05) var cat_idle_speed := 0.65
+@export_range(0.0, 0.08, 0.005) var cat_breathe_amount := 0.040
+@export_range(0.0, 6.0, 0.25) var cat_bob_height := 3.0
 @export_range(250.0, 650.0, 10.0) var particle_gravity := 430.0
 @export_range(6, 24, 1) var place_sparkle_count := 14
 @export_range(36, 96, 2) var win_confetti_count := 64
@@ -595,7 +599,7 @@ func _draw() -> void:
 
 func _draw_header() -> void:
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
-	draw_texture_rect(MASCOT, Rect2(49.0, 36.0, 106.0, 106.0), false)
+	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
 	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
 	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 124.0), 20, _with_alpha(CREAM, 0.72))
 
@@ -611,7 +615,7 @@ func _draw_header() -> void:
 	_draw_panel(progress_rect, CREAM, 36.0, _with_alpha(MINT, 0.48), 4.0)
 	_draw_panel(hearts_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 4.0)
 	draw_circle(Vector2(118.0, 204.0), 28.0, _with_alpha(MINT, 0.20))
-	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, MINT)
+	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, _cat_pose())
 	_draw_text_left("%d / %d  CATS SEATED" % [_cat_count(), grid_size], Vector2(158.0, 214.0), 24, INK)
 	for index in range(3):
 		var heart_radius := 19.0
@@ -727,8 +731,7 @@ func _draw_board() -> void:
 					var bob_envelope := _smooth_pulse(bob_phase)
 					pop_scale *= 1.0 + sin(bob_phase * PI * 2.0) * 0.07 * bob_envelope
 					tile_rect.position.y -= bob_envelope * 9.0
-			var accent := region_colors[region % region_colors.size()].darkened(0.10)
-			_draw_cat(tile_rect.get_center(), slot * 0.31, pop_scale, accent, cat_alpha)
+			_draw_cat(tile_rect.get_center(), slot * 0.31, pop_scale, _cat_pose(cell), cat_alpha, float(cell) * 0.47)
 			if given_cells.has(cell):
 				draw_arc(tile_rect.get_center(), slot * 0.35, 0.0, TAU, 40, _with_alpha(GOLD, 0.92), 5.5, true)
 
@@ -830,10 +833,7 @@ func _draw_win_overlay() -> void:
 	var mascot_duration := celebration_duration * 0.42
 	var mascot_phase := clampf((win_time - mascot_delay) / maxf(mascot_duration, 0.001), 0.0, 1.0)
 	var mascot_scale := lerpf(0.68, 1.0, _cartoon_settle(mascot_phase))
-	var mascot_frame := _scale_rect(Rect2(310.0, 408.0, 280.0, 280.0), mascot_scale)
-	var mascot_image := _scale_rect(Rect2(318.0, 416.0, 264.0, 264.0), mascot_scale)
-	_rounded_rect(mascot_frame, _with_alpha(INK, alpha), 48.0)
-	draw_texture_rect(MASCOT, mascot_image, false, _with_alpha(Color.WHITE, alpha))
+	_draw_cat(mascot_center, 118.0, mascot_scale, CatPose.HAPPY, alpha)
 	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 42, _with_alpha(INK, alpha))
 	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 46.0), 21, _with_alpha(INK_SOFT, alpha))
 	_draw_text_center("%d calm hearts left" % hearts, Rect2(220.0, 835.0, 460.0, 40.0), 18, _with_alpha(CORAL.darkened(0.18), alpha))
@@ -851,7 +851,7 @@ func _draw_loss_overlay() -> void:
 	_rounded_rect(Rect2(modal.position + Vector2(0.0, 15.0), modal.size), Color(0.0, 0.0, 0.0, 0.24 * alpha), 50.0)
 	_draw_panel(modal, _with_alpha(CREAM, alpha), 50.0, _with_alpha(CORAL, 0.68 * alpha), 6.0)
 	var loss_cat_scale := lerpf(0.78, 1.0, _cartoon_settle(alpha))
-	_draw_cat(Vector2(450.0, 600.0), 98.0, loss_cat_scale, CORAL, alpha)
+	_draw_cat(Vector2(450.0, 600.0), 98.0, loss_cat_scale, CatPose.WORRIED, alpha)
 	_draw_text_center("PAWS. RESET.", Rect2(160.0, 720.0, 580.0, 70.0), 42, _with_alpha(INK, alpha))
 	_draw_text_center("The cafe is still cozy. Try the sweep again.", Rect2(160.0, 798.0, 580.0, 48.0), 20, _with_alpha(INK_SOFT, alpha))
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
@@ -891,57 +891,55 @@ func _draw_particles() -> void:
 			draw_circle(pos + direction * confetti_half, confetti_width * 0.5, color)
 
 
-func _draw_cat(center: Vector2, radius: float, scale_value: float, accent: Color, opacity: float = 1.0) -> void:
-	var radius_scaled := radius * scale_value
-	var cream := _with_alpha(CREAM, opacity)
-	var caramel := _with_alpha(CARAMEL, opacity)
-	var coral := _with_alpha(CORAL, opacity)
-	var ink := _with_alpha(INK, opacity)
-	var ink_soft := _with_alpha(INK_SOFT, opacity)
-	var white := _with_alpha(Color.WHITE, opacity)
-	var accent_color := _with_alpha(accent, opacity)
-	var shadow_center := center + Vector2(0.0, radius_scaled * 0.13)
-	draw_circle(shadow_center, radius_scaled * 0.92, Color(0.04, 0.05, 0.09, 0.24 * opacity))
-	var ear_y := center.y - radius_scaled * 0.48
-	draw_colored_polygon(PackedVector2Array([
-		center + Vector2(-radius_scaled * 0.72, -radius_scaled * 0.12),
-		center + Vector2(-radius_scaled * 0.50, -radius_scaled * 0.98),
-		center + Vector2(-radius_scaled * 0.12, -radius_scaled * 0.48)
-	]), cream)
-	draw_colored_polygon(PackedVector2Array([
-		center + Vector2(radius_scaled * 0.72, -radius_scaled * 0.12),
-		center + Vector2(radius_scaled * 0.50, -radius_scaled * 0.98),
-		center + Vector2(radius_scaled * 0.12, -radius_scaled * 0.48)
-	]), caramel)
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(center.x - radius_scaled * 0.56, ear_y),
-		Vector2(center.x - radius_scaled * 0.48, center.y - radius_scaled * 0.78),
-		Vector2(center.x - radius_scaled * 0.28, center.y - radius_scaled * 0.47)
-	]), _with_alpha(coral, 0.56))
-	draw_colored_polygon(PackedVector2Array([
-		Vector2(center.x + radius_scaled * 0.56, ear_y),
-		Vector2(center.x + radius_scaled * 0.48, center.y - radius_scaled * 0.78),
-		Vector2(center.x + radius_scaled * 0.28, center.y - radius_scaled * 0.47)
-	]), _with_alpha(coral, 0.56))
-	draw_circle(center, radius_scaled * 0.74, cream)
-	draw_circle(center + Vector2(radius_scaled * 0.30, -radius_scaled * 0.18), radius_scaled * 0.40, caramel)
-	draw_circle(center + Vector2(-radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, ink)
-	draw_circle(center + Vector2(radius_scaled * 0.27, -radius_scaled * 0.10), radius_scaled * 0.13, ink)
-	draw_circle(center + Vector2(-radius_scaled * 0.23, -radius_scaled * 0.15), radius_scaled * 0.04, white)
-	draw_circle(center + Vector2(radius_scaled * 0.31, -radius_scaled * 0.15), radius_scaled * 0.04, white)
-	draw_colored_polygon(PackedVector2Array([
-		center + Vector2(-radius_scaled * 0.09, radius_scaled * 0.09),
-		center + Vector2(radius_scaled * 0.09, radius_scaled * 0.09),
-		center + Vector2(0.0, radius_scaled * 0.19)
-	]), coral)
-	draw_arc(center + Vector2(-radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 0.2, 1.55, 10, ink_soft, maxf(2.4, radius_scaled * 0.055), true)
-	draw_arc(center + Vector2(radius_scaled * 0.11, radius_scaled * 0.17), radius_scaled * 0.13, 1.58, 2.95, 10, ink_soft, maxf(2.4, radius_scaled * 0.055), true)
-	for side in [-1.0, 1.0]:
-		for whisker in range(2):
-			var start := center + Vector2(side * radius_scaled * 0.42, radius_scaled * (0.12 + float(whisker) * 0.12))
-			var finish := center + Vector2(side * radius_scaled * 0.88, radius_scaled * (0.05 + float(whisker) * 0.17))
-			draw_line(start, finish, _with_alpha(ink_soft, 0.7), maxf(2.0, radius_scaled * 0.045), true)
-	draw_arc(center + Vector2(0.0, radius_scaled * 0.50), radius_scaled * 0.35, 0.05, PI - 0.05, 20, accent_color, maxf(3.0, radius_scaled * 0.105), true)
+func _cat_pose(cell: int = -1) -> int:
+	if game_mode == GameMode.WON:
+		return CatPose.HAPPY
+	if game_mode == GameMode.LOST or error_time > 0.0:
+		return CatPose.WORRIED
+	if cell >= 0 and given_cells.has(cell):
+		return CatPose.SLEEPY
+	if cell >= 0 and cat_pops.has(cell):
+		return CatPose.HAPPY
+	return CatPose.IDLE
+
+
+func _draw_cat(center: Vector2, radius: float, scale_value: float, pose: int = CatPose.IDLE, opacity: float = 1.0, phase_offset: float = 0.0) -> void:
+	var frame_size := CAT_ATLAS.get_size() * 0.5
+	var frame_column := int(pose) % 2
+	var frame_row := int(int(pose) / 2)
+	var source_rect := Rect2(Vector2(float(frame_column), float(frame_row)) * frame_size, frame_size)
+	var idle_phase := animation_clock * cat_idle_speed * TAU + phase_offset
+	var breathe := sin(idle_phase)
+	var animated_center := center + Vector2(0.0, cos(idle_phase) * cat_bob_height)
+	var visual_size := Vector2.ONE * radius * 2.75 * scale_value
+	visual_size *= Vector2(
+		1.0 + breathe * cat_breathe_amount,
+		1.0 - breathe * cat_breathe_amount * 0.62
+	)
+	var destination := Rect2(animated_center - visual_size * 0.5, visual_size)
+	var shadow_size := visual_size * Vector2(0.74, 0.18)
+	var shadow_rect := Rect2(
+		Vector2(animated_center.x - shadow_size.x * 0.5, animated_center.y + visual_size.y * 0.34),
+		shadow_size
+	)
+	_rounded_rect(shadow_rect, Color(0.03, 0.04, 0.08, 0.18 * opacity), shadow_size.y * 0.38)
+
+	var outline_width := clampf(radius * 0.055 * border_weight, 1.5, 5.5)
+	var outline_color := _with_alpha(INK, 0.92 * opacity)
+	var outline_directions: Array[Vector2] = [
+		Vector2(-1.0, -1.0),
+		Vector2(0.0, -1.0),
+		Vector2(1.0, -1.0),
+		Vector2(-1.0, 0.0),
+		Vector2(1.0, 0.0),
+		Vector2(-1.0, 1.0),
+		Vector2(0.0, 1.0),
+		Vector2(1.0, 1.0)
+	]
+	for direction in outline_directions:
+		var outline_rect := Rect2(destination.position + direction * outline_width, destination.size)
+		draw_texture_rect_region(CAT_ATLAS, outline_rect, source_rect, outline_color, false, true)
+	draw_texture_rect_region(CAT_ATLAS, destination, source_rect, _with_alpha(Color.WHITE, opacity), false, true)
 
 
 func _draw_whisker_mark(center: Vector2, radius: float, color: Color) -> void:
