@@ -4,9 +4,23 @@ const PuzzleBook = preload("res://scripts/puzzles.gd")
 const TWILIGHT_SHADER = preload("res://shaders/twilight.gdshader")
 const CAT_ATLAS = preload("res://assets/art/catsweeper_chibi_states.png")
 const UI_FONT = preload("res://assets/fonts/Fredoka-SemiBold.ttf")
-const WALLPAPER_FAR = preload("res://assets/art/backgrounds/rooftop_far.png")
-const WALLPAPER_MID = preload("res://assets/art/backgrounds/rooftop_mid.png")
-const WALLPAPER_NEAR = preload("res://assets/art/backgrounds/rooftop_near.png")
+const WALLPAPER_SETS := [
+	[
+		preload("res://assets/art/backgrounds/rooftop_far.png"),
+		preload("res://assets/art/backgrounds/rooftop_mid.png"),
+		preload("res://assets/art/backgrounds/rooftop_near.png")
+	],
+	[
+		preload("res://assets/art/backgrounds/garden_far.png"),
+		preload("res://assets/art/backgrounds/garden_mid.png"),
+		preload("res://assets/art/backgrounds/garden_near.png")
+	],
+	[
+		preload("res://assets/art/backgrounds/library_far.png"),
+		preload("res://assets/art/backgrounds/library_mid.png"),
+		preload("res://assets/art/backgrounds/library_near.png")
+	]
+]
 const MARK_SOUND_PATH := "res://assets/audio/mark.ogg"
 const PLACE_SOUND_PATH := "res://assets/audio/place.ogg"
 const ERROR_SOUND_PATH := "res://assets/audio/error.ogg"
@@ -653,6 +667,7 @@ func _draw() -> void:
 
 
 func _draw_wallpaper() -> void:
+	var wallpaper_set: Array = WALLPAPER_SETS[_wallpaper_set_index()]
 	var intro_ratio := _smooth_fade(intro_time / maxf(board_intro_duration, 0.001))
 	var scene_phase := animation_clock * background_drift_speed * TAU + float(level_index) * 0.73
 	var idle_motion := Vector2(
@@ -661,9 +676,17 @@ func _draw_wallpaper() -> void:
 	) * wallpaper_idle_sway
 	var camera_motion := -wallpaper_parallax * wallpaper_parallax_strength + idle_motion
 	var reveal_motion := Vector2(0.0, (1.0 - intro_ratio) * 18.0)
-	_draw_wallpaper_layer(WALLPAPER_FAR, camera_motion + reveal_motion, 0.20, 0.72)
-	_draw_wallpaper_layer(WALLPAPER_MID, camera_motion + reveal_motion, 0.52, 0.78)
-	_draw_wallpaper_layer(WALLPAPER_NEAR, camera_motion + reveal_motion, 1.0, 0.86)
+	_draw_wallpaper_layer(wallpaper_set[0] as Texture2D, camera_motion + reveal_motion, 0.20, 0.72)
+	_draw_wallpaper_layer(wallpaper_set[1] as Texture2D, camera_motion + reveal_motion, 0.52, 0.78)
+	_draw_wallpaper_layer(wallpaper_set[2] as Texture2D, camera_motion + reveal_motion, 1.0, 0.86)
+
+
+func _wallpaper_set_index() -> int:
+	if level_index < 4:
+		return 0
+	if level_index < 10:
+		return 1
+	return 2
 
 
 func _draw_wallpaper_layer(texture: Texture2D, motion: Vector2, depth: float, opacity: float) -> void:

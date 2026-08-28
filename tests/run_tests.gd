@@ -39,6 +39,17 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game.grid_size == 5, "first room is 5x5")
 	_expect(game._count_solutions(game.puzzle) == 1, "first room has one solution")
 	_expect(game._cat_count() == 1, "tutorial starts with one locked cat")
+	var wallpaper_sets_valid: bool = game.WALLPAPER_SETS.size() == 3
+	for wallpaper_set in game.WALLPAPER_SETS:
+		wallpaper_sets_valid = wallpaper_sets_valid and wallpaper_set.size() == 3
+		for layer in wallpaper_set:
+			wallpaper_sets_valid = wallpaper_sets_valid and layer is Texture2D and layer.get_size().x > 0.0 and layer.get_size().y > 0.0
+	_expect(wallpaper_sets_valid, "three complete wallpaper sets are imported")
+	for band in [[0, 0], [3, 0], [4, 1], [9, 1], [10, 2], [14, 2]]:
+		game.level_index = int(band[0])
+		_expect(game._wallpaper_set_index() == int(band[1]), "room %d uses wallpaper set %d" % [int(band[0]) + 1, int(band[1]) + 1])
+	game._start_level(0)
+
 
 	_expect(game.tutorial_step == game.TutorialStep.MARK_SEAT, "first room starts the two-step tutorial")
 	_expect(game._tutorial_target_cell() == game.TUTORIAL_MARK_CELL, "tutorial first highlights its mark seat")
