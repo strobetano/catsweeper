@@ -61,17 +61,20 @@ enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 @export_range(2.0, 18.0, 0.5) var shake_strength := 6.0
 @export_range(0.25, 1.20, 0.05) var board_intro_duration := 0.72
 @export_range(0.8, 3.0, 0.05) var cartoon_overshoot := 1.65
-@export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.32
+@export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.38
 @export_range(0.4, 3.0, 0.05) var tutorial_pulse_speed := 1.35
 @export_range(1.0, 4.0, 0.1) var tutorial_success_duration := 2.6
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
+@export_range(0.9, 2.0, 0.05) var full_board_feedback_duration := 1.35
 @export_range(0.1, 1.5, 0.05) var cat_idle_speed := 0.65
 @export_range(0.0, 0.08, 0.005) var cat_breathe_amount := 0.040
 @export_range(0.0, 6.0, 0.25) var cat_bob_height := 3.0
 @export_range(250.0, 650.0, 10.0) var particle_gravity := 430.0
 @export_range(6, 24, 1) var place_sparkle_count := 14
 @export_range(36, 96, 2) var win_confetti_count := 64
+@export_range(1.4, 3.2, 0.05) var win_confetti_duration := 2.25
+@export_range(380.0, 760.0, 10.0) var win_confetti_launch_speed := 560.0
 
 @export_group("Style")
 @export_range(1.0, 1.6, 0.05) var border_weight := 1.25
@@ -134,6 +137,7 @@ var pulse_time := 0.0
 var error_cell := -1
 var error_time := 0.0
 var shake_time := 0.0
+var full_board_feedback_time := 0.0
 var win_time := 0.0
 var toast_text := ""
 var toast_time := 0.0
@@ -224,6 +228,7 @@ func _start_level(index: int) -> void:
 	error_cell = -1
 	error_time = 0.0
 	shake_time = 0.0
+	full_board_feedback_time = 0.0
 	win_time = 0.0
 	cat_pops.clear()
 	mark_pops.clear()
@@ -265,6 +270,7 @@ func _process(delta: float) -> void:
 	pulse_time = maxf(0.0, pulse_time - delta)
 	error_time = maxf(0.0, error_time - delta)
 	shake_time = maxf(0.0, shake_time - delta)
+	full_board_feedback_time = maxf(0.0, full_board_feedback_time - delta)
 	toast_time = maxf(0.0, toast_time - delta)
 
 	for key in cat_pops.keys():
@@ -420,6 +426,8 @@ func _toggle_mark(cell: int) -> void:
 		error_cell = -1
 		error_time = 0.0
 		shake_time = 0.0
+		full_board_feedback_time = 0.0
+		toast_time = 0.0
 	if new_state == CellState.MARKED:
 		mark_pops[cell] = 0.0
 		_play_sound(mark_player, randf_range(0.96, 1.06))
@@ -451,6 +459,8 @@ func _try_place_cat(cell: int) -> void:
 		error_cell = -1
 		error_time = 0.0
 		shake_time = 0.0
+		full_board_feedback_time = 0.0
+		toast_time = 0.0
 		_play_sound(mark_player, 0.84)
 		return
 
@@ -492,9 +502,10 @@ func _validate_full_layout(preferred_cell: int) -> void:
 		error_cell = cell
 		error_time = shake_duration
 		shake_time = shake_duration
+		full_board_feedback_time = full_board_feedback_duration
 		toast_text = reason
 		toast_time = 2.4
-		_spawn_error_sparks(_cell_center(cell))
+		_spawn_error_sparks(_cell_center(cell), true)
 		_play_sound(error_player, randf_range(0.92, 1.02))
 		return
 	_complete_level()
@@ -558,6 +569,7 @@ func _undo() -> void:
 	error_cell = -1
 	error_time = 0.0
 	shake_time = 0.0
+	full_board_feedback_time = 0.0
 	toast_text = "Last sweep restored."
 	toast_time = 1.25
 	_play_sound(mark_player, 0.78)
@@ -566,6 +578,7 @@ func _undo() -> void:
 func _complete_level() -> void:
 	game_mode = GameMode.WON
 	win_time = 0.0
+	full_board_feedback_time = 0.0
 	pending_cell = -1
 	unlocked_level = maxi(unlocked_level, mini(level_index + 1, PuzzleBook.LEVELS.size() - 1))
 	_save_progress()
@@ -611,37 +624,48 @@ func _spawn_place_sparkles(origin: Vector2, color: Color) -> void:
 		})
 
 
-func _spawn_error_sparks(origin: Vector2) -> void:
-	for index in range(8):
-		var angle := TAU * float(index) / 8.0
+func _spawn_error_sparks(origin: Vector2, full_board: bool = false) -> void:
+	var spark_count := 18 if full_board else 8
+	var palette := [CORAL, PLUM, CREAM]
+	for index in range(spark_count):
+		var angle := TAU * float(index) / float(spark_count) + randf_range(-0.10, 0.10)
+		var lifetime := randf_range(0.48, 0.72) if full_board else 0.34
+		var speed := randf_range(90.0, 180.0) if full_board else randf_range(55.0, 105.0)
+		var spark_color: Color = palette[index % palette.size()] if full_board else CORAL
 		particles.append({
 			"kind": "error",
 			"pos": origin,
-			"vel": Vector2.from_angle(angle) * randf_range(55.0, 105.0),
-			"life": 0.34,
-			"max_life": 0.34,
-			"color": CORAL,
-			"size": 5.0,
+			"vel": Vector2.from_angle(angle) * speed,
+			"life": lifetime,
+			"max_life": lifetime,
+			"color": spark_color,
+			"size": randf_range(6.0, 10.0) if full_board else 5.0,
 			"spin": angle,
-			"spin_speed": 3.0
+			"spin_speed": randf_range(-5.0, 5.0) if full_board else 3.0
 		})
 
 
 func _spawn_win_confetti() -> void:
 	var palette := [MINT, CORAL, GOLD, SKY, PLUM, CREAM]
 	for index in range(win_confetti_count):
-		var origin := Vector2(randf_range(80.0, 820.0), randf_range(300.0, 570.0))
-		var lifetime := randf_range(1.45, 2.45)
+		var from_left := index % 2 == 0
+		var inward_direction := 1.0 if from_left else -1.0
+		var origin := Vector2(62.0 if from_left else 838.0, randf_range(880.0, 1080.0))
+		var lifetime := win_confetti_duration * randf_range(0.88, 1.12)
 		particles.append({
 			"kind": "win",
+			"shape": index % 3,
 			"pos": origin,
-			"vel": Vector2(randf_range(-165.0, 165.0), randf_range(-480.0, -180.0)),
+			"vel": Vector2(
+				inward_direction * win_confetti_launch_speed * randf_range(0.30, 0.58),
+				-win_confetti_launch_speed * randf_range(0.88, 1.14)
+			),
 			"life": lifetime,
 			"max_life": lifetime,
 			"color": palette[index % palette.size()],
-			"size": randf_range(5.0, 9.0),
+			"size": randf_range(6.0, 11.0),
 			"spin": randf_range(0.0, TAU),
-			"spin_speed": randf_range(-7.0, 7.0)
+			"spin_speed": randf_range(-8.0, 8.0)
 		})
 
 
@@ -660,6 +684,8 @@ func _draw() -> void:
 	_draw_board()
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 	_draw_footer()
+	if game_mode == GameMode.PLAYING and full_board_feedback_time > 0.0:
+		_draw_full_board_feedback()
 	if game_mode == GameMode.WON:
 		_draw_win_overlay()
 	_draw_particles()
@@ -704,12 +730,12 @@ func _draw_header() -> void:
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
 	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
 	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
-	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 124.0), 20, _with_alpha(CREAM, 0.72))
+	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 124.0), 23, _with_alpha(CREAM, 0.76))
 
 	var level_rect := Rect2(681.0, 54.0, 154.0, 68.0)
 	_rounded_rect(Rect2(level_rect.position + Vector2(0.0, 5.0), level_rect.size), _with_alpha(INK, 0.16), 34.0)
 	_draw_panel(level_rect, _with_alpha(PLUM, 0.88), 34.0, _with_alpha(CREAM, 0.64), 4.0)
-	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 22, INK)
+	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 24, INK)
 
 	var progress_rect := Rect2(75.0, 168.0, 365.0, 72.0)
 	var guidance_rect := Rect2(462.0, 168.0, 363.0, 72.0)
@@ -723,11 +749,11 @@ func _draw_header() -> void:
 	draw_circle(Vector2(505.0, 204.0), 28.0, _with_alpha(CORAL, 0.18))
 	_draw_space_icon(Vector2(505.0, 204.0))
 	var guidance := "MOVE ONE CAT TO FIX" if _cat_count() == grid_size and error_cell >= 0 else "PLACE ALL CATS FIRST"
-	_draw_text_left(guidance, Vector2(543.0, 212.0), 20, INK)
+	_draw_text_left(guidance, Vector2(543.0, 213.0), 23, INK)
 
 
 func _draw_rule_cards() -> void:
-	var labels := ["ONE PER COLOR", "ONE PER LINE", "NO CATS TOUCHING"]
+	var labels := ["1 PER COLOR", "1 PER LINE", "KEEP APART"]
 	var accents := [MINT, SKY, CORAL]
 	var pulse := 0.0
 	if pulse_time > 0.0:
@@ -746,7 +772,7 @@ func _draw_rule_cards() -> void:
 			_draw_line_icon(icon_center)
 		else:
 			_draw_space_icon(icon_center)
-		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 42.0), 19, INK_SOFT)
+		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 43.0), 23, INK_SOFT)
 
 
 func _draw_board() -> void:
@@ -881,26 +907,27 @@ func _draw_footer() -> void:
 	if toast_time <= 0.0 and _tutorial_target_cell() >= 0:
 		_draw_tutorial_prompt()
 	else:
-		var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP OR RIGHT-CLICK TO PLACE"
+		var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP TO PLACE"
 		var instruction_rect := Rect2(90.0, 1148.0, 720.0, 44.0)
 		var toast_alpha := 0.0
 		if toast_time > 0.0:
 			toast_alpha = _smooth_fade(toast_time / maxf(ui_fade_duration, 0.001))
-		var border_color := MINT
-		if error_time > 0.0:
-			border_color = MINT.lerp(CORAL, toast_alpha)
+			if error_cell >= 0 and error_time > 0.0:
+				var error_intro := 1.0 - error_time / maxf(shake_duration, 0.001)
+				toast_alpha *= _smooth_fade(error_intro)
+		var border_color := CORAL if error_cell >= 0 and toast_time > 0.0 else MINT
 		_rounded_rect(Rect2(instruction_rect.position + Vector2(0.0, 4.0), instruction_rect.size), _with_alpha(INK, 0.12), 22.0)
 		_draw_panel(instruction_rect, _with_alpha(CREAM, 0.97), 22.0, _with_alpha(border_color, 0.62), 4.0)
 		if toast_alpha < 1.0:
-			_draw_text_center(base_instruction, instruction_rect, 18, _with_alpha(INK, 1.0 - toast_alpha))
+			_draw_text_center(base_instruction, instruction_rect, 22, _with_alpha(INK, 1.0 - toast_alpha))
 		if toast_alpha > 0.0:
-			_draw_text_center(toast_text, instruction_rect, 18, _with_alpha(INK, toast_alpha))
+			_draw_text_center(toast_text, instruction_rect, 22, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
 	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
 	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
-	_draw_text_center(_difficulty_label(), difficulty_rect, 16, _with_alpha(CREAM, 0.88))
+	_draw_text_center(_difficulty_label(), difficulty_rect, 21, _with_alpha(CREAM, 0.90))
 
 
 func _draw_tutorial_prompt() -> void:
@@ -914,8 +941,8 @@ func _draw_tutorial_prompt() -> void:
 	_draw_panel(prompt_rect, _with_alpha(CREAM, 0.98), 28.0, _with_alpha(accent, 0.78), 5.0)
 	var badge_rect := Rect2(prompt_rect.position + Vector2(12.0, 10.0), Vector2(96.0, 40.0))
 	_draw_panel(badge_rect, accent, 20.0, _with_alpha(INK, 0.16), 3.0)
-	_draw_text_center(step_label, badge_rect, 17, INK)
-	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 19, INK)
+	_draw_text_center(step_label, badge_rect, 20, INK)
+	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 22, INK)
 
 
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
@@ -944,15 +971,52 @@ func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> vo
 			icon_center + Vector2(20.0, 2.0),
 			icon_center + Vector2(8.0, -5.0)
 		]), INK_SOFT)
-	_draw_text_center(label, Rect2(rect.position.x + 74.0, rect.position.y, rect.size.x - 90.0, rect.size.y), 23, INK if enabled else _with_alpha(INK, 0.48))
+	_draw_text_center(label, Rect2(rect.position.x + 74.0, rect.position.y, rect.size.x - 90.0, rect.size.y), 26, INK if enabled else _with_alpha(INK, 0.48))
+
+
+func _draw_full_board_feedback() -> void:
+	var progress := 1.0 - full_board_feedback_time / maxf(full_board_feedback_duration, 0.001)
+	var fade_in := _smooth_fade(progress / 0.16)
+	var fade_out := 1.0 - _smooth_fade((progress - 0.68) / 0.32)
+	var alpha := fade_in * fade_out
+	if alpha <= 0.0:
+		return
+
+	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), _with_alpha(CORAL, 0.055 * alpha))
+	var settle_phase := clampf(progress / 0.28, 0.0, 1.0)
+	var card_scale := lerpf(0.86, 1.0, _cartoon_settle(settle_phase))
+	var card := Rect2(150.0, 545.0, 600.0, 200.0)
+	var pivot := card.get_center()
+	var rise := Vector2(0.0, (1.0 - fade_in) * 18.0)
+	draw_set_transform(
+		canvas_offset + pivot * canvas_scale * (1.0 - card_scale) + rise * canvas_scale,
+		0.0,
+		Vector2.ONE * canvas_scale * card_scale
+	)
+	_rounded_rect(Rect2(card.position + Vector2(0.0, 12.0), card.size), _with_alpha(INK, 0.22 * alpha), 46.0)
+	_draw_panel(card, _with_alpha(CREAM, 0.98 * alpha), 46.0, _with_alpha(CORAL, 0.82 * alpha), 6.0)
+	draw_circle(Vector2(245.0, 645.0), 67.0, _with_alpha(CORAL, 0.16 * alpha))
+	_draw_cat(Vector2(245.0, 645.0), 50.0, 1.0, CatPose.WORRIED, alpha)
+	_draw_text_center("SO CLOSE!", Rect2(315.0, 575.0, 385.0, 64.0), 42, _with_alpha(INK, alpha))
+	_draw_text_center("MOVE THE GLOWING CAT", Rect2(300.0, 646.0, 420.0, 56.0), 24, _with_alpha(CORAL.darkened(0.20), alpha))
+	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
 func _draw_win_overlay() -> void:
-	var alpha := _smooth_fade((win_time - celebration_stagger * 4.0) / maxf(ui_fade_duration, 0.001))
+	var modal_phase := clampf((win_time - celebration_stagger * 4.0) / maxf(ui_fade_duration, 0.001), 0.0, 1.0)
+	var alpha := _smooth_fade(modal_phase)
 	if alpha <= 0.0:
 		return
 	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), Color(0.015, 0.035, 0.09, 0.62 * alpha))
 	var modal := Rect2(110.0, 335.0, 680.0, 735.0)
+	var modal_scale := lerpf(0.92, 1.0, _cartoon_settle(modal_phase))
+	var modal_pivot := modal.get_center()
+	var modal_rise := Vector2(0.0, (1.0 - alpha) * 24.0)
+	draw_set_transform(
+		canvas_offset + modal_pivot * canvas_scale * (1.0 - modal_scale) + modal_rise * canvas_scale,
+		0.0,
+		Vector2.ONE * canvas_scale * modal_scale
+	)
 	_rounded_rect(Rect2(modal.position + Vector2(0.0, 15.0), modal.size), Color(0.0, 0.0, 0.0, 0.24 * alpha), 50.0)
 	_draw_panel(modal, _with_alpha(CREAM, alpha), 50.0, _with_alpha(GOLD, 0.72 * alpha), 6.0)
 	var mascot_center := Vector2(450.0, 548.0)
@@ -965,14 +1029,15 @@ func _draw_win_overlay() -> void:
 	var mascot_phase := clampf((win_time - mascot_delay) / maxf(mascot_duration, 0.001), 0.0, 1.0)
 	var mascot_scale := lerpf(0.68, 1.0, _cartoon_settle(mascot_phase))
 	_draw_cat(mascot_center, 118.0, mascot_scale, CatPose.HAPPY, alpha)
-	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 42, _with_alpha(INK, alpha))
-	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 46.0), 21, _with_alpha(INK_SOFT, alpha))
-	_draw_text_center("Every cat follows all three rules", Rect2(220.0, 835.0, 460.0, 40.0), 18, _with_alpha(CORAL.darkened(0.18), alpha))
+	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 46, _with_alpha(INK, alpha))
+	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 48.0), 24, _with_alpha(INK_SOFT, alpha))
+	_draw_text_center("Every cat follows all three rules", Rect2(180.0, 838.0, 540.0, 44.0), 23, _with_alpha(CORAL.darkened(0.18), alpha))
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
 	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
 	var button_text := "PLAY AGAIN" if level_index >= PuzzleBook.LEVELS.size() - 1 else "NEXT ROOM"
-	_draw_text_center(button_text, MODAL_BUTTON_RECT, 28, _with_alpha(INK, alpha))
+	_draw_text_center(button_text, MODAL_BUTTON_RECT, 30, _with_alpha(INK, alpha))
+	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
 func _draw_particles() -> void:
@@ -980,12 +1045,17 @@ func _draw_particles() -> void:
 		var life_ratio := clampf(float(particle["life"]) / float(particle["max_life"]), 0.0, 1.0)
 		var particle_progress := 1.0 - life_ratio
 		var color: Color = particle["color"]
-		color.a *= _smooth_pulse(particle_progress)
 		var pos: Vector2 = particle["pos"]
 		var particle_size := float(particle["size"])
 		var direction := Vector2.from_angle(float(particle["spin"]))
 		var side := Vector2(-direction.y, direction.x)
 		var kind := String(particle["kind"])
+		if kind == "win":
+			var fade_in := _smooth_fade(particle_progress / 0.08)
+			var fade_out := _smooth_fade(life_ratio / 0.24)
+			color.a *= fade_in * fade_out
+		else:
+			color.a *= _smooth_pulse(particle_progress)
 		if kind == "place":
 			draw_colored_polygon(PackedVector2Array([
 				pos + direction * particle_size,
@@ -1000,11 +1070,28 @@ func _draw_particles() -> void:
 			draw_circle(pos - direction * particle_size, error_width * 0.5, color)
 			draw_circle(pos + direction * particle_size, error_width * 0.5, color)
 		else:
-			var confetti_width := maxf(3.0, particle_size * 0.58)
-			var confetti_half := particle_size * 0.82
-			draw_line(pos - direction * confetti_half, pos + direction * confetti_half, color, confetti_width, true)
-			draw_circle(pos - direction * confetti_half, confetti_width * 0.5, color)
-			draw_circle(pos + direction * confetti_half, confetti_width * 0.5, color)
+			var shape := int(particle.get("shape", 0))
+			if shape == 0:
+				var ribbon_half := particle_size * 0.95
+				var ribbon_width := maxf(2.6, particle_size * 0.34)
+				draw_colored_polygon(PackedVector2Array([
+					pos + direction * ribbon_half + side * ribbon_width,
+					pos + direction * ribbon_half - side * ribbon_width,
+					pos - direction * ribbon_half - side * ribbon_width,
+					pos - direction * ribbon_half + side * ribbon_width
+				]), color)
+				draw_line(pos - direction * ribbon_half * 0.54, pos + direction * ribbon_half * 0.54, _with_alpha(CREAM, color.a * 0.44), maxf(1.2, ribbon_width * 0.42), true)
+			elif shape == 1:
+				draw_colored_polygon(PackedVector2Array([
+					pos + direction * particle_size,
+					pos + side * particle_size * 0.68,
+					pos - direction * particle_size,
+					pos - side * particle_size * 0.68
+				]), color)
+				draw_circle(pos, maxf(1.4, particle_size * 0.22), _with_alpha(CREAM, color.a * 0.58))
+			else:
+				draw_circle(pos, particle_size * 0.72, color)
+				draw_circle(pos - direction * particle_size * 0.18 - side * particle_size * 0.12, particle_size * 0.24, _with_alpha(CREAM, color.a * 0.62))
 
 
 func _cat_pose(cell: int = -1) -> int:

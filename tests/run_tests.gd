@@ -21,7 +21,7 @@ func _run_deferred() -> void:
 	for player in [game.mark_player, game.place_player, game.error_player, game.win_player]:
 		player.stop()
 		player.stream = null
-	_run_gameplay_checks(game)
+	await _run_gameplay_checks(game)
 	await process_frame
 	await process_frame
 	game.free()
@@ -110,13 +110,49 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game.game_mode == game.GameMode.PLAYING, "a full wrong board stays playable")
 	_expect(game._cat_count() == game.grid_size and game.unlocked_level == 0, "a full wrong board keeps every cat and does not unlock the next room")
 	_expect(game.error_cell >= 0 and not game.toast_text.is_empty(), "a full wrong board explains what to fix")
+	_expect(game.full_board_feedback_time > 0.0, "a full wrong board starts playful correction feedback")
+	var full_board_error_particles := 0
+	for particle in game.particles:
+		if String(particle["kind"]) == "error":
+			full_board_error_particles += 1
+	_expect(full_board_error_particles >= 18, "a full wrong board creates a strong error burst")
+	game._process(game.full_board_feedback_duration * 0.20)
+	game.queue_redraw()
+	await process_frame
 
 	game._try_place_cat(wrong_cell)
+	_expect(game.full_board_feedback_time == 0.0, "moving the wrong cat clears the correction card")
 	var correct_cell: int = wrong_row * game.grid_size + int(game.puzzle["solution"][wrong_row])
 	game._try_place_cat(correct_cell)
 	_expect(game.game_mode == game.GameMode.WON, "correcting the full board wins the room")
 	_expect(game._cat_count() == game.grid_size, "win keeps every cat visible")
 	_expect(game.unlocked_level == 1, "win unlocks the next room")
+	var win_particle_count := 0
+	var left_cannon_seen := false
+	var right_cannon_seen := false
+	var win_launches_valid := true
+	var win_shapes: Dictionary = {}
+	for particle in game.particles:
+		if String(particle["kind"]) != "win":
+			continue
+		win_particle_count += 1
+		var particle_position: Vector2 = particle["pos"]
+		var particle_velocity: Vector2 = particle["vel"]
+		if particle_position.x < game.BASE_SIZE.x * 0.5:
+			left_cannon_seen = true
+			win_launches_valid = win_launches_valid and particle_velocity.x > 0.0
+		else:
+			right_cannon_seen = true
+			win_launches_valid = win_launches_valid and particle_velocity.x < 0.0
+		win_launches_valid = win_launches_valid and particle_velocity.y < 0.0
+		win_launches_valid = win_launches_valid and float(particle["life"]) == float(particle["max_life"])
+		win_shapes[int(particle["shape"])] = true
+	_expect(win_particle_count == game.win_confetti_count, "a win launches the configured confetti count")
+	_expect(left_cannon_seen and right_cannon_seen and win_launches_valid, "win confetti launches inward from both sides")
+	_expect(win_shapes.size() == 3, "win confetti mixes three playful shapes")
+	game._process(game.celebration_stagger * 4.0 + game.ui_fade_duration * 0.55)
+	game.queue_redraw()
+	await process_frame
 
 	for level in game.PuzzleBook.LEVELS:
 		_expect(game._count_solutions(level) == 1, "puzzle pack remains uniquely solvable")
