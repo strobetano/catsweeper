@@ -28,13 +28,21 @@ const WIN_SOUND_PATH := "res://assets/audio/win.ogg"
 
 const BASE_SIZE := Vector2(900.0, 1400.0)
 const BOARD_RECT := Rect2(75.0, 365.0, 750.0, 750.0)
-const UNDO_RECT := Rect2(75.0, 1210.0, 355.0, 88.0)
-const RESTART_RECT := Rect2(470.0, 1210.0, 355.0, 88.0)
+const UNDO_RECT := Rect2(75.0, 1210.0, 236.0, 88.0)
+const HINT_RECT := Rect2(332.0, 1210.0, 236.0, 88.0)
+const RESTART_RECT := Rect2(589.0, 1210.0, 236.0, 88.0)
 const MODAL_BUTTON_RECT := Rect2(210.0, 930.0, 480.0, 102.0)
 const SAVE_PATH := "user://catsweeper.cfg"
 const TUTORIAL_GIVEN_CELL := 0
-const TUTORIAL_MARK_CELL := 1
-const TUTORIAL_CAT_CELL := 7
+
+## Every guided step of room 1, from the first mark to the cat that wins it.
+const TUTORIAL_STEPS: Array[Dictionary] = [
+	{"cell": 1, "place_cat": false, "message": "TAP THE GLOW TO RULE IT OUT"},
+	{"cell": 7, "place_cat": true, "message": "DOUBLE-TAP THE GLOW TO SEAT A CAT"},
+	{"cell": 14, "place_cat": true, "message": "AGAIN  ·  EVERY ROW NEEDS A CAT"},
+	{"cell": 16, "place_cat": true, "message": "NEXT  ·  ONE CAT PER COLUMN"},
+	{"cell": 23, "place_cat": true, "message": "LAST ONE  ·  ONE CAT PER COLOR"}
+]
 
 const INK := Color("#1D2942")
 const INK_SOFT := Color("#46516A")
@@ -50,7 +58,6 @@ const PLUM := Color("#C9B9E5")
 enum CellState { EMPTY, MARKED, CAT }
 enum GameMode { PLAYING, WON }
 enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
-enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 
 @export_group("Feel")
 @export_range(0.12, 0.45, 0.01) var double_tap_window := 0.28
@@ -64,6 +71,7 @@ enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 @export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.38
 @export_range(0.4, 3.0, 0.05) var tutorial_pulse_speed := 1.35
 @export_range(1.0, 4.0, 0.1) var tutorial_success_duration := 2.6
+@export_range(1.0, 6.0, 0.1) var hint_highlight_duration := 3.2
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
 @export_range(0.9, 2.0, 0.05) var full_board_feedback_duration := 1.35
@@ -115,7 +123,9 @@ var grid_size := 5
 var cell_states: Array[int] = []
 var given_cells: Dictionary = {}
 var game_mode := GameMode.PLAYING
-var tutorial_step := TutorialStep.OFF
+var tutorial_step := -1
+var hint_cell := -1
+var hint_time := 0.0
 var history: Array[Dictionary] = []
 var elapsed_time := 0.0
 
@@ -234,10 +244,12 @@ func _start_level(index: int) -> void:
 	cat_pops.clear()
 	mark_pops.clear()
 	particles.clear()
-	tutorial_step = TutorialStep.MARK_SEAT if level_index == 0 else TutorialStep.OFF
+	tutorial_step = 0 if level_index == 0 else -1
+	hint_cell = -1
+	hint_time = 0.0
 	toast_text = ""
 	toast_time = 0.0
-	if tutorial_step == TutorialStep.MARK_SEAT:
+	if tutorial_step == 0:
 		pulse_cell = TUTORIAL_GIVEN_CELL
 		pulse_time = rule_pulse_duration
 	queue_redraw()
@@ -273,6 +285,7 @@ func _process(delta: float) -> void:
 	shake_time = maxf(0.0, shake_time - delta)
 	full_board_feedback_time = maxf(0.0, full_board_feedback_time - delta)
 	toast_time = maxf(0.0, toast_time - delta)
+	hint_time = maxf(0.0, hint_time - delta)
 
 	for key in cat_pops.keys():
 		cat_pops[key] = float(cat_pops[key]) + delta
@@ -380,6 +393,9 @@ func _handle_ui_press(base_position: Vector2) -> bool:
 	if UNDO_RECT.has_point(base_position):
 		_undo()
 		return true
+	if HINT_RECT.has_point(base_position):
+		_use_hint()
+		return true
 	if RESTART_RECT.has_point(base_position):
 		_start_level(level_index)
 		return true
@@ -435,7 +451,7 @@ func _toggle_mark(cell: int) -> void:
 	else:
 		_play_sound(mark_player, 0.88)
 	if new_state == CellState.MARKED:
-		_update_tutorial_progress(cell, false)
+		_update_tutorial_progress()
 
 
 func _paint_mark(cell: int) -> void:
@@ -448,7 +464,7 @@ func _paint_mark(cell: int) -> void:
 	cell_states[cell] = CellState.MARKED
 	mark_pops[cell] = 0.0
 	_play_sound(mark_player, randf_range(0.94, 1.08))
-	_update_tutorial_progress(cell, false)
+	_update_tutorial_progress()
 
 
 func _try_place_cat(cell: int) -> void:
@@ -484,7 +500,7 @@ func _try_place_cat(cell: int) -> void:
 	pulse_time = rule_pulse_duration
 	_spawn_place_sparkles(_cell_center(cell), region_colors[int(puzzle["regions"][cell]) % region_colors.size()])
 	_play_sound(place_player, 0.96 + float(_cat_count()) * 0.035)
-	_update_tutorial_progress(cell, true)
+	_update_tutorial_progress()
 	if _cat_count() == grid_size:
 		_validate_full_layout(cell)
 
@@ -512,26 +528,90 @@ func _validate_full_layout(preferred_cell: int) -> void:
 	_complete_level()
 
 
-func _update_tutorial_progress(action_cell: int, placed_cat: bool) -> void:
-	if level_index != 0 or game_mode != GameMode.PLAYING or tutorial_step == TutorialStep.OFF:
+func _update_tutorial_progress() -> void:
+	if level_index != 0 or game_mode != GameMode.PLAYING or tutorial_step < 0:
 		return
-	if tutorial_step == TutorialStep.MARK_SEAT and not placed_cat and action_cell == TUTORIAL_MARK_CELL and cell_states[action_cell] == CellState.MARKED:
-		tutorial_step = TutorialStep.PLACE_CAT
-		pulse_cell = TUTORIAL_CAT_CELL
-		pulse_time = rule_pulse_duration
-	if tutorial_step == TutorialStep.PLACE_CAT and cell_states[TUTORIAL_CAT_CELL] == CellState.CAT:
-		tutorial_step = TutorialStep.OFF
+	var advanced := false
+	while tutorial_step < TUTORIAL_STEPS.size() and _tutorial_step_done(tutorial_step):
+		tutorial_step += 1
+		advanced = true
+	if not advanced:
+		return
+	if tutorial_step >= TUTORIAL_STEPS.size():
+		tutorial_step = -1
 		toast_text = "PURRFECT! NOW USE THE THREE RULES."
 		toast_time = tutorial_success_duration
+		return
+	pulse_cell = int(TUTORIAL_STEPS[tutorial_step]["cell"])
+	pulse_time = rule_pulse_duration
+
+
+func _tutorial_step_done(index: int) -> bool:
+	var step: Dictionary = TUTORIAL_STEPS[index]
+	var wanted := CellState.CAT if bool(step["place_cat"]) else CellState.MARKED
+	return cell_states[int(step["cell"])] == wanted
 
 
 func _tutorial_target_cell() -> int:
-	if level_index != 0 or game_mode != GameMode.PLAYING:
+	if level_index != 0 or game_mode != GameMode.PLAYING or tutorial_step < 0:
 		return -1
-	if tutorial_step == TutorialStep.MARK_SEAT:
-		return TUTORIAL_MARK_CELL
-	if tutorial_step == TutorialStep.PLACE_CAT:
-		return TUTORIAL_CAT_CELL
+	return int(TUTORIAL_STEPS[tutorial_step]["cell"])
+
+
+## The seat the board glows for: the current tutorial step, else a fresh hint.
+func _highlight_cell() -> int:
+	var tutorial_cell := _tutorial_target_cell()
+	if tutorial_cell >= 0:
+		return tutorial_cell
+	if hint_time > 0.0 and game_mode == GameMode.PLAYING:
+		return hint_cell
+	return -1
+
+
+func _highlight_accent() -> Color:
+	if tutorial_step >= 0 and not bool(TUTORIAL_STEPS[tutorial_step]["place_cat"]):
+		return MINT
+	return GOLD
+
+
+func _use_hint() -> void:
+	if game_mode != GameMode.PLAYING:
+		return
+	var tutorial_cell := _tutorial_target_cell()
+	if tutorial_cell >= 0:
+		pulse_cell = tutorial_cell
+		pulse_time = rule_pulse_duration
+		_play_sound(mark_player, 1.12)
+		return
+	var misplaced := _wrong_cat_cell()
+	var cell := misplaced if misplaced >= 0 else _next_solution_cell()
+	if cell < 0:
+		toast_text = "EVERY CAT IS ALREADY SEATED."
+		toast_time = 1.4
+		return
+	hint_cell = cell
+	hint_time = hint_highlight_duration
+	pulse_cell = cell
+	pulse_time = rule_pulse_duration
+	toast_text = "MOVE THE GLOWING CAT" if misplaced >= 0 else "DOUBLE-TAP THE GLOWING SEAT"
+	toast_time = hint_highlight_duration
+	_play_sound(mark_player, 1.12)
+
+
+func _wrong_cat_cell() -> int:
+	for cell in range(cell_states.size()):
+		if cell_states[cell] != CellState.CAT or given_cells.has(cell):
+			continue
+		if cell % grid_size != int(puzzle["solution"][cell / grid_size]):
+			return cell
+	return -1
+
+
+func _next_solution_cell() -> int:
+	for row in range(grid_size):
+		var cell := row * grid_size + int(puzzle["solution"][row])
+		if cell_states[cell] != CellState.CAT:
+			return cell
 	return -1
 
 
@@ -739,7 +819,7 @@ func _draw_header() -> void:
 	_draw_panel(title_panel, _with_alpha(INK, 0.58), 44.0, _with_alpha(CREAM, 0.28), 4.0)
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
 	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
-	_draw_text_left("CATSWEEPER", Vector2(181.0, 84.0), 43, CREAM)
+	_draw_text_left("NEKODOKU", Vector2(181.0, 84.0), 43, CREAM)
 	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 127.0), 28, _with_alpha(CREAM, 0.82))
 
 	var level_rect := Rect2(681.0, 54.0, 154.0, 68.0)
@@ -794,7 +874,7 @@ func _draw_board() -> void:
 	var slot := board_rect.size.x / float(grid_size)
 	var gap := 9.0 if grid_size <= 6 else 8.0
 	var tile_radius := minf(24.0, slot * 0.22)
-	var tutorial_target := _tutorial_target_cell()
+	var guide_cell := _highlight_cell()
 	for cell in range(cell_states.size()):
 		var row := cell / grid_size
 		var column := cell % grid_size
@@ -822,12 +902,12 @@ func _draw_board() -> void:
 		if correction_glow > 0.0:
 			_draw_panel(tile_rect.grow(-1.0), tile_color, tile_radius - 1.0, _with_alpha(GOLD, 0.70 + correction_glow * 0.24), 6.0)
 
-		if cell == tutorial_target:
-			var tutorial_wave := 0.5 + 0.5 * sin(animation_clock * tutorial_pulse_speed * TAU)
-			var tutorial_accent := MINT if tutorial_step == TutorialStep.MARK_SEAT else GOLD
-			var tutorial_rect := tile_rect.grow(-3.0 - tutorial_wave * 1.5)
-			_draw_panel(tutorial_rect, _with_alpha(CREAM, 0.10 + tutorial_wave * 0.08), maxf(8.0, tile_radius - 3.0), _with_alpha(tutorial_accent, 0.74 + tutorial_wave * 0.22), 6.0)
-			draw_arc(tile_rect.get_center(), slot * (0.31 + tutorial_wave * 0.025), 0.0, TAU, 40, _with_alpha(CREAM, 0.34 + tutorial_wave * 0.24), 3.0, true)
+		if cell == guide_cell:
+			var guide_wave := 0.5 + 0.5 * sin(animation_clock * tutorial_pulse_speed * TAU)
+			var guide_accent := _highlight_accent()
+			var guide_rect := tile_rect.grow(-3.0 - guide_wave * 1.5)
+			_draw_panel(guide_rect, _with_alpha(CREAM, 0.10 + guide_wave * 0.08), maxf(8.0, tile_radius - 3.0), _with_alpha(guide_accent, 0.74 + guide_wave * 0.22), 6.0)
+			draw_arc(tile_rect.get_center(), slot * (0.31 + guide_wave * 0.025), 0.0, TAU, 40, _with_alpha(CREAM, 0.34 + guide_wave * 0.24), 3.0, true)
 
 		if pulse_time > 0.0 and _shares_rule(cell, pulse_cell):
 			var pulse_phase := 1.0 - pulse_time / maxf(rule_pulse_duration, 0.001)
@@ -944,6 +1024,7 @@ func _draw_footer() -> void:
 			_draw_text_center(toast_text, instruction_rect, 30, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
+	_draw_button(HINT_RECT, "HINT", "hint", game_mode == GameMode.PLAYING)
 	_draw_button(RESTART_RECT, "RESTART", "restart", true)
 	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
 	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
@@ -952,11 +1033,9 @@ func _draw_footer() -> void:
 
 func _draw_tutorial_prompt() -> void:
 	var prompt_rect := Rect2(75.0, 1137.0, 750.0, 60.0)
-	var accent := MINT if tutorial_step == TutorialStep.MARK_SEAT else GOLD
-	var step_label := "1 / 2" if tutorial_step == TutorialStep.MARK_SEAT else "2 / 2"
-	var message := "TAP GLOWING SEAT TO RULE IT OUT"
-	if tutorial_step == TutorialStep.PLACE_CAT:
-		message = "DOUBLE-TAP GLOWING SEAT FOR A CAT"
+	var accent := _highlight_accent()
+	var step_label := "%d / %d" % [tutorial_step + 1, TUTORIAL_STEPS.size()]
+	var message := String(TUTORIAL_STEPS[tutorial_step]["message"])
 	_rounded_rect(Rect2(prompt_rect.position + Vector2(0.0, 5.0), prompt_rect.size), _with_alpha(INK, 0.16), 28.0)
 	_draw_panel(prompt_rect, _with_alpha(CREAM, 0.98), 28.0, _with_alpha(accent, 0.78), 5.0)
 	var badge_rect := Rect2(prompt_rect.position + Vector2(12.0, 10.0), Vector2(96.0, 40.0))
@@ -984,6 +1063,10 @@ func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> vo
 			icon_center + Vector2(-7.0, -15.0),
 			icon_center + Vector2(-8.0, -1.0)
 		]), INK_SOFT)
+	elif icon == "hint":
+		draw_circle(icon_center + Vector2(0.0, 6.0), 10.5, INK_SOFT)
+		for toe in range(3):
+			draw_circle(icon_center + Vector2(-11.0 + float(toe) * 11.0, -9.0), 4.8, INK_SOFT)
 	else:
 		draw_arc(icon_center, 17.0, -0.3, 5.15, 30, INK_SOFT, 6.0, true)
 		draw_colored_polygon(PackedVector2Array([

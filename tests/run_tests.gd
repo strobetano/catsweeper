@@ -51,31 +51,68 @@ func _run_gameplay_checks(game: Node) -> void:
 	game._start_level(0)
 
 
-	_expect(game.tutorial_step == game.TutorialStep.MARK_SEAT, "first room starts the two-step tutorial")
-	_expect(game._tutorial_target_cell() == game.TUTORIAL_MARK_CELL, "tutorial first highlights its mark seat")
+	var mark_step_cell: int = int(game.TUTORIAL_STEPS[0]["cell"])
+	_expect(game.tutorial_step == 0, "first room starts the guided tutorial")
+	_expect(game._tutorial_target_cell() == mark_step_cell, "tutorial first highlights its mark seat")
 	_expect(game.given_cells.has(game.TUTORIAL_GIVEN_CELL), "tutorial reuses the locked opening cat")
-	_expect(game._shares_rule(game.TUTORIAL_MARK_CELL, game.TUTORIAL_GIVEN_CELL), "tutorial mark seat is visibly impossible")
-	_expect(int(game.puzzle["solution"][1]) == game.TUTORIAL_CAT_CELL % game.grid_size, "tutorial cat seat matches the real solution")
+	_expect(game._shares_rule(mark_step_cell, game.TUTORIAL_GIVEN_CELL), "tutorial mark seat is visibly impossible")
+	var guided_seats := 0
+	var tutorial_seats_valid := true
+	for step in game.TUTORIAL_STEPS:
+		if not bool(step["place_cat"]):
+			continue
+		guided_seats += 1
+		var step_cell: int = int(step["cell"])
+		tutorial_seats_valid = tutorial_seats_valid and int(game.puzzle["solution"][step_cell / game.grid_size]) == step_cell % game.grid_size
+	_expect(tutorial_seats_valid, "every tutorial cat seat matches the real solution")
+	_expect(guided_seats == game.grid_size - game.given_cells.size(), "the tutorial guides every seat the room still needs")
 
 	game.intro_time = game.board_intro_duration
-	var tutorial_mark_position: Vector2 = game._cell_center(game.TUTORIAL_MARK_CELL)
-	game._begin_pointer(tutorial_mark_position, false)
-	_expect(game.pending_cell == game.TUTORIAL_MARK_CELL and game.cell_states[game.TUTORIAL_MARK_CELL] == game.CellState.EMPTY, "tutorial single tap waits for double-tap window")
+	game._begin_pointer(game._cell_center(mark_step_cell), false)
+	_expect(game.pending_cell == mark_step_cell and game.cell_states[mark_step_cell] == game.CellState.EMPTY, "tutorial single tap waits for double-tap window")
 	game._process(game.double_tap_window + 0.01)
-	_expect(game.cell_states[game.TUTORIAL_MARK_CELL] == game.CellState.MARKED and game.tutorial_step == game.TutorialStep.PLACE_CAT, "tutorial single tap marks and advances")
-	_expect(game._tutorial_target_cell() == game.TUTORIAL_CAT_CELL, "tutorial then highlights its cat seat")
+	_expect(game.cell_states[mark_step_cell] == game.CellState.MARKED and game.tutorial_step == 1, "tutorial single tap marks and advances")
 
-	var tutorial_cat_position: Vector2 = game._cell_center(game.TUTORIAL_CAT_CELL)
-	game._begin_pointer(tutorial_cat_position, false)
-	game._begin_pointer(tutorial_cat_position, false)
-	_expect(game.cell_states[game.TUTORIAL_CAT_CELL] == game.CellState.CAT and game.tutorial_step == game.TutorialStep.OFF, "tutorial double-tap places the cat and finishes")
+	for index in range(1, game.TUTORIAL_STEPS.size()):
+		var seat_cell: int = int(game.TUTORIAL_STEPS[index]["cell"])
+		_expect(game._tutorial_target_cell() == seat_cell, "tutorial highlights step %d" % (index + 1))
+		var seat_position: Vector2 = game._cell_center(seat_cell)
+		game._begin_pointer(seat_position, false)
+		game._begin_pointer(seat_position, false)
+		_expect(game.cell_states[seat_cell] == game.CellState.CAT, "tutorial double-tap seats the cat of step %d" % (index + 1))
+	_expect(game.tutorial_step == -1, "following every step finishes the tutorial")
 	_expect(game.toast_time == game.tutorial_success_duration, "tutorial finishes with praise")
+	_expect(game.game_mode == game.GameMode.WON, "the guided tutorial clears the first room")
 
+	game.unlocked_level = 0
 	game._start_level(1)
-	_expect(game.tutorial_step == game.TutorialStep.OFF and game._tutorial_target_cell() == -1, "later rooms do not repeat the tutorial")
+	_expect(game.tutorial_step == -1 and game._tutorial_target_cell() == -1, "later rooms do not repeat the tutorial")
+
+	var first_hint_cell: int = game._next_solution_cell()
+	_expect(first_hint_cell == int(game.puzzle["solution"][0]), "the first hint aims at the opening row")
+	_expect(game._handle_ui_press(game.HINT_RECT.get_center()), "the hint button answers a tap")
+	_expect(game.hint_cell == first_hint_cell and game.hint_time > 0.0, "a hint glows the next correct seat")
+	_expect(game._highlight_cell() == first_hint_cell, "a hinted seat gets the guiding glow")
+	var misplaced_cell: int = game.grid_size + (int(game.puzzle["solution"][1]) + 2) % game.grid_size
+	game._try_place_cat(misplaced_cell)
+	game._use_hint()
+	_expect(game.hint_cell == misplaced_cell, "a hint points at a misplaced cat first")
+	game._process(game.hint_highlight_duration + 0.01)
+	_expect(game.hint_time == 0.0 and game._highlight_cell() == -1, "the hint glow fades on its own")
+
+	var footer_buttons := {"UNDO": game.UNDO_RECT, "HINT": game.HINT_RECT, "RESTART": game.RESTART_RECT}
+	var labels_fit := true
+	for label in footer_buttons:
+		var button_rect: Rect2 = footer_buttons[label]
+		var label_width: float = game.ui_font.get_string_size(label, HORIZONTAL_ALIGNMENT_CENTER, -1.0, 30).x
+		labels_fit = labels_fit and label_width <= button_rect.size.x - 90.0
+	_expect(labels_fit, "every footer button label fits its button")
+
 	game._start_level(0)
-	game._paint_mark(game.TUTORIAL_MARK_CELL)
-	_expect(game.tutorial_step == game.TutorialStep.PLACE_CAT, "drag marking also advances the tutorial")
+	game._paint_mark(mark_step_cell)
+	_expect(game.tutorial_step == 1, "drag marking also advances the tutorial")
+	game._use_hint()
+	_expect(game.hint_cell == -1 and game.pulse_cell == game._tutorial_target_cell(), "a hint during the tutorial repeats its step")
 	game._start_level(0)
 
 	game.intro_time = 0.0
@@ -194,9 +231,9 @@ func _expect(condition: bool, label: String) -> void:
 func _finish() -> void:
 	requested_exit_code = 0 if failures == 0 else 1
 	if failures == 0:
-		print("CATSWEEPER TESTS PASSED")
+		print("NEKODOKU TESTS PASSED")
 	else:
-		print("CATSWEEPER TESTS FAILED: ", failures)
+		print("NEKODOKU TESTS FAILED: ", failures)
 	call_deferred("_quit_cleanly")
 
 
