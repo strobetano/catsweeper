@@ -67,6 +67,7 @@ enum TutorialStep { OFF, MARK_SEAT, PLACE_CAT }
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
 @export_range(0.9, 2.0, 0.05) var full_board_feedback_duration := 1.35
+@export_range(0.4, 3.0, 0.05) var correction_glow_speed := 1.40
 @export_range(0.1, 1.5, 0.05) var cat_idle_speed := 0.65
 @export_range(0.0, 0.08, 0.005) var cat_breathe_amount := 0.040
 @export_range(0.0, 6.0, 0.25) var cat_bob_height := 3.0
@@ -490,10 +491,10 @@ func _try_place_cat(cell: int) -> void:
 
 func _validate_full_layout(preferred_cell: int) -> void:
 	var cells_to_check: Array[int] = []
-	if preferred_cell >= 0 and cell_states[preferred_cell] == CellState.CAT:
+	if preferred_cell >= 0 and cell_states[preferred_cell] == CellState.CAT and not given_cells.has(preferred_cell):
 		cells_to_check.append(preferred_cell)
 	for cell in range(cell_states.size()):
-		if cell_states[cell] == CellState.CAT and cell != preferred_cell:
+		if cell_states[cell] == CellState.CAT and cell != preferred_cell and not given_cells.has(cell):
 			cells_to_check.append(cell)
 	for cell in cells_to_check:
 		var reason := _wrong_reason(cell)
@@ -532,6 +533,15 @@ func _tutorial_target_cell() -> int:
 	if tutorial_step == TutorialStep.PLACE_CAT:
 		return TUTORIAL_CAT_CELL
 	return -1
+
+
+func _correction_glow_strength(cell: int) -> float:
+	if game_mode != GameMode.PLAYING or cell < 0 or cell >= cell_states.size():
+		return 0.0
+	if cell != error_cell or cell_states[cell] != CellState.CAT or given_cells.has(cell):
+		return 0.0
+	var wave := 0.5 + 0.5 * sin(animation_clock * correction_glow_speed * TAU)
+	return 0.72 + wave * 0.28
 
 
 func _wrong_reason(cell: int) -> String:
@@ -795,17 +805,22 @@ func _draw_board() -> void:
 		var region := int(puzzle["regions"][cell])
 		var tile_color := region_colors[region % region_colors.size()]
 		var error_envelope := 0.0
+		var correction_glow := _correction_glow_strength(cell)
 		if cell == hover_cell and game_mode == GameMode.PLAYING:
 			tile_color = tile_color.lightened(0.075)
 		if cell == error_cell and error_time > 0.0:
 			var error_phase := 1.0 - error_time / maxf(shake_duration, 0.001)
 			error_envelope = _smooth_pulse(error_phase)
 			tile_color = tile_color.lerp(CORAL, (0.30 + 0.12 * sin(animation_clock * 34.0)) * error_envelope)
+		if correction_glow > 0.0:
+			tile_color = tile_color.lerp(CREAM, correction_glow * 0.13)
 		_rounded_rect(tile_rect, tile_color, tile_radius)
 		if cell == hover_cell and game_mode == GameMode.PLAYING and cell != error_cell:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CREAM, 0.84), 5.0)
 		if cell == error_cell and error_time > 0.0:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92 * error_envelope), 6.0)
+		if correction_glow > 0.0:
+			_draw_panel(tile_rect.grow(-1.0), tile_color, tile_radius - 1.0, _with_alpha(GOLD, 0.70 + correction_glow * 0.24), 6.0)
 
 		if cell == tutorial_target:
 			var tutorial_wave := 0.5 + 0.5 * sin(animation_clock * tutorial_pulse_speed * TAU)
@@ -864,6 +879,11 @@ func _draw_board() -> void:
 					var bob_envelope := _smooth_pulse(bob_phase)
 					pop_scale *= 1.0 + sin(bob_phase * PI * 2.0) * 0.07 * bob_envelope
 					tile_rect.position.y -= bob_envelope * 9.0
+			if correction_glow > 0.0:
+				var correction_center := tile_rect.get_center()
+				draw_circle(correction_center, slot * (0.34 + correction_glow * 0.025), _with_alpha(GOLD, 0.10 + correction_glow * 0.10))
+				draw_arc(correction_center, slot * (0.36 + correction_glow * 0.025), 0.0, TAU, 48, _with_alpha(CREAM, 0.72 + correction_glow * 0.24), 7.0, true)
+				draw_arc(correction_center, slot * (0.42 + correction_glow * 0.018), 0.0, TAU, 48, _with_alpha(CORAL, 0.46 + correction_glow * 0.20), 4.0, true)
 			_draw_cat(tile_rect.get_center(), slot * 0.31, pop_scale, _cat_pose(cell), cat_alpha, float(cell) * 0.47)
 			if given_cells.has(cell):
 				draw_arc(tile_rect.get_center(), slot * 0.35, 0.0, TAU, 40, _with_alpha(GOLD, 0.92), 5.5, true)
@@ -985,7 +1005,9 @@ func _draw_full_board_feedback() -> void:
 	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), _with_alpha(CORAL, 0.055 * alpha))
 	var settle_phase := clampf(progress / 0.28, 0.0, 1.0)
 	var card_scale := lerpf(0.86, 1.0, _cartoon_settle(settle_phase))
-	var card := Rect2(150.0, 545.0, 600.0, 200.0)
+	var target_center := _cell_center(error_cell)
+	var card_y := 825.0 if target_center.y <= BOARD_RECT.get_center().y else 425.0
+	var card := Rect2(150.0, card_y, 600.0, 200.0)
 	var pivot := card.get_center()
 	var rise := Vector2(0.0, (1.0 - fade_in) * 18.0)
 	draw_set_transform(
@@ -995,10 +1017,11 @@ func _draw_full_board_feedback() -> void:
 	)
 	_rounded_rect(Rect2(card.position + Vector2(0.0, 12.0), card.size), _with_alpha(INK, 0.22 * alpha), 46.0)
 	_draw_panel(card, _with_alpha(CREAM, 0.98 * alpha), 46.0, _with_alpha(CORAL, 0.82 * alpha), 6.0)
-	draw_circle(Vector2(245.0, 645.0), 67.0, _with_alpha(CORAL, 0.16 * alpha))
-	_draw_cat(Vector2(245.0, 645.0), 50.0, 1.0, CatPose.WORRIED, alpha)
-	_draw_text_center("SO CLOSE!", Rect2(315.0, 575.0, 385.0, 64.0), 42, _with_alpha(INK, alpha))
-	_draw_text_center("MOVE THE GLOWING CAT", Rect2(300.0, 646.0, 420.0, 56.0), 28, _with_alpha(CORAL.darkened(0.20), alpha))
+	var mascot_center := card.position + Vector2(95.0, 100.0)
+	draw_circle(mascot_center, 67.0, _with_alpha(CORAL, 0.16 * alpha))
+	_draw_cat(mascot_center, 50.0, 1.0, CatPose.WORRIED, alpha)
+	_draw_text_center("SO CLOSE!", Rect2(card.position + Vector2(165.0, 30.0), Vector2(385.0, 64.0)), 42, _with_alpha(INK, alpha))
+	_draw_text_center("MOVE THE GLOWING CAT", Rect2(card.position + Vector2(150.0, 101.0), Vector2(420.0, 56.0)), 28, _with_alpha(CORAL.darkened(0.20), alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
@@ -1097,7 +1120,7 @@ func _draw_particles() -> void:
 func _cat_pose(cell: int = -1) -> int:
 	if game_mode == GameMode.WON:
 		return CatPose.HAPPY
-	if error_time > 0.0:
+	if _correction_glow_strength(cell) > 0.0 or (cell < 0 and error_time > 0.0):
 		return CatPose.WORRIED
 	if cell >= 0 and given_cells.has(cell):
 		return CatPose.SLEEPY

@@ -111,15 +111,28 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game._cat_count() == game.grid_size and game.unlocked_level == 0, "a full wrong board keeps every cat and does not unlock the next room")
 	_expect(game.error_cell >= 0 and not game.toast_text.is_empty(), "a full wrong board explains what to fix")
 	_expect(game.full_board_feedback_time > 0.0, "a full wrong board starts playful correction feedback")
+	var correction_cell: int = game.error_cell
+	_expect(game.cell_states[correction_cell] == game.CellState.CAT, "correction feedback targets a seated cat")
+	_expect(not game.given_cells.has(correction_cell), "correction feedback targets a movable cat")
+	_expect(game._correction_glow_strength(correction_cell) > 0.0, "correction feedback gives its target a visible glow")
+	_expect(game._cat_pose(correction_cell) == game.CatPose.WORRIED, "only the correction target uses its worried pose")
 	var full_board_error_particles := 0
 	for particle in game.particles:
 		if String(particle["kind"]) == "error":
 			full_board_error_particles += 1
 	_expect(full_board_error_particles >= 18, "a full wrong board creates a strong error burst")
-	game._process(game.full_board_feedback_duration * 0.20)
+	game._process(game.shake_duration + 0.05)
+	_expect(game.error_time == 0.0 and game.full_board_feedback_time > 0.0, "correction card outlasts the short error shake")
+	_expect(game._correction_glow_strength(correction_cell) > 0.0, "target glow remains visible after the error shake")
+	game._process(game.full_board_feedback_duration)
+	_expect(game.full_board_feedback_time == 0.0 and game._correction_glow_strength(correction_cell) > 0.0, "target keeps glowing until it is moved")
 	game.queue_redraw()
 	await process_frame
 
+	game._try_place_cat(correction_cell)
+	_expect(game.cell_states[correction_cell] == game.CellState.EMPTY and game.error_cell == -1 and game._correction_glow_strength(correction_cell) == 0.0, "moving the glowing cat clears its feedback")
+	game._try_place_cat(correction_cell)
+	_expect(game.cell_states[correction_cell] == game.CellState.CAT, "correction target can be restored")
 	game._try_place_cat(wrong_cell)
 	_expect(game.full_board_feedback_time == 0.0, "moving the wrong cat clears the correction card")
 	var correct_cell: int = wrong_row * game.grid_size + int(game.puzzle["solution"][wrong_row])
