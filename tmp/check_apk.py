@@ -73,7 +73,7 @@ for ctype, off, hsize in chunks:
     tag, attrs = element(off, hsize)
     if tag == 'provider':
         providers.append(attrs)
-    elif tag in ('manifest', 'uses-sdk'):
+    elif tag in ('manifest', 'uses-sdk', 'application'):
         print('%-14s %s' % (tag, ' '.join('%s=%s' % kv for kv in attrs.items())))
 print()
 
