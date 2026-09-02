@@ -32,16 +32,29 @@ const UNDO_RECT := Rect2(75.0, 1210.0, 236.0, 88.0)
 const HINT_RECT := Rect2(332.0, 1210.0, 236.0, 88.0)
 const RESTART_RECT := Rect2(589.0, 1210.0, 236.0, 88.0)
 const MODAL_BUTTON_RECT := Rect2(210.0, 930.0, 480.0, 102.0)
+const DIFFICULTY_RECT := Rect2(75.0, 1315.0, 480.0, 54.0)
+const LANGUAGE_RECT := Rect2(571.0, 1315.0, 254.0, 54.0)
 const SAVE_PATH := "user://catsweeper.cfg"
 const TUTORIAL_GIVEN_CELL := 0
 
-## Every guided step of room 1, from the first mark to the cat that wins it.
+## Every guided step of room 1, each one said in words and shown as a picture.
 const TUTORIAL_STEPS: Array[Dictionary] = [
-	{"cell": 1, "place_cat": false, "message": "TAP THE GLOW TO RULE IT OUT"},
-	{"cell": 7, "place_cat": true, "message": "DOUBLE-TAP THE GLOW TO SEAT A CAT"},
-	{"cell": 14, "place_cat": true, "message": "AGAIN  ·  EVERY ROW NEEDS A CAT"},
-	{"cell": 16, "place_cat": true, "message": "NEXT  ·  ONE CAT PER COLUMN"},
-	{"cell": 23, "place_cat": true, "message": "LAST ONE  ·  ONE CAT PER COLOR"}
+	{"cell": 1, "place_cat": false, "message_key": "TUTORIAL_MARK", "icon": "mark"},
+	{"cell": 7, "place_cat": true, "message_key": "TUTORIAL_FIRST_CAT", "icon": "cat"},
+	{"cell": 14, "place_cat": true, "message_key": "TUTORIAL_ROW", "icon": "row"},
+	{"cell": 16, "place_cat": true, "message_key": "TUTORIAL_COLUMN", "icon": "column"},
+	{"cell": 23, "place_cat": true, "message_key": "TUTORIAL_COLOR", "icon": "color"}
+]
+
+## Every language the pill cycles through, each written in its own script.
+const LANGUAGES: Array[Dictionary] = [
+	{"locale": "en", "label": "ENGLISH"},
+	{"locale": "fr", "label": "FRANÇAIS"},
+	{"locale": "de", "label": "DEUTSCH"},
+	{"locale": "it", "label": "ITALIANO"},
+	{"locale": "pt_BR", "label": "PORTUGUÊS"},
+	{"locale": "ja", "label": "日本語"},
+	{"locale": "zh", "label": "中文"}
 ]
 
 const INK := Color("#1D2942")
@@ -118,6 +131,7 @@ var win_player: AudioStreamPlayer
 
 var level_index := 0
 var unlocked_level := 0
+var language_index := 0
 var puzzle: Dictionary
 var grid_size := 5
 var cell_states: Array[int] = []
@@ -204,14 +218,38 @@ func _make_player(audio_stream: AudioStream) -> AudioStreamPlayer:
 
 func _load_progress() -> void:
 	var save := ConfigFile.new()
+	language_index = _language_index(TranslationServer.get_locale())
 	if save.load(SAVE_PATH) == OK:
 		unlocked_level = clampi(int(save.get_value("progress", "unlocked_level", 0)), 0, PuzzleBook.LEVELS.size() - 1)
+		language_index = _language_index(String(save.get_value("progress", "language", "")))
+	_apply_language()
 
 
 func _save_progress() -> void:
 	var save := ConfigFile.new()
 	save.set_value("progress", "unlocked_level", unlocked_level)
+	save.set_value("progress", "language", String(LANGUAGES[language_index]["locale"]))
 	save.save(SAVE_PATH)
+
+
+## Falls back to English when the locale is empty or unsupported.
+func _language_index(locale: String) -> int:
+	for index in range(LANGUAGES.size()):
+		if TranslationServer.compare_locales(locale, String(LANGUAGES[index]["locale"])) > 0:
+			return index
+	return 0
+
+
+func _apply_language() -> void:
+	TranslationServer.set_locale(String(LANGUAGES[language_index]["locale"]))
+	queue_redraw()
+
+
+func _cycle_language() -> void:
+	language_index = (language_index + 1) % LANGUAGES.size()
+	_apply_language()
+	_save_progress()
+	_play_sound(mark_player, 1.06)
 
 
 func _start_level(index: int) -> void:
@@ -396,6 +434,9 @@ func _handle_ui_press(base_position: Vector2) -> bool:
 	if HINT_RECT.has_point(base_position):
 		_use_hint()
 		return true
+	if LANGUAGE_RECT.has_point(base_position):
+		_cycle_language()
+		return true
 	if RESTART_RECT.has_point(base_position):
 		_start_level(level_index)
 		return true
@@ -485,7 +526,7 @@ func _try_place_cat(cell: int) -> void:
 		error_cell = cell
 		error_time = shake_duration
 		shake_time = shake_duration
-		toast_text = "ALL CATS ARE SEATED — MOVE ONE FIRST"
+		toast_text = tr("TOAST_ALL_SEATED")
 		toast_time = 2.4
 		_spawn_error_sparks(_cell_center(cell))
 		_play_sound(error_player, randf_range(0.92, 1.02))
@@ -539,7 +580,7 @@ func _update_tutorial_progress() -> void:
 		return
 	if tutorial_step >= TUTORIAL_STEPS.size():
 		tutorial_step = -1
-		toast_text = "PURRFECT! NOW USE THE THREE RULES."
+		toast_text = tr("TOAST_TUTORIAL_DONE")
 		toast_time = tutorial_success_duration
 		return
 	pulse_cell = int(TUTORIAL_STEPS[tutorial_step]["cell"])
@@ -586,14 +627,14 @@ func _use_hint() -> void:
 	var misplaced := _wrong_cat_cell()
 	var cell := misplaced if misplaced >= 0 else _next_solution_cell()
 	if cell < 0:
-		toast_text = "EVERY CAT IS ALREADY SEATED."
+		toast_text = tr("TOAST_ALL_PLACED")
 		toast_time = 1.4
 		return
 	hint_cell = cell
 	hint_time = hint_highlight_duration
 	pulse_cell = cell
 	pulse_time = rule_pulse_duration
-	toast_text = "MOVE THE GLOWING CAT" if misplaced >= 0 else "DOUBLE-TAP THE GLOWING SEAT"
+	toast_text = tr("MOVE_GLOWING_CAT") if misplaced >= 0 else tr("HINT_SEAT_HERE")
 	toast_time = hint_highlight_duration
 	_play_sound(mark_player, 1.12)
 
@@ -634,13 +675,13 @@ func _wrong_reason(cell: int) -> String:
 		var other_row := other / grid_size
 		var other_column := other % grid_size
 		if abs(other_row - row) <= 1 and abs(other_column - column) <= 1:
-			return "Cats cannot touch, even diagonally."
+			return tr("REASON_TOUCH")
 		if other_row == row:
-			return "That row already has a cat."
+			return tr("REASON_ROW")
 		if other_column == column:
-			return "That column already has a cat."
+			return tr("REASON_COLUMN")
 		if int(puzzle["regions"][other]) == region:
-			return "That color already has its cat."
+			return tr("REASON_COLOR")
 	return ""
 
 
@@ -650,7 +691,7 @@ func _push_history_change(cell: int, old_state: int) -> void:
 
 func _undo() -> void:
 	if history.is_empty() or game_mode == GameMode.WON:
-		toast_text = "Nothing to sweep back yet."
+		toast_text = tr("TOAST_NOTHING_TO_UNDO")
 		toast_time = 1.4
 		return
 	var action: Dictionary = history.pop_back()
@@ -660,7 +701,7 @@ func _undo() -> void:
 	error_time = 0.0
 	shake_time = 0.0
 	full_board_feedback_time = 0.0
-	toast_text = "Last sweep restored."
+	toast_text = tr("TOAST_UNDONE")
 	toast_time = 1.25
 	_play_sound(mark_player, 0.78)
 
@@ -820,12 +861,12 @@ func _draw_header() -> void:
 	_draw_panel(Rect2(43.0, 30.0, 118.0, 118.0), _with_alpha(INK, 0.82), 38.0, _with_alpha(PLUM, 0.42), 5.0)
 	_draw_cat(Vector2(102.0, 92.0), 48.0, 1.0, _cat_pose())
 	_draw_text_left("NEKODOKU", Vector2(181.0, 84.0), 43, CREAM)
-	_draw_text_left("quiet logic for clever paws", Vector2(184.0, 127.0), 28, _with_alpha(CREAM, 0.82))
+	_draw_text_left(tr("TITLE_SUBTITLE"), Vector2(184.0, 127.0), 28, _with_alpha(CREAM, 0.82))
 
 	var level_rect := Rect2(681.0, 54.0, 154.0, 68.0)
 	_rounded_rect(Rect2(level_rect.position + Vector2(0.0, 5.0), level_rect.size), _with_alpha(INK, 0.16), 34.0)
 	_draw_panel(level_rect, _with_alpha(PLUM, 0.88), 34.0, _with_alpha(CREAM, 0.64), 4.0)
-	_draw_text_center("ROOM %02d" % (level_index + 1), level_rect, 28, INK)
+	_draw_text_center(tr("ROOM_LABEL") % (level_index + 1), level_rect, 28, INK)
 
 	var progress_rect := Rect2(75.0, 168.0, 365.0, 72.0)
 	var guidance_rect := Rect2(462.0, 168.0, 363.0, 72.0)
@@ -835,15 +876,15 @@ func _draw_header() -> void:
 	_draw_panel(guidance_rect, CREAM, 36.0, _with_alpha(CORAL, 0.44), 4.0)
 	draw_circle(Vector2(118.0, 204.0), 28.0, _with_alpha(MINT, 0.20))
 	_draw_cat(Vector2(118.0, 204.0), 22.0, 1.0, _cat_pose())
-	_draw_text_left("%d / %d  CATS" % [_cat_count(), grid_size], Vector2(158.0, 217.0), 30, INK)
+	_draw_text_left(tr("CATS_COUNT") % [_cat_count(), grid_size], Vector2(158.0, 217.0), 30, INK)
 	draw_circle(Vector2(505.0, 204.0), 28.0, _with_alpha(CORAL, 0.18))
 	_draw_space_icon(Vector2(505.0, 204.0))
-	var guidance := "MOVE ONE CAT" if _cat_count() == grid_size and error_cell >= 0 else "SEAT ALL CATS"
+	var guidance := tr("GUIDANCE_MOVE") if _cat_count() == grid_size and error_cell >= 0 else tr("GUIDANCE_SEAT")
 	_draw_text_left(guidance, Vector2(543.0, 217.0), 30, INK)
 
 
 func _draw_rule_cards() -> void:
-	var labels := ["1 / COLOR", "1 / LINE", "NO TOUCH"]
+	var labels := [tr("RULE_COLOR"), tr("RULE_LINE"), tr("RULE_TOUCH")]
 	var accents := [MINT, SKY, CORAL]
 	var pulse := 0.0
 	if pulse_time > 0.0:
@@ -862,7 +903,7 @@ func _draw_rule_cards() -> void:
 			_draw_line_icon(icon_center)
 		else:
 			_draw_space_icon(icon_center)
-		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 46.0), 30, INK_SOFT)
+		_draw_text_left(labels[index], Vector2(card.position.x + 70.0, card.position.y + 46.0), 28, INK_SOFT)
 
 
 func _draw_board() -> void:
@@ -1007,7 +1048,7 @@ func _draw_footer() -> void:
 	if toast_time <= 0.0 and _tutorial_target_cell() >= 0:
 		_draw_tutorial_prompt()
 	else:
-		var base_instruction := "TAP TO MARK  ·  DOUBLE-TAP TO PLACE"
+		var base_instruction := tr("FOOTER_HOWTO")
 		var instruction_rect := Rect2(90.0, 1137.0, 720.0, 60.0)
 		var toast_alpha := 0.0
 		if toast_time > 0.0:
@@ -1023,25 +1064,53 @@ func _draw_footer() -> void:
 		if toast_alpha > 0.0:
 			_draw_text_center(toast_text, instruction_rect, 30, _with_alpha(INK, toast_alpha))
 
-	_draw_button(UNDO_RECT, "UNDO", "undo", not history.is_empty())
-	_draw_button(HINT_RECT, "HINT", "hint", game_mode == GameMode.PLAYING)
-	_draw_button(RESTART_RECT, "RESTART", "restart", true)
-	var difficulty_rect := Rect2(250.0, 1321.0, 400.0, 42.0)
-	_draw_panel(difficulty_rect, _with_alpha(INK, 0.48), 21.0, _with_alpha(CREAM, 0.22), 3.0)
-	_draw_text_center(_difficulty_label(), difficulty_rect, 26, _with_alpha(CREAM, 0.92))
+	_draw_button(UNDO_RECT, tr("BUTTON_UNDO"), "undo", not history.is_empty())
+	_draw_button(HINT_RECT, tr("BUTTON_HINT"), "hint", game_mode == GameMode.PLAYING)
+	_draw_button(RESTART_RECT, tr("BUTTON_RESTART"), "restart", true)
+	_draw_panel(DIFFICULTY_RECT, _with_alpha(INK, 0.48), 27.0, _with_alpha(CREAM, 0.22), 3.0)
+	_draw_text_center(_difficulty_label(), DIFFICULTY_RECT, 26, _with_alpha(CREAM, 0.92))
+	_draw_language_pill()
+
+
+func _draw_language_pill() -> void:
+	var hovered := LANGUAGE_RECT.has_point(pointer_base)
+	_rounded_rect(Rect2(LANGUAGE_RECT.position + Vector2(0.0, 5.0), LANGUAGE_RECT.size), _with_alpha(INK, 0.16), 27.0)
+	_draw_panel(LANGUAGE_RECT, Color.WHITE if hovered else _with_alpha(CREAM, 0.96), 27.0, _with_alpha(MINT, 0.62), 3.0)
+	_draw_globe_icon(Vector2(LANGUAGE_RECT.position.x + 38.0, LANGUAGE_RECT.get_center().y))
+	_draw_text_center(String(LANGUAGES[language_index]["label"]), Rect2(LANGUAGE_RECT.position.x + 62.0, LANGUAGE_RECT.position.y, LANGUAGE_RECT.size.x - 76.0, LANGUAGE_RECT.size.y), 26, INK)
 
 
 func _draw_tutorial_prompt() -> void:
+	var step: Dictionary = TUTORIAL_STEPS[tutorial_step]
 	var prompt_rect := Rect2(75.0, 1137.0, 750.0, 60.0)
 	var accent := _highlight_accent()
 	var step_label := "%d / %d" % [tutorial_step + 1, TUTORIAL_STEPS.size()]
-	var message := String(TUTORIAL_STEPS[tutorial_step]["message"])
 	_rounded_rect(Rect2(prompt_rect.position + Vector2(0.0, 5.0), prompt_rect.size), _with_alpha(INK, 0.16), 28.0)
 	_draw_panel(prompt_rect, _with_alpha(CREAM, 0.98), 28.0, _with_alpha(accent, 0.78), 5.0)
 	var badge_rect := Rect2(prompt_rect.position + Vector2(12.0, 10.0), Vector2(96.0, 40.0))
 	_draw_panel(badge_rect, accent, 20.0, _with_alpha(INK, 0.16), 3.0)
 	_draw_text_center(step_label, badge_rect, 26, INK)
-	_draw_text_center(message, Rect2(prompt_rect.position.x + 116.0, prompt_rect.position.y, prompt_rect.size.x - 128.0, prompt_rect.size.y), 28, INK)
+	_draw_tutorial_icon(String(step["icon"]), Vector2(prompt_rect.position.x + 140.0, prompt_rect.get_center().y))
+	_draw_text_center(tr(String(step["message_key"])), Rect2(prompt_rect.position.x + 172.0, prompt_rect.position.y, 564.0, prompt_rect.size.y), 28, INK)
+
+
+## Shows the step as a picture: the mark it leaves, the cat it seats, or the rule it teaches.
+func _draw_tutorial_icon(icon: String, center: Vector2) -> void:
+	if icon == "row":
+		_draw_line_icon(center)
+		return
+	if icon == "column":
+		_draw_column_icon(center)
+		return
+	if icon == "color":
+		_draw_color_icon(center)
+		return
+	draw_circle(center, 24.0, _with_alpha(INK, 0.18))
+	draw_circle(center, 20.0, PAPER)
+	if icon == "cat":
+		_draw_cat(center, 13.0, 1.0, CatPose.HAPPY)
+	else:
+		_draw_whisker_mark(center, 11.0, _with_alpha(INK, 0.80))
 
 
 func _draw_button(rect: Rect2, label: String, icon: String, enabled: bool) -> void:
@@ -1103,8 +1172,8 @@ func _draw_full_board_feedback() -> void:
 	var mascot_center := card.position + Vector2(95.0, 100.0)
 	draw_circle(mascot_center, 67.0, _with_alpha(CORAL, 0.16 * alpha))
 	_draw_cat(mascot_center, 50.0, 1.0, CatPose.WORRIED, alpha)
-	_draw_text_center("SO CLOSE!", Rect2(card.position + Vector2(165.0, 30.0), Vector2(385.0, 64.0)), 42, _with_alpha(INK, alpha))
-	_draw_text_center("MOVE THE GLOWING CAT", Rect2(card.position + Vector2(150.0, 101.0), Vector2(420.0, 56.0)), 28, _with_alpha(CORAL.darkened(0.20), alpha))
+	_draw_text_center(tr("FEEDBACK_SO_CLOSE"), Rect2(card.position + Vector2(165.0, 30.0), Vector2(385.0, 64.0)), 42, _with_alpha(INK, alpha))
+	_draw_text_center(tr("MOVE_GLOWING_CAT"), Rect2(card.position + Vector2(150.0, 101.0), Vector2(420.0, 56.0)), 28, _with_alpha(CORAL.darkened(0.20), alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
@@ -1135,13 +1204,13 @@ func _draw_win_overlay() -> void:
 	var mascot_phase := clampf((win_time - mascot_delay) / maxf(mascot_duration, 0.001), 0.0, 1.0)
 	var mascot_scale := lerpf(0.68, 1.0, _cartoon_settle(mascot_phase))
 	_draw_cat(mascot_center, 118.0, mascot_scale, CatPose.HAPPY, alpha)
-	_draw_text_center("PURRFECT SWEEP!", Rect2(150.0, 708.0, 600.0, 72.0), 46, _with_alpha(INK, alpha))
-	_draw_text_center("Room %02d cleared in %s" % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 48.0), 28, _with_alpha(INK_SOFT, alpha))
-	_draw_text_center("Every cat follows all three rules", Rect2(180.0, 838.0, 540.0, 44.0), 28, _with_alpha(CORAL.darkened(0.18), alpha))
+	_draw_text_center(tr("WIN_TITLE"), Rect2(150.0, 708.0, 600.0, 72.0), 46, _with_alpha(INK, alpha))
+	_draw_text_center(tr("WIN_TIME") % [level_index + 1, _format_time(elapsed_time)], Rect2(160.0, 786.0, 580.0, 48.0), 28, _with_alpha(INK_SOFT, alpha))
+	_draw_text_center(tr("WIN_SUBTITLE"), Rect2(180.0, 838.0, 540.0, 44.0), 28, _with_alpha(CORAL.darkened(0.18), alpha))
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
 	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
-	var button_text := "PLAY AGAIN" if level_index >= PuzzleBook.LEVELS.size() - 1 else "NEXT ROOM"
+	var button_text := tr("WIN_AGAIN") if level_index >= PuzzleBook.LEVELS.size() - 1 else tr("WIN_NEXT")
 	_draw_text_center(button_text, MODAL_BUTTON_RECT, 30, _with_alpha(INK, alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
@@ -1283,6 +1352,26 @@ func _draw_line_icon(center: Vector2) -> void:
 	draw_circle(center, 5.5, MINT)
 
 
+func _draw_column_icon(center: Vector2) -> void:
+	draw_circle(center, 24.0, _with_alpha(INK, 0.18))
+	draw_circle(center, 20.0, PAPER)
+	for index in range(3):
+		var x := -11.0 + float(index) * 11.0
+		draw_line(center + Vector2(x, -12.0), center + Vector2(x, 12.0), _with_alpha(INK, 0.64), 5.5, true)
+		draw_circle(center + Vector2(x, -12.0), 2.75, _with_alpha(INK, 0.64))
+		draw_circle(center + Vector2(x, 12.0), 2.75, _with_alpha(INK, 0.64))
+	draw_circle(center, 5.5, SKY)
+
+
+func _draw_globe_icon(center: Vector2) -> void:
+	draw_circle(center, 17.0, _with_alpha(INK, 0.18))
+	draw_circle(center, 14.0, PAPER)
+	draw_arc(center, 14.0, 0.0, TAU, 28, _with_alpha(INK, 0.58), 3.0, true)
+	draw_line(center + Vector2(-14.0, 0.0), center + Vector2(14.0, 0.0), _with_alpha(INK, 0.58), 3.0, true)
+	draw_arc(center, 7.0, -PI * 0.5, PI * 0.5, 20, _with_alpha(INK, 0.58), 3.0, true)
+	draw_arc(center, 7.0, PI * 0.5, PI * 1.5, 20, _with_alpha(INK, 0.58), 3.0, true)
+
+
 func _draw_space_icon(center: Vector2) -> void:
 	draw_circle(center, 24.0, _with_alpha(INK, 0.18))
 	draw_circle(center, 20.0, PAPER)
@@ -1304,10 +1393,10 @@ func _shares_rule(cell: int, source: int) -> bool:
 
 func _difficulty_label() -> String:
 	if grid_size == 5:
-		return "COZY SHIFT  ·  5 × 5"
+		return tr("DIFFICULTY_5")
 	if grid_size == 6:
-		return "CLEVER SHIFT  ·  6 × 6"
-	return "MOONLIT SHIFT  ·  7 × 7"
+		return tr("DIFFICULTY_6")
+	return tr("DIFFICULTY_7")
 
 
 func _format_time(seconds: float) -> String:

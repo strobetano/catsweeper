@@ -1,0 +1,38 @@
+keys,en,fr,de,it,pt_BR,ja,zh
+TITLE_SUBTITLE,quiet logic for clever paws,logique douce pour pattes malignes,ruhige logik für schlaue pfoten,logica tranquilla per zampe furbe,lógica calma para patas espertas,かしこい肉球のための静かな論理,给聪明猫爪的安静逻辑
+ROOM_LABEL,ROOM %02d,SALLE %02d,RAUM %02d,SALA %02d,SALA %02d,ルーム %02d,房间 %02d
+CATS_COUNT,%d / %d  CATS,%d / %d  CHATS,%d / %d  KATZEN,%d / %d  GATTI,%d / %d  GATOS,%d / %d  ネコ,%d / %d  猫
+GUIDANCE_SEAT,SEAT ALL CATS,PLACE LES CHATS,KATZEN SETZEN,SIEDI I GATTI,SENTE OS GATOS,ネコを配置,安置所有猫
+GUIDANCE_MOVE,MOVE ONE CAT,DÉPLACE UN CHAT,KATZE VERSETZEN,SPOSTA UN GATTO,MOVA UM GATO,ネコを動かす,移动一只猫
+RULE_COLOR,1 / COLOR,1/COULEUR,1 / FARBE,1/COLORE,1 / COR,色に1匹,每色1只
+RULE_LINE,1 / LINE,1 / LIGNE,1 / LINIE,1 / RIGA,1 / LINHA,線に1匹,每线1只
+RULE_TOUCH,NO TOUCH,ESPACÉS,ABSTAND,DISTANTI,SEM TOQUE,隣接なし,不相邻
+FOOTER_HOWTO,TAP TO MARK  ·  DOUBLE-TAP TO PLACE,TAP = CROIX  ·  DOUBLE TAP = CHAT,TIPP = KREUZ  ·  DOPPELTIPP = KATZE,TOCCA = CROCE  ·  DOPPIO = GATTO,TOQUE = CRUZ  ·  DUPLO = GATO,タップで印  ·  ダブルタップでネコ,点按标记  ·  双击放猫
+BUTTON_UNDO,UNDO,ANNULER,ZURÜCK,ANNULLA,DESFAZER,もどす,撤销
+BUTTON_HINT,HINT,INDICE,TIPP,AIUTO,DICA,ヒント,提示
+BUTTON_RESTART,RESTART,REJOUER,NEU,RIAVVIA,REINÍCIO,やり直し,重来
+DIFFICULTY_5,COZY SHIFT  ·  5 × 5,GARDE DOUCE  ·  5 × 5,SANFTE SCHICHT  ·  5 × 5,TURNO COMODO  ·  5 × 5,TURNO CALMO  ·  5 × 5,のんびり番  ·  5 × 5,悠闲班次  ·  5 × 5
+DIFFICULTY_6,CLEVER SHIFT  ·  6 × 6,GARDE MALINE  ·  6 × 6,KLUGE SCHICHT  ·  6 × 6,TURNO FURBO  ·  6 × 6,TURNO ESPERTO  ·  6 × 6,かしこい番  ·  6 × 6,机智班次  ·  6 × 6
+DIFFICULTY_7,MOONLIT SHIFT  ·  7 × 7,GARDE LUNAIRE  ·  7 × 7,MONDSCHICHT  ·  7 × 7,TURNO LUNARE  ·  7 × 7,TURNO LUAR  ·  7 × 7,月夜の番  ·  7 × 7,月光班次  ·  7 × 7
+TOAST_ALL_SEATED,ALL CATS ARE SEATED — MOVE ONE FIRST,TOUS ASSIS — DÉPLACE UN CHAT,ALLE SITZEN — ERST EINE VERSETZEN,TUTTI SEDUTI — SPOSTANE UNO,TODOS SENTADOS — MOVA UM GATO,全員着席 — まず1匹を移動,猫都坐好了 — 先移动一只
+REASON_TOUCH,"Cats cannot touch, even diagonally.",Les chats ne se touchent jamais.,Katzen dürfen sich nie berühren.,I gatti non si toccano mai.,Gatos nunca podem se tocar.,ネコは隣り合えません。,猫不能相邻。
+REASON_ROW,That row already has a cat.,Cette ligne a déjà un chat.,Diese Reihe hat schon eine Katze.,Questa riga ha già un gatto.,Esta linha já tem um gato.,この行にはもうネコがいます。,这一行已经有猫了。
+REASON_COLUMN,That column already has a cat.,Cette colonne a déjà un chat.,Diese Spalte hat schon eine Katze.,Questa colonna ha già un gatto.,Esta coluna já tem um gato.,この列にはもうネコがいます。,这一列已经有猫了。
+REASON_COLOR,That color already has its cat.,Cette couleur a déjà son chat.,Diese Farbe hat schon ihre Katze.,Questo colore ha già il gatto.,Esta cor já tem o seu gato.,この色にはもうネコがいます。,这个颜色已经有猫了。
+TOAST_NOTHING_TO_UNDO,Nothing to sweep back yet.,Rien à annuler pour l'instant.,Noch nichts zum Zurücknehmen.,Non c'è ancora nulla da annullare.,Ainda não há nada para desfazer.,まだ戻せる手がありません。,还没有可以撤销的动作。
+TOAST_UNDONE,Last sweep restored.,Dernier coup annulé.,Letzter Zug zurückgenommen.,Ultima mossa annullata.,Última jogada desfeita.,1手もどしました。,已撤销上一步。
+TOAST_TUTORIAL_DONE,PURRFECT! NOW USE THE THREE RULES.,PARFAIT ! À TOI LES TROIS RÈGLES.,PERFEKT! JETZT DIE DREI REGELN.,PURRFETTO! ORA LE TRE REGOLE.,PURRFEITO! AGORA AS TRÊS REGRAS.,かんぺき！つぎは3つのルール。,太棒了！现在用三条规则。
+TOAST_ALL_PLACED,EVERY CAT IS ALREADY SEATED.,TOUS LES CHATS SONT PLACÉS.,ALLE KATZEN SITZEN SCHON.,TUTTI I GATTI SONO SEDUTI.,TODOS OS GATOS JÁ SENTARAM.,ネコはすべて着席ずみ。,所有猫都已就座。
+MOVE_GLOWING_CAT,MOVE THE GLOWING CAT,DÉPLACE LE CHAT QUI BRILLE,VERSETZE DIE LEUCHTKATZE,SPOSTA IL GATTO ACCESO,MOVA O GATO BRILHANTE,光るネコを動かして,移动发光的猫
+HINT_SEAT_HERE,DOUBLE-TAP THE GLOWING SEAT,DOUBLE TAP SUR LA CASE QUI BRILLE,DOPPELTIPP AUF DAS LEUCHTFELD,DOPPIO TOCCO SUL POSTO ACCESO,TOQUE DUPLO NO LUGAR BRILHANTE,光るマスをダブルタップ,双击发光的格子
+TUTORIAL_MARK,TAP THE GLOW TO RULE IT OUT,TAPE LA CASE QUI BRILLE,TIPPE AUF DAS LEUCHTFELD,TOCCA IL POSTO ACCESO,TOQUE NO LUGAR BRILHANTE,光るマスをタップ,点按发光格子排除它
+TUTORIAL_FIRST_CAT,DOUBLE-TAP THE GLOW TO SEAT A CAT,DOUBLE TAP POUR ASSEOIR UN CHAT,DOPPELTIPP SETZT EINE KATZE,DOPPIO TOCCO PER UN GATTO,TOQUE DUPLO PARA SENTAR UM GATO,ダブルタップでネコを置く,双击放上一只猫
+TUTORIAL_ROW,AGAIN  ·  EVERY ROW NEEDS A CAT,ENCORE  ·  UN CHAT PAR LIGNE,NOCHMAL  ·  EINE KATZE PRO REIHE,ANCORA  ·  UN GATTO PER RIGA,DE NOVO  ·  UM GATO POR LINHA,もう一度  ·  各行に1匹,再来  ·  每行一只猫
+TUTORIAL_COLUMN,NEXT  ·  ONE CAT PER COLUMN,ENSUITE  ·  UN CHAT PAR COLONNE,WEITER  ·  EINE KATZE PRO SPALTE,POI  ·  UN GATTO PER COLONNA,AGORA  ·  UM GATO POR COLUNA,つぎ  ·  各列に1匹,接着  ·  每列一只猫
+TUTORIAL_COLOR,LAST ONE  ·  ONE CAT PER COLOR,DERNIER  ·  UN CHAT PAR COULEUR,ZULETZT  ·  EINE KATZE PRO FARBE,ULTIMO  ·  UN GATTO PER COLORE,ÚLTIMO  ·  UM GATO POR COR,さいご  ·  各色に1匹,最后  ·  每色一只猫
+FEEDBACK_SO_CLOSE,SO CLOSE!,PRESQUE !,FAST!,QUASI!,QUASE!,おしい！,就差一点！
+WIN_TITLE,PURRFECT SWEEP!,RONRON PARFAIT !,PERFEKT GEPUTZT!,PURRFETTO!,RONRONS PERFEITOS!,かんぺき！,完美清扫！
+WIN_TIME,Room %02d cleared in %s,Salle %02d terminée en %s,Raum %02d geschafft in %s,Sala %02d completata in %s,Sala %02d concluída em %s,ルーム %02d を %s でクリア,房间 %02d 用时 %s 完成
+WIN_SUBTITLE,Every cat follows all three rules,Chaque chat suit les trois règles,Jede Katze folgt allen drei Regeln,Ogni gatto segue le tre regole,Cada gato segue as três regras,すべてのネコが三つの規則を守る,每只猫都遵守三条规则
+WIN_NEXT,NEXT ROOM,SALLE SUIVANTE,NÄCHSTER RAUM,SALA SUCCESSIVA,PRÓXIMA SALA,つぎのルーム,下一间房
+WIN_AGAIN,PLAY AGAIN,REJOUER,NOCHMAL SPIELEN,GIOCA ANCORA,JOGAR DE NOVO,もう一度あそぶ,再玩一次

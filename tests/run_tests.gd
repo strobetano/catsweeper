@@ -22,6 +22,7 @@ func _run_deferred() -> void:
 		player.stop()
 		player.stream = null
 	await _run_gameplay_checks(game)
+	_run_language_checks(game)
 	await process_frame
 	await process_frame
 	game.free()
@@ -66,6 +67,10 @@ func _run_gameplay_checks(game: Node) -> void:
 		tutorial_seats_valid = tutorial_seats_valid and int(game.puzzle["solution"][step_cell / game.grid_size]) == step_cell % game.grid_size
 	_expect(tutorial_seats_valid, "every tutorial cat seat matches the real solution")
 	_expect(guided_seats == game.grid_size - game.given_cells.size(), "the tutorial guides every seat the room still needs")
+	var step_pictures: Dictionary = {}
+	for step in game.TUTORIAL_STEPS:
+		step_pictures[String(step["icon"])] = true
+	_expect(step_pictures.size() == game.TUTORIAL_STEPS.size(), "every tutorial step shows its own picture")
 
 	game.intro_time = game.board_intro_duration
 	game._begin_pointer(game._cell_center(mark_step_cell), false)
@@ -99,14 +104,6 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game.hint_cell == misplaced_cell, "a hint points at a misplaced cat first")
 	game._process(game.hint_highlight_duration + 0.01)
 	_expect(game.hint_time == 0.0 and game._highlight_cell() == -1, "the hint glow fades on its own")
-
-	var footer_buttons := {"UNDO": game.UNDO_RECT, "HINT": game.HINT_RECT, "RESTART": game.RESTART_RECT}
-	var labels_fit := true
-	for label in footer_buttons:
-		var button_rect: Rect2 = footer_buttons[label]
-		var label_width: float = game.ui_font.get_string_size(label, HORIZONTAL_ALIGNMENT_CENTER, -1.0, 30).x
-		labels_fit = labels_fit and label_width <= button_rect.size.x - 90.0
-	_expect(labels_fit, "every footer button label fits its button")
 
 	game._start_level(0)
 	game._paint_mark(mark_step_cell)
@@ -218,6 +215,83 @@ func _run_gameplay_checks(game: Node) -> void:
 
 	game.unlocked_level = saved_unlock
 	game._save_progress()
+
+
+## Each entry is one drawing box: how wide the text may be and the size it is drawn at.
+const TEXT_LIMITS: Array[Dictionary] = [
+	{"width": 482.0, "size": 28, "keys": ["TITLE_SUBTITLE"]},
+	{"width": 154.0, "size": 28, "keys": ["ROOM_LABEL"]},
+	{"width": 282.0, "size": 30, "keys": ["CATS_COUNT", "GUIDANCE_SEAT", "GUIDANCE_MOVE"]},
+	{"width": 157.0, "size": 28, "keys": ["RULE_COLOR", "RULE_LINE", "RULE_TOUCH"]},
+	{"width": 146.0, "size": 30, "keys": ["BUTTON_UNDO", "BUTTON_HINT", "BUTTON_RESTART"]},
+	{"width": 460.0, "size": 26, "keys": ["DIFFICULTY_5", "DIFFICULTY_6", "DIFFICULTY_7"]},
+	{"width": 720.0, "size": 30, "keys": [
+		"FOOTER_HOWTO", "TOAST_ALL_SEATED", "TOAST_NOTHING_TO_UNDO", "TOAST_UNDONE",
+		"TOAST_TUTORIAL_DONE", "TOAST_ALL_PLACED", "HINT_SEAT_HERE",
+		"REASON_TOUCH", "REASON_ROW", "REASON_COLUMN", "REASON_COLOR"
+	]},
+	{"width": 420.0, "size": 28, "keys": ["MOVE_GLOWING_CAT"]},
+	{"width": 564.0, "size": 28, "keys": [
+		"TUTORIAL_MARK", "TUTORIAL_FIRST_CAT", "TUTORIAL_ROW", "TUTORIAL_COLUMN", "TUTORIAL_COLOR"
+	]},
+	{"width": 385.0, "size": 42, "keys": ["FEEDBACK_SO_CLOSE"]},
+	{"width": 600.0, "size": 46, "keys": ["WIN_TITLE"]},
+	{"width": 580.0, "size": 28, "keys": ["WIN_TIME"]},
+	{"width": 540.0, "size": 28, "keys": ["WIN_SUBTITLE"]},
+	{"width": 480.0, "size": 30, "keys": ["WIN_NEXT", "WIN_AGAIN"]}
+]
+
+
+func _run_language_checks(game: Node) -> void:
+	var saved_language: int = game.language_index
+	var english: Translation = load("res://assets/i18n/ui.en.translation")
+	_expect(english != null, "the translation table is imported")
+	if english == null:
+		return
+	var keys := english.get_message_list()
+	_expect(keys.size() >= 30, "the translation table covers the whole interface")
+
+	for language in game.LANGUAGES:
+		var locale: String = String(language["locale"])
+		game.language_index = game._language_index(locale)
+		game._apply_language()
+		_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), locale) > 0, "%s becomes the live language" % locale)
+		var untranslated := PackedStringArray()
+		for key in keys:
+			var line: String = game.tr(key)
+			if line.is_empty() or (locale != "en" and line == String(key)):
+				untranslated.append(String(key))
+		_expect(untranslated.is_empty(), _listed("%s translates every line" % locale, untranslated))
+		var overflowing := PackedStringArray()
+		for limit in TEXT_LIMITS:
+			for key in limit["keys"]:
+				var line: String = game.tr(String(key)).replace("%02d", "01").replace("%d", "5").replace("%s", "00:00")
+				if game.ui_font.get_string_size(line, HORIZONTAL_ALIGNMENT_LEFT, -1.0, int(limit["size"])).x > float(limit["width"]):
+					overflowing.append(String(key))
+		_expect(overflowing.is_empty(), _listed("%s text fits every panel" % locale, overflowing))
+
+	var chips_fit := true
+	for language in game.LANGUAGES:
+		var chip_width: float = game.ui_font.get_string_size(String(language["label"]), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 26).x
+		chips_fit = chips_fit and chip_width <= game.LANGUAGE_RECT.size.x - 76.0
+	_expect(chips_fit, "every language name fits the language pill")
+	_expect(game.ui_font.get_string_size("日本語", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 26).x > 0.0, "japanese and chinese letters have glyphs to draw")
+
+	game.language_index = 0
+	game._apply_language()
+	_expect(game._handle_ui_press(game.LANGUAGE_RECT.get_center()), "the language pill answers a tap")
+	_expect(game.language_index == 1, "tapping the pill moves to the next language")
+	_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), String(game.LANGUAGES[1]["locale"])) > 0, "the pill changes the live language")
+
+	game.language_index = saved_language
+	game._apply_language()
+	game._save_progress()
+
+
+func _listed(label: String, offenders: PackedStringArray) -> String:
+	if offenders.is_empty():
+		return label
+	return "%s (%s)" % [label, ", ".join(offenders)]
 
 
 func _expect(condition: bool, label: String) -> void:
