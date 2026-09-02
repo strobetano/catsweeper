@@ -53,10 +53,21 @@ func _run_gameplay_checks(game: Node) -> void:
 
 
 	var mark_step_cell: int = int(game.TUTORIAL_STEPS[0]["cell"])
+	var first_cause_cell: int = int(game.TUTORIAL_STEPS[0]["cause"])
 	_expect(game.tutorial_step == 0, "first room starts the guided tutorial")
+	_expect(game.rules_card, "room 1 opens on the three rules")
+	game._process(game.tutorial_reason_duration + 0.01)
+	_expect(game.tutorial_reason_time > 0.0, "the first reason waits behind the rules card")
+	_expect(game._handle_ui_press(game.BOARD_RECT.get_center()), "a tap answers the rules card")
+	_expect(not game.rules_card, "the rules card steps aside after a tap")
 	_expect(game._tutorial_target_cell() == mark_step_cell, "tutorial first highlights its mark seat")
-	_expect(game.given_cells.has(game.TUTORIAL_GIVEN_CELL), "tutorial reuses the locked opening cat")
-	_expect(game._shares_rule(mark_step_cell, game.TUTORIAL_GIVEN_CELL), "tutorial mark seat is visibly impossible")
+	_expect(game.given_cells.has(first_cause_cell), "tutorial reuses the locked opening cat")
+	_expect(game._shares_rule(mark_step_cell, first_cause_cell), "tutorial mark seat is visibly impossible")
+	var causes_are_cats := true
+	for step in game.TUTORIAL_STEPS:
+		var cause_cell: int = int(step["cause"])
+		causes_are_cats = causes_are_cats and (cause_cell == first_cause_cell or int(game.puzzle["solution"][cause_cell / game.grid_size]) == cause_cell % game.grid_size)
+	_expect(causes_are_cats, "every step blames a cat that is really seated by then")
 	var guided_seats := 0
 	var tutorial_seats_valid := true
 	for step in game.TUTORIAL_STEPS:
@@ -73,10 +84,14 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(step_pictures.size() == game.TUTORIAL_STEPS.size(), "every tutorial step shows its own picture")
 
 	game.intro_time = game.board_intro_duration
+	_expect(game.tutorial_reason_time > 0.0 and game.pulse_cell == first_cause_cell, "a step opens by pulsing the cat that explains it")
+	game._process(game.tutorial_reason_duration + 0.01)
+	_expect(game.tutorial_reason_time == 0.0, "the reason then gives way to the tap to make")
 	game._begin_pointer(game._cell_center(mark_step_cell), false)
 	_expect(game.pending_cell == mark_step_cell and game.cell_states[mark_step_cell] == game.CellState.EMPTY, "tutorial single tap waits for double-tap window")
 	game._process(game.double_tap_window + 0.01)
 	_expect(game.cell_states[mark_step_cell] == game.CellState.MARKED and game.tutorial_step == 1, "tutorial single tap marks and advances")
+	_expect(game.tutorial_reason_time > 0.0 and game.pulse_cell == int(game.TUTORIAL_STEPS[1]["cause"]), "the next step explains itself too")
 
 	for index in range(1, game.TUTORIAL_STEPS.size()):
 		var seat_cell: int = int(game.TUTORIAL_STEPS[index]["cell"])
@@ -108,8 +123,9 @@ func _run_gameplay_checks(game: Node) -> void:
 	game._start_level(0)
 	game._paint_mark(mark_step_cell)
 	_expect(game.tutorial_step == 1, "drag marking also advances the tutorial")
+	game.tutorial_reason_time = 0.0
 	game._use_hint()
-	_expect(game.hint_cell == -1 and game.pulse_cell == game._tutorial_target_cell(), "a hint during the tutorial repeats its step")
+	_expect(game.hint_cell == -1 and game.tutorial_reason_time > 0.0 and game.pulse_cell == int(game.TUTORIAL_STEPS[game.tutorial_step]["cause"]), "a hint during the tutorial replays the reason")
 	game._start_level(0)
 
 	game.intro_time = 0.0
@@ -209,6 +225,7 @@ func _run_gameplay_checks(game: Node) -> void:
 	game.game_mode = game.GameMode.WON
 	game.win_time = 0.55
 	game.unlocked_level = final_level
+	game.rules_card = false
 	var modal_point: Vector2 = game.MODAL_BUTTON_RECT.position + game.MODAL_BUTTON_RECT.size * 0.5
 	game._handle_ui_press(modal_point)
 	_expect(game.level_index == 0 and game.unlocked_level == 0, "play again resets saved progression")
@@ -227,13 +244,18 @@ const TEXT_LIMITS: Array[Dictionary] = [
 	{"width": 460.0, "size": 26, "keys": ["DIFFICULTY_5", "DIFFICULTY_6", "DIFFICULTY_7"]},
 	{"width": 720.0, "size": 30, "keys": [
 		"FOOTER_HOWTO", "TOAST_ALL_SEATED", "TOAST_NOTHING_TO_UNDO", "TOAST_UNDONE",
-		"TOAST_TUTORIAL_DONE", "TOAST_ALL_PLACED", "HINT_SEAT_HERE",
-		"REASON_TOUCH", "REASON_ROW", "REASON_COLUMN", "REASON_COLOR"
+		"TOAST_TUTORIAL_DONE", "TOAST_ALL_PLACED",
+		"REASON_ROW", "REASON_COLUMN", "REASON_COLOR"
 	]},
 	{"width": 420.0, "size": 28, "keys": ["MOVE_GLOWING_CAT"]},
 	{"width": 564.0, "size": 28, "keys": [
-		"TUTORIAL_MARK", "TUTORIAL_FIRST_CAT", "TUTORIAL_ROW", "TUTORIAL_COLUMN", "TUTORIAL_COLOR"
+		"TUTORIAL_MARK", "TUTORIAL_FIRST_CAT", "HINT_SEAT_HERE",
+		"TUTORIAL_WHY_TOUCH", "TUTORIAL_WHY_BLOCKED", "TUTORIAL_WHY_ROW",
+		"TUTORIAL_WHY_COLUMN", "TUTORIAL_WHY_COLOR"
 	]},
+	{"width": 550.0, "size": 28, "keys": ["RULES_COLOR", "RULES_LINE", "REASON_TOUCH"]},
+	{"width": 640.0, "size": 42, "keys": ["RULES_TITLE"]},
+	{"width": 640.0, "size": 30, "keys": ["RULES_START"]},
 	{"width": 385.0, "size": 42, "keys": ["FEEDBACK_SO_CLOSE"]},
 	{"width": 600.0, "size": 46, "keys": ["WIN_TITLE"]},
 	{"width": 580.0, "size": 28, "keys": ["WIN_TIME"]},
@@ -279,6 +301,7 @@ func _run_language_checks(game: Node) -> void:
 
 	game.language_index = 0
 	game._apply_language()
+	game.rules_card = false
 	_expect(game._handle_ui_press(game.LANGUAGE_RECT.get_center()), "the language pill answers a tap")
 	_expect(game.language_index == 1, "tapping the pill moves to the next language")
 	_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), String(game.LANGUAGES[1]["locale"])) > 0, "the pill changes the live language")

@@ -35,15 +35,15 @@ const MODAL_BUTTON_RECT := Rect2(210.0, 930.0, 480.0, 102.0)
 const DIFFICULTY_RECT := Rect2(75.0, 1315.0, 480.0, 54.0)
 const LANGUAGE_RECT := Rect2(571.0, 1315.0, 254.0, 54.0)
 const SAVE_PATH := "user://catsweeper.cfg"
-const TUTORIAL_GIVEN_CELL := 0
 
-## Every guided step of room 1, each one said in words and shown as a picture.
+## Every guided step of room 1. "cause" is the seated cat that explains the step:
+## it is pulsed while the reason is on screen, then the step asks for the tap.
 const TUTORIAL_STEPS: Array[Dictionary] = [
-	{"cell": 1, "place_cat": false, "message_key": "TUTORIAL_MARK", "icon": "mark"},
-	{"cell": 7, "place_cat": true, "message_key": "TUTORIAL_FIRST_CAT", "icon": "cat"},
-	{"cell": 14, "place_cat": true, "message_key": "TUTORIAL_ROW", "icon": "row"},
-	{"cell": 16, "place_cat": true, "message_key": "TUTORIAL_COLUMN", "icon": "column"},
-	{"cell": 23, "place_cat": true, "message_key": "TUTORIAL_COLOR", "icon": "color"}
+	{"cell": 1, "cause": 0, "place_cat": false, "reason_key": "TUTORIAL_WHY_TOUCH", "message_key": "TUTORIAL_MARK", "icon": "mark"},
+	{"cell": 7, "cause": 0, "place_cat": true, "reason_key": "TUTORIAL_WHY_BLOCKED", "message_key": "TUTORIAL_FIRST_CAT", "icon": "cat"},
+	{"cell": 14, "cause": 7, "place_cat": true, "reason_key": "TUTORIAL_WHY_ROW", "message_key": "HINT_SEAT_HERE", "icon": "row"},
+	{"cell": 16, "cause": 14, "place_cat": true, "reason_key": "TUTORIAL_WHY_COLUMN", "message_key": "HINT_SEAT_HERE", "icon": "column"},
+	{"cell": 23, "cause": 16, "place_cat": true, "reason_key": "TUTORIAL_WHY_COLOR", "message_key": "HINT_SEAT_HERE", "icon": "color"}
 ]
 
 ## Every language the pill cycles through, each written in its own script.
@@ -84,6 +84,8 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(0.18, 0.55, 0.01) var ui_fade_duration := 0.38
 @export_range(0.4, 3.0, 0.05) var tutorial_pulse_speed := 1.35
 @export_range(1.0, 4.0, 0.1) var tutorial_success_duration := 2.6
+@export_range(1.0, 5.0, 0.1) var tutorial_reason_duration := 2.6
+@export_range(0.18, 0.90, 0.01) var rules_card_intro_duration := 0.42
 @export_range(1.0, 6.0, 0.1) var hint_highlight_duration := 3.2
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
@@ -138,6 +140,9 @@ var cell_states: Array[int] = []
 var given_cells: Dictionary = {}
 var game_mode := GameMode.PLAYING
 var tutorial_step := -1
+var tutorial_reason_time := 0.0
+var rules_card := false
+var rules_card_time := 0.0
 var hint_cell := -1
 var hint_time := 0.0
 var history: Array[Dictionary] = []
@@ -283,13 +288,16 @@ func _start_level(index: int) -> void:
 	mark_pops.clear()
 	particles.clear()
 	tutorial_step = 0 if level_index == 0 else -1
+	tutorial_reason_time = 0.0
+	rules_card = false
+	rules_card_time = 0.0
 	hint_cell = -1
 	hint_time = 0.0
 	toast_text = ""
 	toast_time = 0.0
 	if tutorial_step == 0:
-		pulse_cell = TUTORIAL_GIVEN_CELL
-		pulse_time = rule_pulse_duration
+		rules_card = true
+		_begin_tutorial_step()
 	queue_redraw()
 
 
@@ -324,6 +332,10 @@ func _process(delta: float) -> void:
 	full_board_feedback_time = maxf(0.0, full_board_feedback_time - delta)
 	toast_time = maxf(0.0, toast_time - delta)
 	hint_time = maxf(0.0, hint_time - delta)
+	if rules_card:
+		rules_card_time += delta
+	else:
+		tutorial_reason_time = maxf(0.0, tutorial_reason_time - delta)
 
 	for key in cat_pops.keys():
 		cat_pops[key] = float(cat_pops[key]) + delta
@@ -379,7 +391,7 @@ func _gui_input(event: InputEvent) -> void:
 			accept_event()
 		elif event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 			var cell := _cell_at(pointer_base)
-			if cell >= 0 and game_mode == GameMode.PLAYING:
+			if cell >= 0 and game_mode == GameMode.PLAYING and not rules_card:
 				pending_cell = -1
 				_try_place_cat(cell)
 			accept_event()
@@ -418,6 +430,9 @@ func _finish_pointer() -> void:
 
 
 func _handle_ui_press(base_position: Vector2) -> bool:
+	if rules_card:
+		rules_card = false
+		return true
 	if game_mode == GameMode.WON:
 		if win_time >= 0.55 and MODAL_BUTTON_RECT.has_point(base_position):
 			if level_index >= PuzzleBook.LEVELS.size() - 1:
@@ -583,7 +598,13 @@ func _update_tutorial_progress() -> void:
 		toast_text = tr("TOAST_TUTORIAL_DONE")
 		toast_time = tutorial_success_duration
 		return
-	pulse_cell = int(TUTORIAL_STEPS[tutorial_step]["cell"])
+	_begin_tutorial_step()
+
+
+## Shows why this seat is the one, by pulsing the cat that rules out its neighbours.
+func _begin_tutorial_step() -> void:
+	tutorial_reason_time = tutorial_reason_duration
+	pulse_cell = int(TUTORIAL_STEPS[tutorial_step]["cause"])
 	pulse_time = rule_pulse_duration
 
 
@@ -618,10 +639,8 @@ func _highlight_accent() -> Color:
 func _use_hint() -> void:
 	if game_mode != GameMode.PLAYING:
 		return
-	var tutorial_cell := _tutorial_target_cell()
-	if tutorial_cell >= 0:
-		pulse_cell = tutorial_cell
-		pulse_time = rule_pulse_duration
+	if _tutorial_target_cell() >= 0:
+		_begin_tutorial_step()
 		_play_sound(mark_player, 1.12)
 		return
 	var misplaced := _wrong_cat_cell()
@@ -819,6 +838,8 @@ func _draw() -> void:
 		_draw_full_board_feedback()
 	if game_mode == GameMode.WON:
 		_draw_win_overlay()
+	if rules_card:
+		_draw_rules_card()
 	_draw_particles()
 	draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
@@ -1091,7 +1112,8 @@ func _draw_tutorial_prompt() -> void:
 	_draw_panel(badge_rect, accent, 20.0, _with_alpha(INK, 0.16), 3.0)
 	_draw_text_center(step_label, badge_rect, 26, INK)
 	_draw_tutorial_icon(String(step["icon"]), Vector2(prompt_rect.position.x + 140.0, prompt_rect.get_center().y))
-	_draw_text_center(tr(String(step["message_key"])), Rect2(prompt_rect.position.x + 172.0, prompt_rect.position.y, 564.0, prompt_rect.size.y), 28, INK)
+	var line_key := "reason_key" if tutorial_reason_time > 0.0 else "message_key"
+	_draw_text_center(tr(String(step[line_key])), Rect2(prompt_rect.position.x + 172.0, prompt_rect.position.y, 564.0, prompt_rect.size.y), 28, INK)
 
 
 ## Shows the step as a picture: the mark it leaves, the cat it seats, or the rule it teaches.
@@ -1174,6 +1196,33 @@ func _draw_full_board_feedback() -> void:
 	_draw_cat(mascot_center, 50.0, 1.0, CatPose.WORRIED, alpha)
 	_draw_text_center(tr("FEEDBACK_SO_CLOSE"), Rect2(card.position + Vector2(165.0, 30.0), Vector2(385.0, 64.0)), 42, _with_alpha(INK, alpha))
 	_draw_text_center(tr("MOVE_GLOWING_CAT"), Rect2(card.position + Vector2(150.0, 101.0), Vector2(420.0, 56.0)), 28, _with_alpha(CORAL.darkened(0.20), alpha))
+	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
+
+
+## Names the three rules once, before the guided room starts.
+func _draw_rules_card() -> void:
+	var progress := clampf(rules_card_time / maxf(rules_card_intro_duration, 0.001), 0.0, 1.0)
+	var alpha := _smooth_fade(progress)
+	var card_scale := lerpf(0.90, 1.0, _cartoon_settle(progress))
+	draw_rect(Rect2(Vector2.ZERO, BASE_SIZE), Color(0.015, 0.035, 0.09, 0.62 * alpha))
+	var card := Rect2(90.0, 380.0, 720.0, 640.0)
+	var pivot := card.get_center()
+	draw_set_transform(
+		canvas_offset + pivot * canvas_scale * (1.0 - card_scale),
+		0.0,
+		Vector2.ONE * canvas_scale * card_scale
+	)
+	_rounded_rect(Rect2(card.position + Vector2(0.0, 14.0), card.size), Color(0.0, 0.0, 0.0, 0.24 * alpha), 50.0)
+	_draw_panel(card, _with_alpha(CREAM, alpha), 50.0, _with_alpha(MINT, 0.78 * alpha), 6.0)
+	_draw_cat(Vector2(450.0, 462.0), 40.0, 1.0, CatPose.IDLE, alpha)
+	_draw_text_center(tr("RULES_TITLE"), Rect2(130.0, 520.0, 640.0, 60.0), 42, _with_alpha(INK, alpha))
+	_draw_color_icon(Vector2(166.0, 630.0))
+	_draw_text_left(tr("RULES_COLOR"), Vector2(212.0, 640.0), 28, _with_alpha(INK_SOFT, alpha))
+	_draw_line_icon(Vector2(166.0, 730.0))
+	_draw_text_left(tr("RULES_LINE"), Vector2(212.0, 740.0), 28, _with_alpha(INK_SOFT, alpha))
+	_draw_space_icon(Vector2(166.0, 830.0))
+	_draw_text_left(tr("REASON_TOUCH"), Vector2(212.0, 840.0), 28, _with_alpha(INK_SOFT, alpha))
+	_draw_text_center(tr("RULES_START"), Rect2(130.0, 890.0, 640.0, 56.0), 30, _with_alpha(CORAL.darkened(0.18), alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
 
