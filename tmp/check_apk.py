@@ -54,18 +54,28 @@ def name(i):
     return strings[i] if 0 <= i < len(strings) else '#%d' % i
 
 
-providers = []
-for ctype, off, hsize in chunks:
+def element(off, hsize):
+    """Return (tag, {attr: value}) for a start-element chunk."""
     p = off + hsize
-    if ctype != 0x0102 or name(u32(p + 4)) != 'provider':
-        continue
     attrs = {}
     astart, asize, acount = u16(p + 8), u16(p + 10), u16(p + 12)
     for i in range(acount):
         a = p + astart + i * asize
-        if data[a + 15] == 0x03:
-            attrs[name(u32(a + 4))] = name(u32(a + 16))
-    providers.append(attrs)
+        raw = u32(a + 16)
+        attrs[name(u32(a + 4))] = name(raw) if data[a + 15] == 0x03 else raw
+    return name(u32(p + 4)), attrs
+
+
+providers = []
+for ctype, off, hsize in chunks:
+    if ctype != 0x0102:
+        continue
+    tag, attrs = element(off, hsize)
+    if tag == 'provider':
+        providers.append(attrs)
+    elif tag in ('manifest', 'uses-sdk'):
+        print('%-14s %s' % (tag, ' '.join('%s=%s' % kv for kv in attrs.items())))
+print()
 
 seen = {}
 clash = False
