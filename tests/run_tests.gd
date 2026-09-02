@@ -331,7 +331,6 @@ func _run_language_checks(game: Node) -> void:
 		var chip_width: float = game.ui_font.get_string_size(String(language["label"]), HORIZONTAL_ALIGNMENT_LEFT, -1.0, 26).x
 		chips_fit = chips_fit and chip_width <= game.LANGUAGE_RECT.size.x - 76.0
 	_expect(chips_fit, "every language name fits the language pill")
-	_expect(game.ui_font.get_string_size("日本語", HORIZONTAL_ALIGNMENT_LEFT, -1.0, 26).x > 0.0, "japanese and chinese letters have glyphs to draw")
 
 	game.language_index = 0
 	game._apply_language()
