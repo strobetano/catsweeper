@@ -87,6 +87,7 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(1.0, 5.0, 0.1) var tutorial_reason_duration := 2.6
 @export_range(0.18, 0.90, 0.01) var rules_card_intro_duration := 0.42
 @export_range(1.0, 6.0, 0.1) var hint_highlight_duration := 3.2
+@export_range(1.0, 5.0, 0.1) var clash_highlight_duration := 2.4
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
 @export_range(0.6, 2.0, 0.05) var celebration_duration := 1.30
 @export_range(0.9, 2.0, 0.05) var full_board_feedback_duration := 1.35
@@ -166,6 +167,9 @@ var pulse_cell := -1
 var pulse_time := 0.0
 var error_cell := -1
 var error_time := 0.0
+var clash_cell := -1
+var clash_kind := ""
+var clash_time := 0.0
 var shake_time := 0.0
 var full_board_feedback_time := 0.0
 var win_time := 0.0
@@ -281,6 +285,7 @@ func _start_level(index: int) -> void:
 	pulse_time = 0.0
 	error_cell = -1
 	error_time = 0.0
+	clash_time = 0.0
 	shake_time = 0.0
 	full_board_feedback_time = 0.0
 	win_time = 0.0
@@ -329,6 +334,7 @@ func _process(delta: float) -> void:
 	pulse_time = maxf(0.0, pulse_time - delta)
 	error_time = maxf(0.0, error_time - delta)
 	shake_time = maxf(0.0, shake_time - delta)
+	clash_time = maxf(0.0, clash_time - delta)
 	full_board_feedback_time = maxf(0.0, full_board_feedback_time - delta)
 	toast_time = maxf(0.0, toast_time - delta)
 	hint_time = maxf(0.0, hint_time - delta)
@@ -496,11 +502,7 @@ func _toggle_mark(cell: int) -> void:
 	_push_history_change(cell, old_state)
 	cell_states[cell] = new_state
 	if old_state == CellState.CAT:
-		error_cell = -1
-		error_time = 0.0
-		shake_time = 0.0
-		full_board_feedback_time = 0.0
-		toast_time = 0.0
+		_clear_error_feedback()
 	if new_state == CellState.MARKED:
 		mark_pops[cell] = 0.0
 		_play_sound(mark_player, randf_range(0.96, 1.06))
@@ -529,11 +531,7 @@ func _try_place_cat(cell: int) -> void:
 	if cell_states[cell] == CellState.CAT:
 		_push_history_change(cell, CellState.CAT)
 		cell_states[cell] = CellState.EMPTY
-		error_cell = -1
-		error_time = 0.0
-		shake_time = 0.0
-		full_board_feedback_time = 0.0
-		toast_time = 0.0
+		_clear_error_feedback()
 		_play_sound(mark_player, 0.84)
 		return
 
@@ -559,6 +557,10 @@ func _try_place_cat(cell: int) -> void:
 	_update_tutorial_progress()
 	if _cat_count() == grid_size:
 		_validate_full_layout(cell)
+		return
+	var clash := _find_clash(cell)
+	if not clash.is_empty():
+		_show_clash(cell, clash)
 
 
 func _validate_full_layout(preferred_cell: int) -> void:
@@ -569,19 +571,36 @@ func _validate_full_layout(preferred_cell: int) -> void:
 		if cell_states[cell] == CellState.CAT and cell != preferred_cell and not given_cells.has(cell):
 			cells_to_check.append(cell)
 	for cell in cells_to_check:
-		var reason := _wrong_reason(cell)
-		if reason.is_empty():
+		var clash := _find_clash(cell)
+		if clash.is_empty():
 			continue
-		error_cell = cell
-		error_time = shake_duration
-		shake_time = shake_duration
+		_show_clash(cell, clash)
 		full_board_feedback_time = full_board_feedback_duration
-		toast_text = reason
-		toast_time = 2.4
 		_spawn_error_sparks(_cell_center(cell), true)
-		_play_sound(error_player, randf_range(0.92, 1.02))
 		return
 	_complete_level()
+
+
+## Lights up the two cats that break a rule and the line or patch they share.
+func _show_clash(cell: int, clash: Dictionary) -> void:
+	error_cell = cell
+	error_time = shake_duration
+	shake_time = shake_duration
+	clash_cell = int(clash["cell"])
+	clash_kind = String(clash["kind"])
+	clash_time = clash_highlight_duration
+	toast_text = tr(String(clash["reason_key"]))
+	toast_time = clash_highlight_duration
+	_play_sound(error_player, randf_range(0.92, 1.02))
+
+
+func _clear_error_feedback() -> void:
+	error_cell = -1
+	error_time = 0.0
+	clash_time = 0.0
+	shake_time = 0.0
+	full_board_feedback_time = 0.0
+	toast_time = 0.0
 
 
 func _update_tutorial_progress() -> void:
@@ -684,7 +703,8 @@ func _correction_glow_strength(cell: int) -> float:
 	return 0.72 + wave * 0.28
 
 
-func _wrong_reason(cell: int) -> String:
+## The first cat this one breaks a rule with, and which rule that is.
+func _find_clash(cell: int) -> Dictionary:
 	var row := cell / grid_size
 	var column := cell % grid_size
 	var region := int(puzzle["regions"][cell])
@@ -694,14 +714,33 @@ func _wrong_reason(cell: int) -> String:
 		var other_row := other / grid_size
 		var other_column := other % grid_size
 		if abs(other_row - row) <= 1 and abs(other_column - column) <= 1:
-			return tr("REASON_TOUCH")
+			return {"cell": other, "kind": "touch", "reason_key": "REASON_TOUCH"}
 		if other_row == row:
-			return tr("REASON_ROW")
+			return {"cell": other, "kind": "row", "reason_key": "REASON_ROW"}
 		if other_column == column:
-			return tr("REASON_COLUMN")
+			return {"cell": other, "kind": "column", "reason_key": "REASON_COLUMN"}
 		if int(puzzle["regions"][other]) == region:
-			return tr("REASON_COLOR")
-	return ""
+			return {"cell": other, "kind": "color", "reason_key": "REASON_COLOR"}
+	return {}
+
+
+## True for every seat that shows why the clash happened: the shared line,
+## the shared color patch, or the seats around a cat nobody may touch.
+func _in_clash_group(cell: int) -> bool:
+	if clash_time <= 0.0 or error_cell < 0 or clash_cell < 0:
+		return false
+	var row := cell / grid_size
+	var column := cell % grid_size
+	var error_row := error_cell / grid_size
+	var error_column := error_cell % grid_size
+	match clash_kind:
+		"row":
+			return row == error_row
+		"column":
+			return column == error_column
+		"color":
+			return int(puzzle["regions"][cell]) == int(puzzle["regions"][error_cell])
+	return abs(row - error_row) <= 1 and abs(column - error_column) <= 1
 
 
 func _push_history_change(cell: int, old_state: int) -> void:
@@ -716,10 +755,7 @@ func _undo() -> void:
 	var action: Dictionary = history.pop_back()
 	for change in action["changes"]:
 		cell_states[int(change["cell"])] = int(change["state"])
-	error_cell = -1
-	error_time = 0.0
-	shake_time = 0.0
-	full_board_feedback_time = 0.0
+	_clear_error_feedback()
 	toast_text = tr("TOAST_UNDONE")
 	toast_time = 1.25
 	_play_sound(mark_player, 0.78)
@@ -937,6 +973,7 @@ func _draw_board() -> void:
 	var gap := 9.0 if grid_size <= 6 else 8.0
 	var tile_radius := minf(24.0, slot * 0.22)
 	var guide_cell := _highlight_cell()
+	var clash_wave := 0.5 + 0.5 * sin(animation_clock * correction_glow_speed * TAU)
 	for cell in range(cell_states.size()):
 		var row := cell / grid_size
 		var column := cell % grid_size
@@ -950,6 +987,8 @@ func _draw_board() -> void:
 		var correction_glow := _correction_glow_strength(cell)
 		if cell == hover_cell and game_mode == GameMode.PLAYING:
 			tile_color = tile_color.lightened(0.075)
+		if _in_clash_group(cell):
+			tile_color = tile_color.lerp(CORAL, 0.22 + clash_wave * 0.14)
 		if cell == error_cell and error_time > 0.0:
 			var error_phase := 1.0 - error_time / maxf(shake_duration, 0.001)
 			error_envelope = _smooth_pulse(error_phase)
@@ -963,6 +1002,11 @@ func _draw_board() -> void:
 			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL, 0.92 * error_envelope), 6.0)
 		if correction_glow > 0.0:
 			_draw_panel(tile_rect.grow(-1.0), tile_color, tile_radius - 1.0, _with_alpha(GOLD, 0.70 + correction_glow * 0.24), 6.0)
+
+		if clash_time > 0.0 and (cell == error_cell or cell == clash_cell):
+			draw_arc(tile_rect.get_center(), slot * 0.39, 0.0, TAU, 48, _with_alpha(CORAL, 0.60 + clash_wave * 0.28), 6.0, true)
+		elif _in_clash_group(cell):
+			_draw_panel(tile_rect.grow(-2.0), tile_color, tile_radius - 2.0, _with_alpha(CORAL.darkened(0.12), 0.60 + clash_wave * 0.30), 5.0)
 
 		if cell == guide_cell:
 			var guide_wave := 0.5 + 0.5 * sin(animation_clock * tutorial_pulse_speed * TAU)

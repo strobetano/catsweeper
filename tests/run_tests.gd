@@ -120,6 +120,22 @@ func _run_gameplay_checks(game: Node) -> void:
 	game._process(game.hint_highlight_duration + 0.01)
 	_expect(game.hint_time == 0.0 and game._highlight_cell() == -1, "the hint glow fades on its own")
 
+	game._start_level(1)
+	game._try_place_cat(2)
+	_expect(game.clash_time == 0.0 and game.error_cell == -1, "a cat that breaks nothing is left alone")
+	game._try_place_cat(17)
+	_expect(game.error_cell == 17 and game.clash_cell == 2, "a clashing cat is shown next to the cat it clashes with")
+	_expect(game.clash_kind == "column" and not game.toast_text.is_empty(), "the clash names the rule that broke")
+	var clash_column_lit := true
+	for row in range(game.grid_size):
+		clash_column_lit = clash_column_lit and game._in_clash_group(row * game.grid_size + 2)
+	_expect(clash_column_lit, "the whole clashing column lights up")
+	_expect(not game._in_clash_group(3), "seats outside the clash stay calm")
+	game._process(game.clash_highlight_duration + 0.01)
+	_expect(not game._in_clash_group(2), "the clash highlight fades on its own")
+	game._try_place_cat(17)
+	_expect(game.error_cell == -1 and game.clash_time == 0.0, "moving the clashing cat clears the mistake")
+
 	game._start_level(0)
 	game._paint_mark(mark_step_cell)
 	_expect(game.tutorial_step == 1, "drag marking also advances the tutorial")
