@@ -86,6 +86,7 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(1.0, 4.0, 0.1) var tutorial_success_duration := 2.6
 @export_range(1.0, 5.0, 0.1) var tutorial_reason_duration := 2.6
 @export_range(0.18, 0.90, 0.01) var rules_card_intro_duration := 0.42
+@export_range(1, 5, 1) var hints_per_room := 3
 @export_range(1.0, 6.0, 0.1) var hint_highlight_duration := 3.2
 @export_range(1.0, 5.0, 0.1) var clash_highlight_duration := 2.4
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
@@ -146,6 +147,7 @@ var rules_card := false
 var rules_card_time := 0.0
 var hint_cell := -1
 var hint_time := 0.0
+var hints_left := 0
 var history: Array[Dictionary] = []
 var elapsed_time := 0.0
 
@@ -298,6 +300,7 @@ func _start_level(index: int) -> void:
 	rules_card_time = 0.0
 	hint_cell = -1
 	hint_time = 0.0
+	hints_left = hints_per_room
 	toast_text = ""
 	toast_time = 0.0
 	if tutorial_step == 0:
@@ -662,12 +665,17 @@ func _use_hint() -> void:
 		_begin_tutorial_step()
 		_play_sound(mark_player, 1.12)
 		return
+	if hints_left <= 0:
+		toast_text = tr("TOAST_NO_HINTS_LEFT")
+		toast_time = 1.4
+		return
 	var misplaced := _wrong_cat_cell()
 	var cell := misplaced if misplaced >= 0 else _next_solution_cell()
 	if cell < 0:
 		toast_text = tr("TOAST_ALL_PLACED")
 		toast_time = 1.4
 		return
+	hints_left -= 1
 	hint_cell = cell
 	hint_time = hint_highlight_duration
 	pulse_cell = cell
@@ -1130,7 +1138,7 @@ func _draw_footer() -> void:
 			_draw_text_center(toast_text, instruction_rect, 30, _with_alpha(INK, toast_alpha))
 
 	_draw_button(UNDO_RECT, tr("BUTTON_UNDO"), "undo", not history.is_empty())
-	_draw_button(HINT_RECT, tr("BUTTON_HINT"), "hint", game_mode == GameMode.PLAYING)
+	_draw_button(HINT_RECT, tr("BUTTON_HINT"), "hint", game_mode == GameMode.PLAYING and hints_left > 0)
 	_draw_button(RESTART_RECT, tr("BUTTON_RESTART"), "restart", true)
 	_draw_panel(DIFFICULTY_RECT, _with_alpha(INK, 0.48), 27.0, _with_alpha(CREAM, 0.22), 3.0)
 	_draw_text_center(_difficulty_label(), DIFFICULTY_RECT, 26, _with_alpha(CREAM, 0.92))

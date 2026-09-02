@@ -121,6 +121,15 @@ func _run_gameplay_checks(game: Node) -> void:
 	_expect(game.hint_time == 0.0 and game._highlight_cell() == -1, "the hint glow fades on its own")
 
 	game._start_level(1)
+	_expect(game.hints_left == game.hints_per_room, "a fresh room restocks the hints")
+	for spent in range(game.hints_per_room):
+		game._use_hint()
+	_expect(game.hints_left == 0, "a room only ever gives out its set number of hints")
+	game.hint_cell = -1
+	game._use_hint()
+	_expect(game.hint_cell == -1 and not game.toast_text.is_empty(), "a spent hint button says so instead of pointing")
+
+	game._start_level(1)
 	game._try_place_cat(2)
 	_expect(game.clash_time == 0.0 and game.error_cell == -1, "a cat that breaks nothing is left alone")
 	game._try_place_cat(17)
@@ -260,7 +269,7 @@ const TEXT_LIMITS: Array[Dictionary] = [
 	{"width": 460.0, "size": 26, "keys": ["DIFFICULTY_5", "DIFFICULTY_6", "DIFFICULTY_7"]},
 	{"width": 720.0, "size": 30, "keys": [
 		"FOOTER_HOWTO", "TOAST_ALL_SEATED", "TOAST_NOTHING_TO_UNDO", "TOAST_UNDONE",
-		"TOAST_TUTORIAL_DONE", "TOAST_ALL_PLACED",
+		"TOAST_TUTORIAL_DONE", "TOAST_ALL_PLACED", "TOAST_NO_HINTS_LEFT",
 		"REASON_ROW", "REASON_COLUMN", "REASON_COLOR"
 	]},
 	{"width": 420.0, "size": 28, "keys": ["MOVE_GLOWING_CAT"]},
