@@ -246,14 +246,23 @@ func _run_gameplay_checks(game: Node) -> void:
 		_expect(game._count_solutions(level) == 1, "puzzle pack remains uniquely solvable")
 
 	var final_level: int = game.PuzzleBook.LEVELS.size() - 1
-	game.level_index = final_level
+	game._start_level(final_level)
 	game.game_mode = game.GameMode.WON
 	game.win_time = 0.55
 	game.unlocked_level = final_level
 	game.rules_card = false
 	var modal_point: Vector2 = game.MODAL_BUTTON_RECT.position + game.MODAL_BUTTON_RECT.size * 0.5
 	game._handle_ui_press(modal_point)
-	_expect(game.level_index == 0 and game.unlocked_level == 0, "play again resets saved progression")
+	_expect(game.level_index == final_level + 1, "the rooms keep going past the handmade pack")
+	_expect(game.grid_size >= game.endless_min_size and game.grid_size <= game.endless_max_size, "a made-up room keeps to the chosen sizes")
+
+	var made_up: Array[int] = []
+	for room in range(game.PuzzleBook.LEVELS.size(), game.PuzzleBook.LEVELS.size() + 6):
+		var level: Dictionary = game._level_at(room)
+		_expect(game._count_solutions(level) == 1, "made-up room %d has exactly one solution" % (room + 1))
+		made_up.append(int(level["size"]))
+	_expect(made_up.min() != made_up.max(), "made-up rooms vary in difficulty")
+	_expect(game._level_at(99)["regions"] == game._level_at(99)["regions"], "the same room number always rebuilds the same room")
 
 	game.unlocked_level = saved_unlock
 	game._save_progress()
@@ -285,7 +294,7 @@ const TEXT_LIMITS: Array[Dictionary] = [
 	{"width": 600.0, "size": 46, "keys": ["WIN_TITLE"]},
 	{"width": 580.0, "size": 28, "keys": ["WIN_TIME"]},
 	{"width": 540.0, "size": 28, "keys": ["WIN_SUBTITLE"]},
-	{"width": 480.0, "size": 30, "keys": ["WIN_NEXT", "WIN_AGAIN"]}
+	{"width": 480.0, "size": 30, "keys": ["WIN_NEXT"]}
 ]
 
 

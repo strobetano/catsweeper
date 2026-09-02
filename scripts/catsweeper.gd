@@ -87,6 +87,8 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(1.0, 5.0, 0.1) var tutorial_reason_duration := 2.6
 @export_range(0.18, 0.90, 0.01) var rules_card_intro_duration := 0.42
 @export_range(1, 5, 1) var hints_per_room := 3
+@export_range(5, 7, 1) var endless_min_size := 5
+@export_range(5, 7, 1) var endless_max_size := 7
 @export_range(1.0, 6.0, 0.1) var hint_highlight_duration := 3.2
 @export_range(1.0, 5.0, 0.1) var clash_highlight_duration := 2.4
 @export_range(0.02, 0.12, 0.005) var celebration_stagger := 0.055
@@ -181,7 +183,6 @@ var cat_pops: Dictionary = {}
 var mark_pops: Dictionary = {}
 var particles: Array[Dictionary] = []
 
-var validation_solution_count := 0
 
 
 func _ready() -> void:
@@ -231,7 +232,7 @@ func _load_progress() -> void:
 	var save := ConfigFile.new()
 	language_index = _language_index(TranslationServer.get_locale())
 	if save.load(SAVE_PATH) == OK:
-		unlocked_level = clampi(int(save.get_value("progress", "unlocked_level", 0)), 0, PuzzleBook.LEVELS.size() - 1)
+		unlocked_level = maxi(int(save.get_value("progress", "unlocked_level", 0)), 0)
 		language_index = _language_index(String(save.get_value("progress", "language", "")))
 	_apply_language()
 
@@ -263,9 +264,17 @@ func _cycle_language() -> void:
 	_play_sound(mark_player, 1.06)
 
 
+## The handmade pack first, then rooms built on demand, so they never run out.
+func _level_at(index: int) -> Dictionary:
+	if index < PuzzleBook.LEVELS.size():
+		return PuzzleBook.LEVELS[index]
+	var span := maxi(endless_max_size - endless_min_size + 1, 1)
+	return PuzzleBook.generate(index, endless_min_size + (index - PuzzleBook.LEVELS.size()) % span)
+
+
 func _start_level(index: int) -> void:
-	level_index = clampi(index, 0, PuzzleBook.LEVELS.size() - 1)
-	puzzle = PuzzleBook.LEVELS[level_index]
+	level_index = maxi(index, 0)
+	puzzle = _level_at(level_index)
 	grid_size = int(puzzle["size"])
 	cell_states.clear()
 	cell_states.resize(grid_size * grid_size)
@@ -444,12 +453,7 @@ func _handle_ui_press(base_position: Vector2) -> bool:
 		return true
 	if game_mode == GameMode.WON:
 		if win_time >= 0.55 and MODAL_BUTTON_RECT.has_point(base_position):
-			if level_index >= PuzzleBook.LEVELS.size() - 1:
-				unlocked_level = 0
-				_save_progress()
-				_start_level(0)
-			else:
-				_start_level(level_index + 1)
+			_start_level(level_index + 1)
 			return true
 		return false
 	if UNDO_RECT.has_point(base_position):
@@ -774,7 +778,7 @@ func _complete_level() -> void:
 	win_time = 0.0
 	full_board_feedback_time = 0.0
 	pending_cell = -1
-	unlocked_level = maxi(unlocked_level, mini(level_index + 1, PuzzleBook.LEVELS.size() - 1))
+	unlocked_level = maxi(unlocked_level, level_index + 1)
 	_save_progress()
 	_spawn_win_confetti()
 	_play_sound(win_player, 1.0)
@@ -1311,7 +1315,7 @@ func _draw_win_overlay() -> void:
 	var button_fill := CORAL.lightened(0.04) if MODAL_BUTTON_RECT.has_point(pointer_base) else CORAL
 	_rounded_rect(Rect2(MODAL_BUTTON_RECT.position + Vector2(0.0, 8.0), MODAL_BUTTON_RECT.size), Color(0.28, 0.10, 0.08, 0.18 * alpha), 46.0)
 	_draw_panel(MODAL_BUTTON_RECT, _with_alpha(button_fill, alpha), 46.0, _with_alpha(CREAM, 0.48 * alpha), 5.0)
-	var button_text := tr("WIN_AGAIN") if level_index >= PuzzleBook.LEVELS.size() - 1 else tr("WIN_NEXT")
+	var button_text := tr("WIN_NEXT")
 	_draw_text_center(button_text, MODAL_BUTTON_RECT, 30, _with_alpha(INK, alpha))
 	draw_set_transform(canvas_offset, 0.0, Vector2.ONE * canvas_scale)
 
@@ -1600,36 +1604,4 @@ func _validate_puzzle_pack() -> void:
 
 
 func _count_solutions(level: Dictionary) -> int:
-	var n := int(level["size"])
-	var used_columns: Array[bool] = []
-	var used_regions: Array[bool] = []
-	var columns: Array[int] = []
-	used_columns.resize(n)
-	used_columns.fill(false)
-	used_regions.resize(n)
-	used_regions.fill(false)
-	columns.resize(n)
-	columns.fill(-1)
-	validation_solution_count = 0
-	_search_solution(0, n, level["regions"], used_columns, used_regions, columns)
-	return validation_solution_count
-
-
-func _search_solution(row: int, n: int, regions: Array, used_columns: Array[bool], used_regions: Array[bool], columns: Array[int]) -> void:
-	if validation_solution_count >= 2:
-		return
-	if row == n:
-		validation_solution_count += 1
-		return
-	for column in range(n):
-		var region := int(regions[row * n + column])
-		if used_columns[column] or used_regions[region]:
-			continue
-		if row > 0 and abs(column - columns[row - 1]) <= 1:
-			continue
-		used_columns[column] = true
-		used_regions[region] = true
-		columns[row] = column
-		_search_solution(row + 1, n, regions, used_columns, used_regions, columns)
-		used_columns[column] = false
-		used_regions[region] = false
+	return PuzzleBook.count_solutions(level)
