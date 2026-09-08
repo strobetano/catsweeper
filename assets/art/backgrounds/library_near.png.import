@@ -15,7 +15,7 @@ dest_files=["res://.godot/imported/library_near.png-1b70d96724be27dfdca8b82ab600
 
 [params]
 
-compress/mode=0
+compress/mode=1
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
