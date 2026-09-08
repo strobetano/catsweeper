@@ -50,7 +50,8 @@ const TUTORIAL_STEPS: Array[Dictionary] = [
 const LANGUAGES: Array[Dictionary] = [
 	{"locale": "en", "label": "ENGLISH"},
 	{"locale": "fr", "label": "FRANÇAIS"},
-	{"locale": "pt_BR", "label": "PORTUGUÊS"}
+	{"locale": "pt_BR", "label": "PORTUGUÊS"},
+	{"locale": "es", "label": "ESPAÑOL"}
 ]
 
 const INK := Color("#1D2942")

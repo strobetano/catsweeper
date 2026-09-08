@@ -35,7 +35,7 @@ enabled=PackedStringArray("res://addons/godot_vibe_os/plugin.cfg")
 
 [internationalization]
 
-locale/translations=PackedStringArray("res://assets/i18n/ui.en.translation", "res://assets/i18n/ui.fr.translation", "res://assets/i18n/ui.pt_BR.translation")
+locale/translations=PackedStringArray("res://assets/i18n/ui.en.translation", "res://assets/i18n/ui.fr.translation", "res://assets/i18n/ui.pt_BR.translation", "res://assets/i18n/ui.es.translation")
 
 [physics]
 

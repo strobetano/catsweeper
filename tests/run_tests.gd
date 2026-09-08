@@ -312,10 +312,15 @@ func _run_language_checks(game: Node) -> void:
 		game.language_index = game._language_index(locale)
 		game._apply_language()
 		_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), locale) > 0, "%s becomes the live language" % locale)
+		var translation: Translation = TranslationServer.get_translation_object(locale)
+		_expect(translation != null, "%s has a registered translation" % locale)
+		if translation == null:
+			continue
+		_expect(TranslationServer.compare_locales(translation.get_locale(), locale) > 0, "%s uses its own translation" % locale)
 		var untranslated := PackedStringArray()
 		for key in keys:
 			var line: String = game.tr(key)
-			if line.is_empty() or (locale != "en" and line == String(key)):
+			if translation.get_message(key).is_empty() or line != String(translation.get_message(key)) or line == String(key):
 				untranslated.append(String(key))
 		_expect(untranslated.is_empty(), _listed("%s translates every line" % locale, untranslated))
 		var overflowing := PackedStringArray()
@@ -335,9 +340,23 @@ func _run_language_checks(game: Node) -> void:
 	game.language_index = 0
 	game._apply_language()
 	game.rules_card = false
-	_expect(game._handle_ui_press(game.LANGUAGE_RECT.get_center()), "the language pill answers a tap")
-	_expect(game.language_index == 1, "tapping the pill moves to the next language")
-	_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), String(game.LANGUAGES[1]["locale"])) > 0, "the pill changes the live language")
+	for step in range(1, game.LANGUAGES.size() + 1):
+		var expected_index: int = step % game.LANGUAGES.size()
+		var expected_locale: String = String(game.LANGUAGES[expected_index]["locale"])
+		_expect(game._handle_ui_press(game.LANGUAGE_RECT.get_center()), "the language pill answers tap %d" % step)
+		_expect(game.language_index == expected_index, "the pill cycles to %s" % expected_locale)
+		_expect(TranslationServer.compare_locales(TranslationServer.get_locale(), expected_locale) > 0, "the pill displays %s" % expected_locale)
+
+	var spanish_index: int = game._language_index("es")
+	_expect(String(game.LANGUAGES[spanish_index]["locale"]) == "es", "Spanish is available in the language pill")
+	_expect(game._language_index("es_ES") == spanish_index and game._language_index("es_MX") == spanish_index, "Spanish regional locales select Spanish")
+	game.language_index = spanish_index
+	game._apply_language()
+	game._save_progress()
+	game.language_index = 0
+	game._apply_language()
+	game._load_progress()
+	_expect(game.language_index == spanish_index and game.tr("BUTTON_HINT") == "PISTA", "the saved Spanish choice restores Spanish text")
 
 	game.language_index = saved_language
 	game._apply_language()
