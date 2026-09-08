@@ -112,6 +112,8 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(0.0, 36.0, 1.0) var wallpaper_parallax_strength := 18.0
 @export_range(1.0, 12.0, 0.25) var wallpaper_follow_speed := 5.0
 @export_range(0.0, 12.0, 0.5) var wallpaper_idle_sway := 5.0
+@export_range(0.0, 64.0, 1.0) var wallpaper_intro_slide := 18.0
+@export_range(0.1, 0.45, 0.01) var wallpaper_corner_fraction := 0.40
 
 @export_group("Audio")
 @export_range(-30.0, 0.0, 0.5) var sfx_volume_db := -8.0
@@ -318,8 +320,9 @@ func _start_level(index: int) -> void:
 func _process(delta: float) -> void:
 	animation_clock += delta
 	var pointer_ratio := Vector2.ZERO
-	if Rect2(Vector2.ZERO, BASE_SIZE).has_point(pointer_base):
-		pointer_ratio = pointer_base / BASE_SIZE * 2.0 - Vector2.ONE
+	var pointer_screen := pointer_base * canvas_scale + canvas_offset
+	if Rect2(Vector2.ZERO, size).has_point(pointer_screen):
+		pointer_ratio = pointer_screen / size * 2.0 - Vector2.ONE
 	var target_parallax := Vector2(
 		clampf(pointer_ratio.x, -1.0, 1.0),
 		clampf(pointer_ratio.y, -1.0, 1.0)
@@ -898,7 +901,7 @@ func _draw_wallpaper() -> void:
 		cos(scene_phase * 0.73)
 	) * wallpaper_idle_sway
 	var camera_motion := -wallpaper_parallax * wallpaper_parallax_strength + idle_motion
-	var reveal_motion := Vector2(0.0, (1.0 - intro_ratio) * 18.0)
+	var reveal_motion := Vector2(0.0, (1.0 - intro_ratio) * wallpaper_intro_slide)
 	_draw_wallpaper_layer(wallpaper_set[0] as Texture2D, camera_motion + reveal_motion, 0.20, 0.72)
 	_draw_wallpaper_layer(wallpaper_set[1] as Texture2D, camera_motion + reveal_motion, 0.52, 0.78)
 	_draw_wallpaper_layer(wallpaper_set[2] as Texture2D, camera_motion + reveal_motion, 1.0, 0.86)
@@ -913,11 +916,48 @@ func _wallpaper_set_index() -> int:
 
 
 func _draw_wallpaper_layer(texture: Texture2D, motion: Vector2, depth: float, opacity: float) -> void:
+	# Frame the full screen while the board keeps its own centered scale.
+	var view_size := size / maxf(canvas_scale, 0.001)
+	var margin := (wallpaper_parallax_strength + wallpaper_idle_sway + wallpaper_intro_slide) * depth
+	var draw_position := -canvas_offset / maxf(canvas_scale, 0.001) - Vector2.ONE * margin + motion * depth
+	var draw_size := view_size + Vector2.ONE * margin * 2.0
 	var texture_size := texture.get_size()
-	var cover_scale := maxf(BASE_SIZE.x / texture_size.x, BASE_SIZE.y / texture_size.y) * 1.06
-	var draw_size := texture_size * cover_scale
-	var draw_position := (BASE_SIZE - draw_size) * 0.5 + motion * depth
-	draw_texture_rect(texture, Rect2(draw_position, draw_size), false, _with_alpha(Color.WHITE, opacity))
+	var width_scale := draw_size.x / texture_size.x
+	var height_scale := draw_size.y / texture_size.y
+	var texture_scale := minf(width_scale, height_scale)
+	var axis := 0 if width_scale > height_scale else 1
+	var half_size := texture_size * texture_scale
+	var gap := maxf(draw_size[axis] - half_size[axis], 0.0)
+	var fade_width := minf(gap * 0.5, half_size[axis] * (0.5 - wallpaper_corner_fraction))
+	half_size[axis] *= 0.5
+	var tint := _with_alpha(Color.WHITE, opacity)
+	# Anchor each half to its edge and soften its inner cut as the screen expands.
+	for side in range(2):
+		var side_position := draw_position
+		side_position[axis] += float(side) * (draw_size[axis] - half_size[axis])
+		var source_offset := Vector2.ZERO
+		source_offset[axis] = texture_size[axis] * 0.5 * float(side)
+		var solid_offset := Vector2.ZERO
+		solid_offset[axis] = 0.0 if side == 0 else fade_width
+		var solid_size := half_size
+		solid_size[axis] -= fade_width
+		draw_texture_rect_region(texture, Rect2(side_position + solid_offset, solid_size),
+			Rect2(source_offset + solid_offset / texture_scale, solid_size / texture_scale), tint)
+		if fade_width <= 0.0:
+			continue
+		var fade_offset := Vector2.ZERO
+		fade_offset[axis] = half_size[axis] - fade_width if side == 0 else 0.0
+		var fade_size := half_size
+		fade_size[axis] = fade_width
+		var points := PackedVector2Array([Vector2.ZERO, Vector2(fade_size.x, 0.0), fade_size, Vector2(0.0, fade_size.y)])
+		var uvs := PackedVector2Array()
+		var colors := PackedColorArray()
+		for corner in range(4):
+			var alpha := points[corner][axis] / fade_width
+			colors.append(_with_alpha(tint, 1.0 - alpha if side == 0 else alpha))
+			uvs.append((source_offset + (fade_offset + points[corner]) / texture_scale) / texture_size)
+			points[corner] += side_position + fade_offset
+		draw_polygon(points, colors, uvs, texture)
 
 
 func _draw_header() -> void:
