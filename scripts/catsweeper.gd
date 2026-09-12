@@ -111,7 +111,8 @@ enum CatPose { IDLE, HAPPY, SLEEPY, WORRIED }
 @export_range(0.0, 0.03, 0.001) var background_grain_strength := 0.005
 @export_range(0.0, 36.0, 1.0) var wallpaper_parallax_strength := 18.0
 @export_range(1.0, 12.0, 0.25) var wallpaper_follow_speed := 5.0
-@export_range(0.0, 12.0, 0.5) var wallpaper_idle_sway := 5.0
+@export_range(0.0, 40.0, 0.5) var wallpaper_idle_sway := 10.0
+@export_range(0.05, 1.5, 0.01) var wallpaper_sway_speed := 0.45
 @export_range(0.0, 64.0, 1.0) var wallpaper_intro_slide := 18.0
 @export_range(0.1, 0.45, 0.01) var wallpaper_corner_fraction := 0.40
 
@@ -895,16 +896,21 @@ func _draw() -> void:
 func _draw_wallpaper() -> void:
 	var wallpaper_set: Array = WALLPAPER_SETS[_wallpaper_set_index()]
 	var intro_ratio := _smooth_fade(intro_time / maxf(board_intro_duration, 0.001))
-	var scene_phase := animation_clock * background_drift_speed * TAU + float(level_index) * 0.73
-	var idle_motion := Vector2(
-		sin(scene_phase),
-		cos(scene_phase * 0.73)
-	) * wallpaper_idle_sway
+	var idle_motion := _idle_sway_motion()
 	var camera_motion := -wallpaper_parallax * wallpaper_parallax_strength + idle_motion
 	var reveal_motion := Vector2(0.0, (1.0 - intro_ratio) * wallpaper_intro_slide)
 	_draw_wallpaper_layer(wallpaper_set[0] as Texture2D, camera_motion + reveal_motion, 0.20, 0.72)
 	_draw_wallpaper_layer(wallpaper_set[1] as Texture2D, camera_motion + reveal_motion, 0.52, 0.78)
 	_draw_wallpaper_layer(wallpaper_set[2] as Texture2D, camera_motion + reveal_motion, 1.0, 0.86)
+
+
+## A smooth, drifting wander so the parallax reads even without a pointer.
+func _idle_sway_motion() -> Vector2:
+	var phase := animation_clock * wallpaper_sway_speed + float(level_index) * 1.37
+	return Vector2(
+		sin(phase) * 0.62 + sin(phase * 1.73 + 1.1) * 0.28 + sin(phase * 2.41 + 3.7) * 0.10,
+		cos(phase * 0.87 + 0.6) * 0.62 + cos(phase * 1.57 + 2.3) * 0.28 + cos(phase * 2.19 + 4.9) * 0.10
+	) * wallpaper_idle_sway
 
 
 func _wallpaper_set_index() -> int:
