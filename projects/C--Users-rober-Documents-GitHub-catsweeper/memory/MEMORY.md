@@ -2,3 +2,5 @@
 - [Marketing art pipeline](marketing-art-pipeline.md) — where hero masters, store-image renderer, paw-fix and PSD scripts live and how to rerun them
 - [Check generated art anatomy](check-generated-art-anatomy.md) — user caught a three-front-paw cat; verify limbs/pose before delivering art
 - [Publisher packshot convention](publisher-packshot-convention.md) — "packshot" = 2048² layered PSD in PublisherKit/packshot, mirrors the Strobeat kit
+- [Godot export packs agent files](godot-export-packs-agent-files.md) — exports sweep session/agent files into the game unless excluded; check the packed list every export
+- [Arsenal deliverable](arsenal-deliverable.md) — the Nekodoku publisher page: contents, cover recipe, 100 MB upload cap, read-back URLs

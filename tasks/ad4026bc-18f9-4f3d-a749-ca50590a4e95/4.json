@@ -1,0 +1,9 @@
+{
+  "id": "4",
+  "subject": "Build publisher zips and rebuild the Desktop zips",
+  "description": "Create the packshot PSD + icons zip and the store assets zip; rebuild Nekodoku.zip and Nekodoku_App_Store_Package.zip from the updated package folder (old zips moved to the delivery workspace backup). Verify zip integrity.",
+  "activeForm": "Building zips",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

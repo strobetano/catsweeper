@@ -1,0 +1,9 @@
+{
+  "id": "5",
+  "subject": "Update the Arsenal deliverable",
+  "description": "Replace cover (fixed cat), replace Android + Web build files in place with the new version, replace release notes PDF, add the two publisher zips under Marketing. Do not touch isPublic. Re-read with GET and confirm.",
+  "activeForm": "Updating Arsenal",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

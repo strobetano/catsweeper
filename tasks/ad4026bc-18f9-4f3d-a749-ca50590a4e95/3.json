@@ -1,0 +1,9 @@
+{
+  "id": "3",
+  "subject": "Update the Desktop package with the new build",
+  "description": "Replace 02_Build files in Desktop\\Nekodoku_App_Store_Package with the new build, update ASSET_MANIFEST.txt and WEB_README.txt (version, file names, hashes), back up what is replaced.",
+  "activeForm": "Updating the Desktop package",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

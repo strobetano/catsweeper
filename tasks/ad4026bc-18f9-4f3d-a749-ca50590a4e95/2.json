@@ -1,0 +1,9 @@
+{
+  "id": "2",
+  "subject": "Rebuild web build and Android WebView APK as 1.0.9 (build 10)",
+  "description": "Bump export_presets.cfg to version code 10 / name 1.0.9, headless Web export from HEAD, browser QA with the existing qa scripts, package zip, build + sign WebView APK with build_webview_apk.py, verify signature and contents.",
+  "activeForm": "Rebuilding web and Android builds",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

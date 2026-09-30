@@ -1,0 +1,9 @@
+{
+  "id": "1",
+  "subject": "Run Godot gates before building",
+  "description": "godot_orient, godot_verify (import + syntax), godot_test_run on current HEAD. Stop the rebuild if any gate fails.",
+  "activeForm": "Running Godot verify and tests",
+  "status": "completed",
+  "blocks": [],
+  "blockedBy": []
+}

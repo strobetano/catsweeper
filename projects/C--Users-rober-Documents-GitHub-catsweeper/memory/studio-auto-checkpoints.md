@@ -5,7 +5,7 @@ metadata:
   type: project
 ---
 
-Every prompt the user sends is preceded by an automatic commit named `studio checkpoint: <first words of the prompt>`, made with everything in the working tree (`git add -A` style — it swept in `cache/`, `plugins/`, and the session transcript under `projects/`). Pushes show up as `chore: synchronize with remote`. The repo root doubles as the Claude config dir, which is why those folders live there.
+Every prompt the user sends is preceded by an automatic commit named `studio checkpoint: <first words of the prompt>`, sweeping in most of the working tree (`cache/`, `plugins/`, `skills/` and the session transcripts under `projects/` all became tracked; `sessions/`, `shell-snapshots/` and `tasks/` have stayed untracked). Pushes show up as `chore: synchronize with remote`. The repo root doubles as the Claude config dir, which is why those folders live there — and why Godot exports can pick them up, see [[godot-export-packs-agent-files]].
 
 **Why:** Seen on 2026-09-30: two checkpoint commits appeared on `main` between prompts without any commit from me, and previously untracked config folders became tracked.
 
