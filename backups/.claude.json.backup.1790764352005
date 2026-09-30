@@ -1,0 +1,3460 @@
+{
+  "numStartups": 212,
+  "installMethod": "native",
+  "autoUpdates": false,
+  "hasSeenTasksHint": true,
+  "tipsHistory": {
+    "new-user-warmup": 7,
+    "plan-mode-for-complex-tasks": 209,
+    "memory-command": 199,
+    "theme-command": 206,
+    "status-line": 1,
+    "stickers-command": 1,
+    "enter-to-steer-in-relatime": 207,
+    "todo-list": 184,
+    "install-github-app": 207,
+    "install-slack-app": 207,
+    "drag-and-drop-images": 207,
+    "double-esc-code-restore": 207,
+    "continue": 207,
+    "shift-tab": 207,
+    "image-paste": 207,
+    "config-thinking-mode": 2,
+    "ultrathink-keyword": 2,
+    "btw-side-question": 2,
+    "desktop-app": 108,
+    "web-app": 201,
+    "mobile-app": 109,
+    "shift-enter": 207,
+    "guest-passes": 156,
+    "frontend-design-plugin": 203,
+    "custom-agents": 97,
+    "permissions": 207,
+    "rename-conversation": 200,
+    "custom-commands": 101,
+    "agent-flag": 201,
+    "overage-promo": 19,
+    "default-permission-mode-config": 207,
+    "feedback-command": 201,
+    "git-worktrees": 207,
+    "color-when-multi-clauding": 208,
+    "powershell-tool-env": 207,
+    "desktop-shortcut": 201,
+    "overage-credit": 101,
+    "remote-control": 201,
+    "agents-view-multiclauding": 132,
+    "no-flicker": 207,
+    "dynamic-workflows": 203,
+    "c4e-desktop": 156,
+    "subagent-fanout-nudge": 156,
+    "loop-command-nudge": 156,
+    "ctx:correction-spiral": 157,
+    "artifact-publish-plan": 203,
+    "workflow-size-prompting-ambient": 207,
+    "plugin-disuse-review": 212,
+    "ultrareview-awareness": 211,
+    "artifact-duplicate": 208,
+    "ultrareview-post-commit": 192,
+    "web-setup-github": 194,
+    "ide-upsell-external-terminal": 204,
+    "c4e-remote-sessions": 205,
+    "goal-command-nudge": 205
+  },
+  "promptQueueUseCount": 733,
+  "btwUseCount": 2,
+  "cachedDynamicConfigs": {
+    "tengu_1p_event_batch_config": {
+      "scheduledDelayMillis": 5000,
+      "maxExportBatchSize": 200,
+      "maxQueueSize": 8192
+    },
+    "tengu-top-of-feed-tip": {
+      "tip": "",
+      "color": ""
+    }
+  },
+  "cachedGrowthBookFeatures": {
+    "tengu_xq7_marble_zephyr": false,
+    "tengu_cobalt_harbor_notice": true,
+    "tengu_reflective_bee": "off",
+    "tengu_tingly_hopper": true,
+    "tengu_tide_elm": "off",
+    "tengu_thistle_grebe": "default",
+    "tengu_brass_plover": true,
+    "tengu_umber_stile": true,
+    "tengu_cobalt_plinth_moss": true,
+    "tengu_cobalt_plinth_direct": true,
+    "tengu_version_config": {
+      "minVersion": "1.0.24"
+    },
+    "tengu_snippet_save": false,
+    "tengu_sepia_moth": false,
+    "tengu_ethereal_nova": false,
+    "tengu_fennel_kite_model": "",
+    "tengu_sorrel_avocet": false,
+    "tengu_structured_output_strict": false,
+    "tengu_vellum_lantern": false,
+    "tengu_prompt_suggestion": true,
+    "tengu_salt_marsh": false,
+    "tengu_gorse_fathom": false,
+    "tengu_jade_anvil_4": false,
+    "tengu_plum_vx3": true,
+    "tengu_mcp_negotiation_server_denylist": [
+      "bridge.claudeusercontent.com"
+    ],
+    "tengu_fancy_crab": 300,
+    "tengu_lumen_thicket_q7": false,
+    "tengu_ccr_hook_keepalive_enabled": true,
+    "tengu_fg_left_arrow_agents": true,
+    "tengu_ccr_v2_session_crud_cli": true,
+    "tengu_drifting_reef": {},
+    "tengu_sable_thrush": true,
+    "tengu_birch_compass": true,
+    "tengu_hashed_lark": false,
+    "tengu_basalt_sundial": false,
+    "tengu_amber_packet": false,
+    "tengu_rc_permission_nudge": {
+      "afterPromptCount": 2,
+      "probability": 0.5,
+      "maxImpressions": 3
+    },
+    "tengu_ashen_kelp": true,
+    "tengu_mcp_legacy_url_elicitation": true,
+    "tengu_cedar_plume": false,
+    "tengu_mark_chapter": false,
+    "tengu_willow_tern": false,
+    "tengu_delegated_quail": {
+      "mode": "shadow",
+      "served": "primary"
+    },
+    "tengu_saffron_lattice": {
+      "enabled": false
+    },
+    "tengu_reactive_compact_remote": false,
+    "tengu_smooth_forest": true,
+    "tengu_iridescent_crystal": false,
+    "tengu_idle_amber_finch": false,
+    "tengu_passport_quail": false,
+    "tengu_kestrel_moor": false,
+    "tengu_lantern_sconce_copy": {
+      "credits_on": "Usage limit reached · continuing to work, then switching to usage credits"
+    },
+    "tengu_shale_finch": false,
+    "tengu_clever_orbit": false,
+    "tengu_wild_tome": true,
+    "tengu_chomp_inflection": true,
+    "tengu_amber_lynx": false,
+    "tengu_lantern_spool": false,
+    "tengu_amber_lattice": {
+      "plugins": [
+        "security-guidance",
+        "code-review",
+        "commit-commands",
+        "code-simplifier",
+        "hookify",
+        "feature-dev",
+        "frontend-design",
+        "pr-review-toolkit",
+        "skill-creator",
+        "plugin-dev",
+        "agent-sdk-dev",
+        "mcp-server-dev",
+        "claude-code-setup",
+        "claude-md-management",
+        "playground",
+        "ralph-loop",
+        "explanatory-output-style",
+        "learning-output-style",
+        "clangd-lsp",
+        "csharp-lsp",
+        "gopls-lsp",
+        "jdtls-lsp",
+        "kotlin-lsp",
+        "lua-lsp",
+        "php-lsp",
+        "pyright-lsp",
+        "ruby-lsp",
+        "rust-analyzer-lsp",
+        "swift-lsp",
+        "typescript-lsp"
+      ]
+    },
+    "tengu_moss_anchor": false,
+    "tengu_harbor_kite_limits": {},
+    "tengu_disable_live_host_context": false,
+    "tengu_curious_tower": true,
+    "tengu_sharded_beacon": true,
+    "tengu_skills_dashboard_enabled": false,
+    "tengu_wise_star": true,
+    "tengu_saffron_wren": true,
+    "tengu_gouda_loop": true,
+    "tengu_ccr_delta_rehydrate": true,
+    "tengu_umber_kestrel": false,
+    "tengu_context_usage_bulk_counts": true,
+    "tengu_violin_soundpost": true,
+    "tengu_wondrous_acorn": {
+      "enabled": true,
+      "min_continues": 3
+    },
+    "tengu_amber_tollgate": false,
+    "tengu_max_version_config": {},
+    "tengu_violin_maple": false,
+    "tengu_loggia_carousel": false,
+    "tengu_hushed_lark_text": "The user hasn't heard from you in a while — say in a few words what you're doing, then continue.",
+    "tengu_cozy_crane": "enforce",
+    "tengu_osprey_lantern": false,
+    "tengu_bridge_requires_action_details": true,
+    "tengu_agent_list_attach": true,
+    "tengu_slate_lantern_ember": true,
+    "tengu_lapis_thicket": false,
+    "tengu_plan_artifact": false,
+    "tengu_plugin_official_mkt_git_fallback": true,
+    "tengu_c4w_usage_limit_notifications_enabled": true,
+    "tengu_collage_kaleidoscope": true,
+    "tengu_umber_petrel": false,
+    "tengu_juniper_gantry": false,
+    "tengu_plugin_hooks_modules": false,
+    "tengu_cobalt_plinth_putguard": true,
+    "tengu_coral_fern": false,
+    "tengu_lantern_wick_release": "Earlier usage-limit notes no longer apply. Continue working normally. Don't mention this to the user.",
+    "tengu_cobalt_ridge": true,
+    "tengu_copper_meadow": false,
+    "tengu_lapis_anchor_user_turn": true,
+    "tengu_blue_coaster": false,
+    "tengu_lichen_compass": false,
+    "tengu_maple_sundial": false,
+    "tengu_teal_corbel_newel": false,
+    "tengu_bridge_attestation_enforce_config": {
+      "accept_level": "VERIFIED_KEYLESS_DEVICE",
+      "accept_statuses": []
+    },
+    "tengu_vscode_review_upsell": false,
+    "tengu_gault_kestrel": true,
+    "tengu_bad_survey_transcript_ask_config": {
+      "probability": 1
+    },
+    "tengu_ochre_wren": false,
+    "tengu_basalt_meadow": true,
+    "tengu_velvet_harbor_owl": "off",
+    "tengu_claudeai_skills_sync_shared_round": true,
+    "tengu_warm_wirth": true,
+    "tengu_silent_harbor": false,
+    "tengu_cobalt_plinth_reader_persist": true,
+    "tengu_luminous_whistle": true,
+    "tengu_bridge_rc_child_idle_exit_ms": 3600000,
+    "tengu_marbled_teal": false,
+    "tengu_haze_glass": false,
+    "tengu_mossy_lantern": true,
+    "tengu_cobalt_plinth_yew": true,
+    "tengu_mint_lanes": false,
+    "tengu_marl_cormorant": true,
+    "tengu_fleet_past_sessions": false,
+    "tengu_heron_tallow": true,
+    "tengu_polished_lagoon": true,
+    "tengu_misty_anchor": false,
+    "tengu_willow_census_ttl_hours": 24,
+    "tengu_slate_harbor_experiment": false,
+    "tengu_subagent_cache_evict": false,
+    "tengu_compact_cache_prefix": true,
+    "tengu_ccr_bundle_seed_enabled": true,
+    "tengu_mcp_path_scoped_permissions": true,
+    "tengu_amber_heron": true,
+    "tengu_cobalt_wren": false,
+    "tengu-off-switch": {
+      "activated": false
+    },
+    "tengu_retire_chat_relay_artifact_backstop": true,
+    "tengu_cobalt_plinth_rowan": true,
+    "tengu_marble_anvil": true,
+    "tengu_usage_overage_included_models": [
+      "Fable",
+      "Fable 5",
+      "Fable 5.1"
+    ],
+    "tengu_anchor_tide": true,
+    "tengu_lucky_brooks": false,
+    "tengu_slate_fern": true,
+    "tengu_turtle_carbon": true,
+    "tengu_tussock_oriole": false,
+    "tengu_scarf_coffee": false,
+    "tengu_lucid_anchor": true,
+    "tengu_steady_plum": {
+      "title": "Use {model} at {to} effort by default?",
+      "body": "{to} is the default effort for {model} and is recommended for most coding tasks; {from} spends more tokens per task. You can change this any time with /effort.",
+      "confirmLabel": "Switch {model} to {to} effort",
+      "cancelLabel": "Keep {from}",
+      "cancelFirst": true,
+      "fromEffort": [
+        "xhigh",
+        "max"
+      ],
+      "toEffort": "high",
+      "showWarning": true
+    },
+    "tengu_bridge_host_profile": "off",
+    "tengu_event_watchdog_default_on": true,
+    "tengu_river_kestrel": false,
+    "tengu_bridge_min_version": {
+      "minVersion": "2.1.139"
+    },
+    "tengu_quartz_vireo": "",
+    "tengu_hushed_lark": 5,
+    "tengu_amber_moleskin": {
+      "default": {
+        "repl": 0.15,
+        "sdk": 0.15
+      }
+    },
+    "tengu_classifier_summary_llm_emit": true,
+    "tengu_ccr_idle_heartbeat": true,
+    "tengu_account_skills_sync_enabled": false,
+    "tengu_valiant_rain": true,
+    "tengu_cobalt_plinth_burnet": true,
+    "tengu_lapis_anchor": "padded-countdown",
+    "tengu_amber_lark": false,
+    "tengu_flint_harbor_share": false,
+    "tengu_cozy_teapot": "strict",
+    "tengu-top-of-feed-tip": {
+      "tip": "",
+      "color": ""
+    },
+    "tengu_ccr_reactivation_beat": true,
+    "tengu_umber_lattice": true,
+    "tengu_elegant_ocean": true,
+    "tengu_sparrow_ledger": false,
+    "tengu_malort_pedway": {
+      "enabled": true,
+      "pixelValidation": false,
+      "clipboardPasteMultiline": true,
+      "screenshotFilter": true,
+      "mouseAnimation": true,
+      "hideBeforeAction": true,
+      "autoTargetDisplay": false,
+      "coordinateMode": "pixels"
+    },
+    "tengu_orchid_trellis": false,
+    "tengu_cosmic_shore": true,
+    "tengu_watchdog_skip_nonstreaming_fallback": false,
+    "tengu_cobalt_thicket": false,
+    "tengu-model-error-overrides": {},
+    "tengu_thrifty_sonic": true,
+    "tengu_thinking_block_resumption": false,
+    "tengu_cork_lantern": false,
+    "tengu_hidden_ripple": true,
+    "tengu_quartz_meadow": false,
+    "tengu_sub_nomdrep_q7k": true,
+    "tengu_steady_marshmallow": false,
+    "tengu_russet_plover": true,
+    "tengu_kairos_cron": true,
+    "tengu_vast_tulip": true,
+    "tengu_md_artifact_styling": false,
+    "tengu_marble_whisper2": true,
+    "tengu_sessions_elevated_auth_enforcement": true,
+    "tengu_immediate_model_command": true,
+    "tengu_gorse_plover": false,
+    "tengu_ccr_reconnect_beat": true,
+    "tengu_cobalt_plinth_lovage": true,
+    "tengu_velvet_moth": 0.05,
+    "tengu_brick_follow": false,
+    "tengu_claudeai_plugins_sync_enabled": true,
+    "tengu_slate_anchor": true,
+    "tengu_auto_mode_default_on": false,
+    "tengu_violin_saddle": true,
+    "tengu_cowork_chrome_automode_default": true,
+    "tengu_review_bughunter_config": {
+      "fleet_size": 5,
+      "max_duration_minutes": 10,
+      "agent_timeout_seconds": 600,
+      "total_wallclock_minutes": 22,
+      "cost_note": "$5-$25",
+      "duration_note": "~15-25 min",
+      "typical_cost_usd": 20,
+      "enabled": true
+    },
+    "tengu_teal_corbel_finial": true,
+    "tengu_jazzy_bird": true,
+    "tengu_cobalt_plinth_fennel": false,
+    "tengu_amber_flint": true,
+    "tengu_harbor_prism": true,
+    "tengu_amber_relay": false,
+    "tengu_mellow_hollerith": false,
+    "tengu_quiet_reef": false,
+    "tengu_composed_quail": true,
+    "tengu_gleaming_fair": false,
+    "tengu_marker_easel_live": false,
+    "tengu_radiant_heron": false,
+    "tengu_typed_koala": true,
+    "tengu_canary": {},
+    "tengu_cobalt_plinth_sorrel": true,
+    "tengu_hipaa_history_retention_prune": true,
+    "tengu_radiant_island": {},
+    "tengu_harbor": true,
+    "tengu_nifty_lemur": {
+      "enabled": false,
+      "version": 0
+    },
+    "tengu_kairos_push_notifications": true,
+    "tengu_breezy_crescent": true,
+    "tengu_session_memory": false,
+    "tengu_quiet_slate_wren": false,
+    "tengu_quizzical_shore": false,
+    "tengu_ccr_no_subscriber_hold_ms": 10000,
+    "tengu_surreal_dali": true,
+    "tengu_tangerine_ladder_boost": true,
+    "tengu_hawthorn_steeple": false,
+    "tengu_wise_comet": false,
+    "tengu_slim_subagent_claudemd": true,
+    "tengu_cork_m4q": true,
+    "tengu_slate_ibis": true,
+    "tengu_mocha_barista": true,
+    "tengu_polished_dewdrop": "off",
+    "tengu_crimson_vector": false,
+    "tengu_dapper_dawn": false,
+    "tengu_twinkly_prism": false,
+    "tengu_juniper_vale": {
+      "enabled": false,
+      "maxChars": 500,
+      "autoDismissAfterMs": 30000
+    },
+    "tengu_compiled_acorn": true,
+    "tengu_cobalt_harbor": false,
+    "tengu_cobalt_plinth_sloe": "v0",
+    "tengu_basalt_scarp": false,
+    "tengu_cobalt_plinth_willow": true,
+    "tengu_read_dedup_killswitch": false,
+    "tengu_copper_fox": true,
+    "tengu_maple_pier": true,
+    "tengu_basalt_quill": false,
+    "tengu_amber_quill_moth": true,
+    "tengu_kestrel_arch": "OFF",
+    "tengu_kairos_ready_nudge": {
+      "probability": 0.25,
+      "maxImpressions": 5,
+      "impressionKey": "v1"
+    },
+    "tengu_moonlit_panda": true,
+    "tengu_slate_trellis": false,
+    "tengu_garnet_finch": false,
+    "tengu_stone_shell": false,
+    "tengu_cobalt_plinth": true,
+    "tengu_prompt_cache_1h_config": {
+      "allowlist": [
+        "repl_main_thread*",
+        "sdk",
+        "auto_mode",
+        "rolling_compact",
+        "memdir_relevance",
+        "agent_classifier",
+        "prompt_suggestion",
+        "away_summary",
+        "extract_memories"
+      ]
+    },
+    "tengu_quiet_basalt_echo": false,
+    "tengu_account_plugins_sync_enabled": false,
+    "tengu_feature_template": false,
+    "tengu_pewter_summit": true,
+    "tengu_plugin_feedback_survey_config": {},
+    "tengu_pewter_kestrel": {
+      "global": 50000,
+      "Bash": 30000,
+      "PowerShell": 30000,
+      "Grep": 20000,
+      "Snip": 1000,
+      "StrReplaceBasedEditTool": 30000,
+      "BashSearchTool": 20000
+    },
+    "tengu_velvet_ibis": {},
+    "tengu_miraculo_the_bard": false,
+    "tengu_expressive_whistle": false,
+    "tengu_wise_bear_copy": {
+      "note_session": "Use your limit reset to reset it now: `clau.de/reset`",
+      "note_weekly": "Use your limit reset to reset it now: `clau.de/reset`",
+      "note_model": "Use your limit reset to reset it now: `clau.de/reset`",
+      "only_if_unused_reset": true
+    },
+    "tengu_slate_harrier": "off",
+    "tengu_hawthorn_window": 200000,
+    "tengu_ide_rc_auto_enable": true,
+    "tengu_vellum_siding": false,
+    "tengu_shimmying_stardust": false,
+    "tengu_cobalt_plinth_sedge": true,
+    "tengu_still_kestrel": true,
+    "tengu_hazel_osprey": false,
+    "tengu_hazel_trellis": 3,
+    "tengu_brindle_causeway": true,
+    "tengu_tool_memory_cgroup": false,
+    "tengu_stellar_drift": true,
+    "tengu_cobalt_plinth_bryony": true,
+    "tengu_dapper_lagoon": false,
+    "tengu_reflective_wolf": true,
+    "tengu_plucky_orchard": true,
+    "tengu_claudeai_skills_sync_enabled": true,
+    "tengu_ccr_stream_event_flush_ms": 200,
+    "tengu_remote_auto_mode_include_destructive_mcp": false,
+    "tengu_adaptive_raven": false,
+    "tengu_juniper_moth": false,
+    "tengu_frond_boric": {},
+    "tengu_saddle_lantern": true,
+    "tengu_feedback_survey_config": {
+      "minTimeBeforeFeedbackMs": 300000,
+      "minTimeBetweenFeedbackMs": 3600000,
+      "minTimeBetweenGlobalFeedbackMs": 43200000,
+      "minUserTurnsBeforeFeedback": 3,
+      "minUserTurnsBetweenFeedback": 5,
+      "hideThanksAfterMs": 3000,
+      "onForModels": [
+        "*"
+      ],
+      "probability": 0.25
+    },
+    "tengu_harbor_kite": true,
+    "tengu_sotto_voce": true,
+    "tengu_cheerful_horizon": false,
+    "tengu_amber_wren": {
+      "targetedRangeNudge": true,
+      "maxTokens": 25000
+    },
+    "tengu_shiny_stardust": false,
+    "tengu_violin_lining": true,
+    "tengu_otk_slot_v1": false,
+    "tengu_magical_pixel_startup": false,
+    "tengu_violin_fret": true,
+    "tengu_birch_lantern": "off",
+    "tengu_quartz_thimble": true,
+    "tengu_cobalt_plinth_fern": true,
+    "tengu_slate_meadow": true,
+    "tengu_cobalt_plinth_hazel": true,
+    "tengu_walnut_spire": false,
+    "tengu_quiet_harbor": false,
+    "tengu_system_prompt_global_cache": true,
+    "tengu_event_loop_stall": true,
+    "tengu_marble_whisper": true,
+    "tengu_ccr_bridge_multi_session": true,
+    "tengu_destructive_command_warning": false,
+    "tengu_sunny_locket": {
+      "mode": "off"
+    },
+    "tengu_pewter_brook": false,
+    "tengu_slate_finch": false,
+    "tengu_hearth_overview_sends_unclassified": true,
+    "tengu_lapis_finch": true,
+    "tengu_print_engine_loop": true,
+    "tengu_cedar_sundial": true,
+    "tengu_ccr_bundle_max_bytes": 104857600,
+    "tengu_riverbed_lantern": false,
+    "tengu_auto_notice_once": true,
+    "tengu_linen_osprey": false,
+    "tengu_import": true,
+    "tengu_mcp_stateless_skip_init": true,
+    "tengu_ultraplan_config": {
+      "enabled": false
+    },
+    "tengu_rate_limit_promo_notices": [],
+    "tengu_synchronous_bunny": false,
+    "tengu_iridescent_gem": 0.01,
+    "tengu_amber_anchor": false,
+    "tengu_brass_sled": false,
+    "tengu_vscode_onboarding": true,
+    "tengu_log_datadog_events": true,
+    "tengu_updater_range_resume": false,
+    "tengu_startup_announcements": [
+      {
+        "id": "opus-5-5-launch",
+        "text": "Get to finished work sooner with Opus 5.5. Switch anytime with `/model`.",
+        "maxImpressions": 10,
+        "priority": 0,
+        "accentBar": false,
+        "requiresModel": "claude-opus-5-5"
+      }
+    ],
+    "tengu_gentle_frost": false,
+    "tengu_quartz_pipit": true,
+    "tengu_ccr_stream_first_flush_ms": 20,
+    "tengu_media_byte_cap": 25165824,
+    "tengu_velvet_tide": false,
+    "tengu_lantern_sconce": true,
+    "tengu_fennel_kite": false,
+    "tengu_byte_stream_idle_timeout_ms": 180000,
+    "tengu_bridge_placeholder_sweep": true,
+    "tengu_trace_lantern": false,
+    "tengu_sorrel_trellis_tenon": false,
+    "tengu_eager_pillow": true,
+    "tengu_harbor_kite_mode_emit": true,
+    "tengu_concurrent_candle": false,
+    "tengu_polished_tulip": true,
+    "tengu_chair_sermon": false,
+    "tengu_satchel_banjo": false,
+    "tengu_bridge_attestation_enforce": true,
+    "tengu_slate_kestrel": true,
+    "tengu_kb_cohesion_fixes": false,
+    "tengu_orford_ness": true,
+    "tengu_violin_neck": true,
+    "tengu_ccr_keepalive_after_stop_enabled": true,
+    "tengu_shining_fractals": false,
+    "tengu_luminous_seal": true,
+    "tengu_lively_waffle": true,
+    "tengu_willow_mode": "hint_v2",
+    "tengu_crystal_beam": {
+      "budgetTokens": 0
+    },
+    "tengu_pewter_lantern": false,
+    "tengu_bramble_lintel": 7,
+    "tengu_copper_wren": true,
+    "tengu_lucky_cerf_text": "",
+    "tengu_violin_purfling": true,
+    "tengu_cobalt_lantern": true,
+    "tengu_auto_mode_config": {
+      "enabled": "enabled",
+      "twoStageClassifier": true,
+      "sameTurnSiblingContext": true,
+      "jsonlTranscript": true,
+      "editRemovalVisibility": true,
+      "editRemovalCap": 3000,
+      "outcomeVisibility": false,
+      "repoVisibility": true,
+      "gitStatusType": true,
+      "gitStatusUploads": false,
+      "severityByModel": {
+        "claude-sonnet-5[1m]": {
+          "t1": 25,
+          "t2": 35
+        },
+        "claude-opus-4-8[1m]": {
+          "t1": 45,
+          "t2": 35
+        },
+        "claude-sonnet-5": {
+          "t1": 25,
+          "t2": 35
+        },
+        "claude-opus-4-8": {
+          "t1": 45,
+          "t2": 35
+        }
+      },
+      "envOnboarding": true,
+      "severityBySite": {
+        "handoff": "on",
+        "workflowGate": "on",
+        "sandboxNetwork": "on",
+        "investigator": "on",
+        "compactFabCheck": "on"
+      }
+    },
+    "tengu_harbor_kite_win": true,
+    "tengu_event_sampling_config": {
+      "tengu_plugin_name_collision": {
+        "sample_rate": 0.01
+      },
+      "tengu_session_file_read": {
+        "sample_rate": 0.01
+      },
+      "tengu_skill_file_changed": {
+        "sample_rate": 0
+      }
+    },
+    "tengu_kairos_input_needed_push": true,
+    "tengu_harbor_kite_pacing_off": false,
+    "tengu_ultraplan_timeout_seconds": 5400,
+    "tengu_walnut_prism": false,
+    "tengu_copper_thistle": false,
+    "tengu_tool_cgroup_exclude_classes": {},
+    "tengu_dash_flame": true,
+    "tengu_peppy_zephyr": true,
+    "tengu_bridge_selfheal_heartbeats": true,
+    "tengu_tool_search_unsupported_models": [
+      "claude-3-5-haiku",
+      "claude-3-haiku",
+      "claude-3-opus",
+      "claude-3-sonnet",
+      "claude-3-5-sonnet",
+      "claude-3-7-sonnet"
+    ],
+    "tengu_sage_compass2": {
+      "enabled": true
+    },
+    "tengu_sorrel_trellis": true,
+    "tengu_willow_refresh_ttl_hours": 0,
+    "tengu_marble_finch": false,
+    "tengu_quiet_tarjan": false,
+    "tengu_classifier_summary_heuristic_emit": true,
+    "tengu_cobalt_plinth_bracken": true,
+    "tengu_sdk_mcp_manifests": true,
+    "tengu_medlar_quoin": true,
+    "tengu_worktree_mode": true,
+    "tengu_startup_notice": "",
+    "tengu_pewter_lark": "off",
+    "tengu_bridge_partial_messages": false,
+    "tengu_sorrel_trellis_lintel": true,
+    "tengu_mcp_normalize_root_combinators": [
+      "*"
+    ],
+    "tengu_noreread_q7m_velvet": false,
+    "tengu_keybinding_customization_release": true,
+    "tengu_cobalt_plinth_alder": true,
+    "tengu_validated_clover": false,
+    "tengu_penguins_enabled": true,
+    "tengu_hover_rest": false,
+    "tengu_bridge_poll_interval_config": {
+      "poll_interval_ms_not_at_capacity": 2000,
+      "poll_interval_ms_at_capacity": 600000,
+      "heartbeat_interval_ms": 0,
+      "multisession_poll_interval_ms_not_at_capacity": 5000,
+      "multisession_poll_interval_ms_at_capacity": 60000,
+      "multisession_poll_interval_ms_partial_capacity": 5000,
+      "non_exclusive_heartbeat_interval_ms": 180000,
+      "session_keepalive_interval_ms": 0,
+      "session_keepalive_interval_v2_ms": 0
+    },
+    "tengu_lantern_wick_mode": "off",
+    "tengu_toasty_breeze": {
+      "enabled": false,
+      "version": 0
+    },
+    "tengu_dune_wren": false,
+    "tengu_steady_sunbeam": false,
+    "tengu_birthday_hat": false,
+    "tengu_bridge_auth_revive": true,
+    "tengu_violin_heel": true,
+    "tengu_fgts": true,
+    "tengu_pewter_ledger": "OFF",
+    "tengu_maple_tide": false,
+    "tengu_swann_brevity": "focused",
+    "tengu_bridge_repl_v2": true,
+    "tengu_breezy_fairy": true,
+    "tengu_malformed_tool_use_clean_retry": true,
+    "tengu_ccr_no_subscriber_flush_ms": 0,
+    "tengu_ccr_v2_bridge_create_cli": true,
+    "tengu_violin_speculative_classifier": false,
+    "tengu_ccr_handoff_metadata": true,
+    "tengu_harbor_permissions": true,
+    "tengu_teleport_send_to_cloud": false,
+    "tengu_violin_bridgepin": true,
+    "tengu_cobalt_plinth_samphire": true,
+    "tengu_mcp_protocol_negotiation_http": true,
+    "tengu_thinking_display_updates": true,
+    "tengu_sharded_snowflake": false,
+    "tengu_gleaming_fair_reuse": true,
+    "tengu_sepia_cormorant": [],
+    "tengu_hidden_frog": true,
+    "tengu_ember_trail": "0",
+    "tengu_lantern_wick_text": null,
+    "tengu_classifier_disabled_surfaces": "",
+    "tengu_basalt_spur": true,
+    "tengu_sage_compass": {},
+    "tengu_nimble_amber_prose": false,
+    "tengu_cloth_snorkel": true,
+    "tengu_violin_duet": false,
+    "tengu_post_compact_survey": false,
+    "tengu_moth_copse": false,
+    "tengu_mcp_memory_cgroup": false,
+    "tengu_cobalt_plinth_woad": true,
+    "tengu_ccr_subagent_lazy_hydrate": true,
+    "tengu_cedar_halo": false,
+    "tengu_quiet_ember": false,
+    "tengu_swift_whistle": true,
+    "tengu_cobalt_plinth_larch": true,
+    "tengu_desktop_upsell_v2": {
+      "enabled": false
+    },
+    "tengu_workout2": true,
+    "tengu_shoji_engine": true,
+    "tengu_flax_grouse": false,
+    "tengu_code_diff_cli": true,
+    "tengu_amber_sextant": true,
+    "tengu_loggia_roster": [],
+    "tengu_glowing_orbit": true,
+    "tengu_federated_flask": false,
+    "tengu_amber_prism": false,
+    "tengu_copper_kite": false,
+    "tengu_silk_hinge": false,
+    "tengu_violin_strad": true,
+    "tengu_mcp_singleton_unwrap": true,
+    "tengu_mcp_protocol_negotiation_claudeai": true,
+    "tengu_amber_tally": {},
+    "tengu_violin_chinrest": true,
+    "tengu_wavy_light": false,
+    "tengu_harbor_kite_cloud": false,
+    "tengu_hearth_member_relay_rows_enabled": true,
+    "tengu_olive_hinge": "",
+    "tengu_timber_lark": "copy_a",
+    "tengu_carved_slate": true,
+    "tengu_billiard_aviary": false,
+    "tengu_cobalt_plinth_madder": false,
+    "tengu_ochre_plover": false,
+    "tengu_cfc_in_product_permissions": true,
+    "tengu_gypsum_kite": false,
+    "tengu_bg_attach_stall_ms": 5000,
+    "tengu_agents_md_mod": true,
+    "tengu_brisk_meadow": false,
+    "tengu_negative_interaction_transcript_ask_config": {
+      "probability": 0
+    },
+    "tengu_smooth_chipmunk": true,
+    "tengu_file_write_optimization": true,
+    "tengu_larch_pavise": false,
+    "tengu_ochre_hollow": true,
+    "tengu_fennel_godwit": false,
+    "tengu_cuddly_willow": true,
+    "tengu_slate_siskin": {
+      "enabled": false,
+      "timeoutMs": 8000,
+      "throttleMs": 30000,
+      "summaryLineThreshold": 5
+    },
+    "tengu_marble_sandcastle": false,
+    "tengu_mcp_elicitation": true,
+    "tengu_bridge_unarchive_on_resume": true,
+    "tengu_steady_lantern": false,
+    "tengu_fine_survey_transcript_ask_config": {
+      "probability": 0.5
+    },
+    "tengu_alder_compass": false,
+    "tengu_ccr_bridge": true,
+    "tengu_webagent_mcp_bridge": false,
+    "tengu_prism_ledger": false,
+    "tengu_bridge_system_init": true,
+    "tengu_sprightly_lagoon": false,
+    "tengu_concurrent_moonbeam": false,
+    "tengu_1p_event_batch_config": {
+      "scheduledDelayMillis": 30000,
+      "maxExportBatchSize": 400,
+      "maxQueueSize": 8192,
+      "path": "/api/event_logging/v2/batch"
+    },
+    "tengu_groovy_eclipse": true,
+    "tengu_lucky_cerf": [],
+    "tengu_ccr_v2_send_events_cli": true,
+    "tengu_silk_almanac": false,
+    "tengu_madrone_spindle_corbel": false,
+    "tengu_mcp_claudeai_eligibility_gate": true,
+    "tengu_flint_harbor_prompt": {
+      "prompt": "You are helping a power user generate an onboarding guide for teammates who are new to Claude Code. The guide will live in the team's onboarding docs and can be pasted into Claude for an interactive walkthrough.\n\nYou're co-authoring this with them — collaborative and helpful, like a teammate who's done this before and is happy to share.\n\n## Usage data (last {{WINDOW_DAYS}} days)\n\nThis was scanned from the guide creator's local Claude Code transcripts:\n\n```json\n{{USAGE_DATA}}\n```\n\n## Your task\n\nBefore anything else — including before thinking through the classification — output exactly this line as your first visible text:\n\n> Looking at how you've used Claude over the last {{WINDOW_DAYS}} days to put together an onboarding guide for teammates new to Claude Code.\n\nThis must come before any extended thinking about session descriptors. The guide creator is staring at a blank screen until you do. Classification is step 2, not step 1.\n\nGenerate the guide immediately, then ask for revisions. Don't wait for answers first — it's easier for the guide creator to edit a concrete draft than answer abstract questions.\n\n1. **Output the acknowledgment line above.** No thinking, no classification, no tool calls before this. One line, then move on.\n\n2. **Derive the work-type breakdown.** Read the `sessionDescriptors` array — each entry describes one session via its title, any linked code reviews (`prNumbers`), and first user message. Classify each session into one of these task types:\n\n   - **build_feature** — new functionality, scripts, tools, config/CI/env setup\n   - **debug_fix** — investigating and fixing bugs\n   - **improve_quality** — refactoring, tests, cleanup, code review\n   - **analyze_data** — queries, metrics, number crunching\n   - **plan_design** — architecture, approach, strategy, understanding unfamiliar code, design review\n   - **prototype** — spikes, POCs, throwaway exploration\n   - **write_docs** — PRDs, RFCs, READMEs, design docs, copy/doc review\n\n   Categories describe the *type of task*, not the project or domain — a teammate on any project should recognize them. Review sessions belong with whatever's being reviewed: code review is improve_quality, doc review is write_docs, design review is plan_design. Most sessions fit the list; only invent a new category if it's genuinely a different type of task. Pick the top 3-5 with rough percentages. First messages alone are usually enough; titles and code-review links are enrichment. If first messages are uninformative, use tool and MCP counts as a weak hint. If there are ~0 sessions, leave the breakdown as a TODO.\n\n   In the rendered guide, display categories with spaces and title case (e.g. \"Build Feature\" not \"build_feature\").\n\n3. **Gather the remaining pieces.** For repos, start with `currentRepo` and check the workspace for sibling repo directories. For MCP server setup, use each entry's `name` (and `urlOrigin` where present) to infer what the server does and how a teammate would get access. Leave the Team Tips and Get Started sections as TODO placeholders — you'll ask for these in Review and fill them in after.\n\n4. **Write the guide to `ONBOARDING.md`** following this template:\n\n```\n{{GUIDE_TEMPLATE}}\n```\n\n   Fill in real numbers from the usage data (not placeholders). Use `generatedBy` for the name; if it's missing, omit the name. Ascii bar charts: `█` for filled, `░` for empty, 20 chars wide. Keep the HTML comment instruction at the bottom exactly as shown.\n\n5. **Render the guide in a code block, then close out the first turn.** You're co-authoring this guide with the guide creator — frame the follow-up as collaboration, not corrections.\n\n   After the code block, add a `---` horizontal rule and a `**Review**` heading so the guide is visually separated from your questions. Under the heading, number these three questions:\n\n   1. \"I went with '[X]' for the team name — let me know if that sounds right.\" (or if you couldn't tell: \"What's the team name? I'll add it in.\")\n   2. Is there a starter task for someone new to Claude Code? (ticket or doc link — optional)\n   3. Any team tips you'd tell a new teammate that aren't already in CLAUDE.md?\n\n   After they answer, update `ONBOARDING.md` with their team name, tips, and starter task. Then close with this exact line (not numbered, not paraphrased):\n\n   Saved to `ONBOARDING.md`. Drop it in your team docs and channels — when a new teammate pastes it into Claude Code, they get a guided onboarding tour from there.\n\n   Apply any edits they come back with to the file.",
+      "guideTemplate": "# Welcome to [Team Name]\n\n## How We Use Claude\n\nBased on [name]'s usage over the last [N] days:\n\nWork Type Breakdown:\n  [Category 1]  [ascii bar]  [N]%\n  [Category 2]  [ascii bar]  [N]%\n  [Category 3]  [ascii bar]  [N]%\n  ...\n\nTop Skills & Commands:\n  [/command]  [ascii bar]  [N]x/month\n  ...\n\nTop MCP Servers:\n  [Server]  [ascii bar]  [N] calls\n  ...\n\n## Your Setup Checklist\n\n### Codebases\n- [ ] [repo-name] — [repo url]\n...\n\n### MCP Servers to Activate\n- [ ] [Server] — [what it's for]. [How to get access]\n...\n\n### Skills to Know About\n- [/command] — [what it does, when the team uses it]\n...\n\n## Team Tips\n\n_TODO_\n\n## Get Started\n\n_TODO_\n\n<!-- INSTRUCTION FOR CLAUDE: A new teammate just pasted this guide for how the\nteam uses Claude Code. You're their onboarding buddy — warm, conversational,\nnot lecture-y.\n\nOpen with a warm welcome — include the team name from the title. Then: \"Your\nteammate uses Claude Code for [list all the work types]. Let's get you started.\"\n\nCheck what's already in place against everything under Setup Checklist\n(including skills), using markdown checkboxes — [x] done, [ ] not yet. Lead\nwith what they already have. One sentence per item, all in one message.\n\nTell them you'll help with setup, cover the actionable team tips, then the\nstarter task (if there is one). Offer to start with the first unchecked item,\nget their go-ahead, then work through the rest one by one.\n\nAfter setup, walk them through the remaining sections — offer to help where you\ncan (e.g. link to channels), and just surface the purely informational bits.\n\nDon't invent sections or summaries that aren't in the guide. The stats are the\nguide creator's personal usage data — don't extrapolate them into a \"team\nworkflow\" narrative. -->",
+      "windowDays": 30
+    },
+    "tengu_harbor_ledger": [
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "discord"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "telegram"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "fakechat"
+      },
+      {
+        "marketplace": "claude-plugins-official",
+        "plugin": "imessage"
+      }
+    ],
+    "tengu_native_cursor": true,
+    "tengu_parchment_fern": false,
+    "tengu_ultrareview_awareness": {
+      "slash_menu": true,
+      "prose_pointer": true,
+      "post_commit": true,
+      "startup_tip": true
+    },
+    "tengu_onyx_plover": {
+      "enabled": false,
+      "minHours": 24,
+      "minSessions": 3,
+      "remoteEnabled": false
+    },
+    "tengu_violin_scroll": true,
+    "tengu_tense_pond": false,
+    "tengu_bridge_repl_v2_config": {
+      "init_retry_max_attempts": 3,
+      "init_retry_base_delay_ms": 500,
+      "init_retry_jitter_fraction": 0.25,
+      "init_retry_max_delay_ms": 4000,
+      "http_timeout_ms": 10000,
+      "uuid_dedup_buffer_size": 2000,
+      "heartbeat_interval_ms": 20000,
+      "heartbeat_jitter_fraction": 0.1,
+      "token_refresh_buffer_ms": 1500000,
+      "teardown_archive_timeout_ms": 1500,
+      "connect_timeout_ms": 15000,
+      "min_version": "2.1.70",
+      "should_show_app_upgrade_message": false
+    },
+    "tengu_madrone_spindle_newel": false,
+    "tengu_marker_easel": false,
+    "tengu_mcp_protocol_negotiation_stdio": false,
+    "tengu_scratch": false,
+    "tengu_pewter_orchard": true,
+    "tengu_rustling_orbit": false,
+    "tengu_lapis_anchor_budget": 15000000,
+    "tengu_mcp_subagent_prompt": true,
+    "tengu_loud_sugary_rock": false,
+    "tengu_madrone_spindle": true,
+    "tengu_mcp_drop_invalid_tool_schemas": [
+      "*"
+    ],
+    "tengu_modular_mochi": true,
+    "tengu_lilac_loom": null,
+    "tengu_kairos_loop_prompt": true,
+    "tengu_lively_beaver": true,
+    "tengu_cobalt_plinth_yarrow": false,
+    "tengu_ochre_kite": true,
+    "tengu_violin_rosin": false,
+    "tengu_permission_friction": true,
+    "tengu_slate_meridian": false,
+    "claude_code_skills_dashboard_enabled_cli": false,
+    "tengu-fable-off-switch": {
+      "activated": false
+    },
+    "tengu_xterm_atlas_reset": true,
+    "tengu_mcp_retry_failed_remote": false,
+    "tengu_kairos_cron_durable": false,
+    "tengu_amber_tributary_join": false,
+    "tengu_gha_plugin_code_review": false,
+    "tengu_ultraplan_prompt_identifier": "visual_plan",
+    "tengu_magical_pixel": false,
+    "tengu_cobalt_heron": false,
+    "tengu_cowork_auto_mode_include_allowed_write_mcp": true,
+    "tengu_lantern_prism": true,
+    "tengu_violin_tailgut": true,
+    "tengu_porch_bell_9f": "",
+    "tengu_velvet_harbor": false,
+    "tengu_basalt_shelf": 0,
+    "tengu_fleet_needs_input_nudge": true,
+    "tengu_humble_hammock": true,
+    "tengu_willow_sentinel_ttl_hours": 1,
+    "tengu_claudeai_mcp_connectors": true,
+    "tengu_walrus_canteen": false,
+    "tengu_vscode_feedback_survey": true,
+    "tengu_kairos_github_webhooks": false,
+    "tengu_aura_sieve": false,
+    "tengu_cobalt_raccoon": true,
+    "tengu_sm_config": {
+      "minimumMessageTokensToInit": 150000,
+      "minimumTokensBetweenUpdate": 40000,
+      "toolCallsBetweenUpdates": 10
+    },
+    "tengu_hazel_osprey_floor": 75000,
+    "tengu_slate_ribbon": true,
+    "tengu_virtual_pancake": true,
+    "tengu_cobalt_compass": true,
+    "tengu_review_workflow_routing": false,
+    "tengu_juniper_sundial": 10,
+    "tengu_pewter_kite_ms": 0,
+    "tengu_mcp_step_up_auth_dialog": false,
+    "tengu_slate_thimble": false,
+    "tengu_chert_bezel": true,
+    "tengu_violin_ferrule": true,
+    "tengu_deferred_stub_tool": true,
+    "tengu_violin_peg": true,
+    "tengu_amber_redwood2": "",
+    "tengu_drift_lantern": true,
+    "tengu_good_survey_transcript_ask_config": {
+      "probability": 0.5
+    },
+    "tengu_amber_rokovoko": 0.2,
+    "tengu_plugin_binary_assets": false,
+    "tengu_misty_twilight": true,
+    "tengu_birch_kettle": false,
+    "tengu_copper_bollard": false,
+    "tengu_swift_lynx": {
+      "version": 2,
+      "endpoint": "/v1/code/promo/cloud_credit",
+      "webPath": "/code/claim-credit",
+      "desktopPath": "/claude-code-desktop/claim-credit",
+      "claimLinkIncludesOrganization": true,
+      "startup": {
+        "text": "You've been granted a $250 bonus credit for cloud sessions, on top of your plan limits",
+        "claimPageLine": "Get started with your $250 cloud session credit",
+        "buttonLabel": "Get started"
+      },
+      "limitWall": {
+        "noticeLine": "While you wait, start a new cloud session with a $250 credit",
+        "label": "While you wait, start a new cloud session with a $250 credit",
+        "claimPageLine": "Get started with your $250 cloud session credit"
+      },
+      "ide": {
+        "text": "While you wait, start a new cloud session with a $250 credit",
+        "buttonLabel": "Get started"
+      }
+    },
+    "tengu_streaming_tool_execution2": true,
+    "tengu_rc_long_turn_nudge": {
+      "thresholdSec": 10,
+      "probability": 0.5,
+      "maxImpressions": 5,
+      "impressionKey": "v1"
+    },
+    "tengu_slate_nexus": true,
+    "tengu_slate_lantern": true,
+    "tengu_chomp_sable": false,
+    "tengu_tool_pear": false,
+    "tengu_lantern_wick": false,
+    "tengu_herring_clock": false,
+    "tengu_grey_step2": {
+      "enabled": true,
+      "dialogTitle": "We recommend medium effort for Opus",
+      "dialogDescription": "Effort determines how long Claude thinks for when completing your task. We recommend medium effort for most tasks to balance speed and intelligence and maximize rate limits. Use ultrathink to trigger high effort when needed."
+    },
+    "tengu_workflows_enabled": true,
+    "tengu_violin_pegbox": true,
+    "tengu_violin_fingerboard": true,
+    "tengu_dunwich_bell": false,
+    "tengu_violin_nut": true,
+    "tengu_flickering_rain": true,
+    "tengu_rewind_first_message": true,
+    "tengu_scalable_quiche": false,
+    "tengu_saffron_anchor": true,
+    "tengu_ochre_bittern": false,
+    "tengu_copper_bridge": true,
+    "tengu_twinkling_globe": false,
+    "tengu_amber_sentinel": true,
+    "tengu_cedar_hollow_7m": {},
+    "tengu_marble_lark": false,
+    "tengu_teal_corbel": true,
+    "tengu_woven_harbor": false,
+    "tengu_silly_waterfall": true,
+    "tengu_starry_locket": false,
+    "tengu_cobalt_thistle": false,
+    "tengu_slate_moth": false,
+    "tengu_kairos_loop_dynamic": true,
+    "tengu_session_name_uniqueness": false,
+    "tengu_tern_alloy": "copy_a",
+    "tengu_willow_crate": false,
+    "tengu_violin_amati": true,
+    "tengu_lexical_glade": true,
+    "tengu_sorrel_trellis_newel": false,
+    "tengu_jazzy_goblet": true,
+    "tengu_chrome_install_upsell": true,
+    "tengu_cobalt_plinth_holly": true,
+    "tengu_dreamy_frost": true,
+    "tengu_lovely_umbrella": false,
+    "tengu_prompt_cache_diagnostics": true,
+    "tengu_team_discovery": false,
+    "tengu_mill_orange": false,
+    "tengu_cinder_plover": "",
+    "tengu_vscode_integrated_browser": false,
+    "tengu_ccr_subagent_skip_on_delta": false,
+    "tengu_vellum_ash": [],
+    "tengu_slate_wren": false,
+    "tengu_onyx_sluice": true,
+    "tengu_crimson_echo": {},
+    "tengu_violin_wood": false,
+    "tengu_cobalt_plinth_damson": true,
+    "tengu_mcp_local_oauth_blocked_hosts": {
+      "hosts": [
+        "microsoft365.mcp.claude.com",
+        "gmail.mcp.claude.com",
+        "gcal.mcp.claude.com"
+      ]
+    },
+    "tengu_zinc_harbor": false,
+    "tengu_mcp_protocol_negotiation_ccr": true,
+    "tengu_plank_river_frost": "user_intent",
+    "tengu_bridge_poll_interval_ms": 0,
+    "tengu_ember_latch": false,
+    "tengu_violin_hair": true,
+    "tengu_tranquil_crescent": false,
+    "tengu_flint_harbor": false,
+    "tengu_desktop_upsell": {
+      "enable_shortcut_tip": true,
+      "enable_startup_dialog": false
+    },
+    "tengu_doorbell_agave": false,
+    "tengu_cobalt_plinth_mallow": false,
+    "tengu_cobalt_plinth_linden": true,
+    "tengu_goofy_jellyfish": "",
+    "tengu_curious_tower_stateless_models": "fable-5-1, opus-5, opus-4-8",
+    "tengu_frame_publish_context": true,
+    "tengu_compass_dial": true,
+    "tengu_synthetic_fog": 4259840,
+    "tengu_harbor_willow": true,
+    "tengu_hearth_resolved_rows": "full",
+    "tengu_lilac_dune": false,
+    "tengu_ccr_classifier_keepalive_enabled": false,
+    "tengu_ccr_upload_trim": {
+      "envelope": true,
+      "media": true
+    },
+    "tengu_red_coaster": false,
+    "tengu_cedar_lantern": true,
+    "tengu_slate_avocet": false,
+    "tengu_quiet_heron": true,
+    "tengu_cinder_almanac": true,
+    "tengu_react_vulnerability_warning": false,
+    "tengu_ccr_drop_unwatched_stream_events": true,
+    "tengu_buzzing_lightning": false,
+    "tengu_penguin_mode_promo": {
+      "discountPercent": 0,
+      "endDate": "Feb 16"
+    },
+    "tengu_report_findings_tool": true,
+    "tengu_quiet_dolphin": false,
+    "tengu_mcp_swap_dedupe": false,
+    "tengu_basalt_tern": false,
+    "tengu_velvet_hammer_falcon": false,
+    "tengu_chrome_auto_enable": true,
+    "tengu_bison_cairn": false,
+    "tengu_ccr_context_build_after_resume_enabled": false,
+    "tengu_bubbly_harbor": true,
+    "tengu_velvet_static": true,
+    "tengu_dazzling_floyd": true,
+    "tengu_ticklish_whisper": false,
+    "tengu_velvet_hammer_mythos_5": false,
+    "tengu_feature_claudified_template": false,
+    "tengu_auto_mode_classifier_queue": false,
+    "tengu_velvet_hammer_sonnet_4_5": false,
+    "tengu_ultrareview_git_init_recovery_enabled": false,
+    "tengu_long_context_survey_threshold": "",
+    "tengu_velvet_hammer_opus_4_6": false,
+    "tengu_iridescent_pascal": false,
+    "tengu_saffron_credits_only_tiers": [
+      "enterprise"
+    ],
+    "tengu_velvet_hammer_haiku": false,
+    "tengu_quill_harbor": "acceptEdits",
+    "tengu_fancy_wand": false,
+    "tengu_peppy_stardust": {},
+    "tengu_long_context_survey_question_variant": "",
+    "tengu_velvet_mallet_opus_4_6": true,
+    "tengu_joyful_globe": true,
+    "tengu_velvet_hammer_opus": false,
+    "tengu_gentle_hammock": true,
+    "tengu_velvet_mallet_opus_4_7": true,
+    "tengu_violin_link_proof_v2": true,
+    "tengu_velvet_hammer_opus_4_7": false,
+    "tengu_velvet_mallet_sonnet_4_6": true,
+    "tengu_slate_quill": true,
+    "tengu_velvet_mallet_haiku": false,
+    "tengu_velvet_hammer_opus_4_8": true,
+    "tengu_atomic_ocean": true,
+    "tengu_ccr_replay_acks_at_request_dispatch": true,
+    "tengu_velvet_mallet_sonnet": false,
+    "tengu_velvet_hammer": false,
+    "tengu_non_deferrable_builtins": {},
+    "tengu_velvet_mallet_sonnet_4_5": false,
+    "tengu_swirling_squid": false,
+    "tengu_velvet_hammer_fable_5": false,
+    "tengu_juniper_relay_config": {},
+    "tengu_sorted_flute": false,
+    "tengu_sleepy_snowflake": "all",
+    "tengu_velvet_mallet": false,
+    "tengu_loop_noop_fold": true,
+    "tengu_velvet_mallet_haiku_4_5": true,
+    "tengu_garnet_spool": false,
+    "tengu_tab_read_sep": false,
+    "tengu_cobalt_awning": -1,
+    "tengu_soft_slate_nudge": "baseline",
+    "tengu_velvet_mallet_sonnet_5": true,
+    "tengu_juniper_relay": false,
+    "tengu_velvet_mallet_opus": false,
+    "tengu_windows_credman": false,
+    "tengu_dapper_brooks": false,
+    "tengu_ccr_plugin_refresh_in_idle_enabled": false,
+    "tengu_amber_redwood3": "",
+    "tengu_golden_popcorn": 0,
+    "tengu_long_context_survey_probability": "",
+    "tengu_velvet_hammer_sonnet": false,
+    "tengu_lantern_hearth": "off",
+    "tengu_velvet_mallet_opus_5": true,
+    "tengu_binary_balloon": false,
+    "tengu_velvet_hammer_haiku_4_5": false,
+    "tengu_rustling_pixel": "upgrade",
+    "tengu_ax_screen_reader": true,
+    "tengu_velvet_hammer_sonnet_5": false,
+    "tengu_cinder_swift": "interrupt",
+    "tengu_velvet_mallet_opus_4_8": true,
+    "tengu_umber_sluice": true,
+    "tengu_loud_sugary_rock2": false,
+    "tengu_velvet_mallet_falcon": false,
+    "tengu_velvet_hammer_sonnet_4_6": false,
+    "tengu_long_context_survey_trigger_mode": "",
+    "tengu_ccr_toolstate_snapshot": false,
+    "tengu_sleepy_shore": {},
+    "tengu_velvet_mallet_fable_5": true,
+    "tengu_vellum_anchor": false,
+    "tengu_c4e_slash_upsell": true,
+    "tengu_humble_zephyr": false
+  },
+  "unpinOpus47LaunchEffort": true,
+  "unpinOpus48LaunchEffort": true,
+  "unpinFable5LaunchEffort": true,
+  "cachedStatsigGates": {
+    "tengu_log_1p_events": true,
+    "code_slack_app_install_banner": false,
+    "tengu_tool_pear": false,
+    "tengu_sumi": false,
+    "tengu_prompt_suggestion": true,
+    "tengu_year_end_2025_campaign_promo": false,
+    "tengu_disable_bypass_permissions_mode": false
+  },
+  "userID": "154eceebffdea45dcbc11391c91b3ec4fdc1aeb792d8bef7f64b519716552105",
+  "firstStartTime": "2026-01-05T15:32:40.784Z",
+  "sonnet45MigrationComplete": true,
+  "opus45MigrationComplete": true,
+  "changelogLastFetched": 1790374582208,
+  "autoUpdatesProtectedForNative": true,
+  "officialMarketplaceAutoInstallAttempted": true,
+  "officialMarketplaceAutoInstalled": true,
+  "githubRepoPaths": {
+    "labyrica/arsenal": [
+      "C:\\Users\\rober\\Documents\\GitHub\\arsenal"
+    ],
+    "robertobendi/labyrica.com": [
+      "C:\\Users\\rober\\Documents\\GitHub\\labyrica.com"
+    ],
+    "robertobendi/longituud": [
+      "C:\\Users\\rober\\Documents\\GitHub\\longituud"
+    ],
+    "labyrica/slatestack": [
+      "C:\\Users\\rober\\Documents\\GitHub\\slatestack"
+    ],
+    "labyrica/orbit": [
+      "C:\\Users\\rober\\Documents\\GitHub\\orbit"
+    ],
+    "robertobendi/lhumos-alpha": [
+      "C:\\Users\\rober\\Documents\\GitHub\\Lhumos-alpha"
+    ],
+    "robertobendi/strobetano.com": [
+      "C:\\Users\\rober\\Documents\\GitHub\\strobetano.com"
+    ],
+    "strobetano/cosyrange": [
+      "C:\\Users\\rober\\Documents\\GitHub\\cosyrange"
+    ],
+    "robertobendi/pipermap": [
+      "C:\\Users\\rober\\Documents\\GitHub\\pipermap"
+    ],
+    "labyrica/adbmirror": [
+      "C:\\Users\\rober\\Documents\\GitHub\\AdbMirror"
+    ],
+    "labyrica/orchestra": [
+      "C:\\Users\\rober\\Documents\\GitHub\\orchestra"
+    ],
+    "robertobendi/libertygest": [
+      "C:\\Users\\rober\\Documents\\GitHub\\LibertyGest"
+    ],
+    "strobetano/spord-reboot": [
+      "C:\\Users\\rober\\Documents\\GitHub\\spord-reboot"
+    ],
+    "robertobendi/cardaria": [
+      "C:\\Users\\rober\\Documents\\GitHub\\cardaria"
+    ],
+    "labyrica/hightower": [
+      "C:\\Users\\rober\\Documents\\GitHub\\hightower"
+    ],
+    "strobetano/2am": [
+      "C:\\Users\\rober\\Documents\\GitHub\\2am"
+    ],
+    "strobetano/vendingmachine": [
+      "C:\\Users\\rober\\Documents\\GitHub\\vendingmachine"
+    ],
+    "robertobendi/wazzicode-unity": [
+      "C:\\Users\\rober\\Documents\\GitHub\\wazzicode-unity"
+    ],
+    "robertobendi/wuat": [
+      "C:\\Users\\rober\\Documents\\GitHub\\Wuat"
+    ],
+    "robertobendi/zerotime-dispatch": [
+      "C:\\Users\\rober\\Documents\\GitHub\\zerotime-dispatch"
+    ],
+    "strobetano/spordbeat": [
+      "C:\\Users\\rober\\Documents\\GitHub\\spordbeat"
+    ],
+    "strobetano/parcelpanic": [
+      "C:\\Users\\rober\\Documents\\GitHub\\parcelpanic"
+    ],
+    "strobetano/fps-kit": [
+      "C:\\Users\\rober\\Documents\\GitHub\\fps-kit"
+    ],
+    "robertobendi/octopus-control": [
+      "C:\\Users\\rober\\Documents\\GitHub\\octopus-control"
+    ],
+    "strobetano/blockluck-fps": [
+      "C:\\Users\\rober\\Documents\\GitHub\\blockluck-fps"
+    ]
+  },
+  "thinkingMigrationComplete": true,
+  "claudeCodeFirstTokenDate": "2026-01-03T09:52:54.663252Z",
+  "shiftEnterKeyBindingInstalled": true,
+  "hasCompletedOnboarding": true,
+  "lastOnboardingVersion": "2.1.223",
+  "projects": {
+    "C:/Users/rober/Documents/GitHub/arsenal": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "lastCost": 172.5035015,
+      "lastAPIDuration": 5486935,
+      "lastAPIDurationWithoutRetries": 5458353,
+      "lastToolDuration": 4971219,
+      "lastDuration": 822389145,
+      "lastLinesAdded": 5564,
+      "lastLinesRemoved": 695,
+      "lastTotalInputTokens": 5217,
+      "lastTotalOutputTokens": 371544,
+      "lastTotalCacheCreationInputTokens": 2484158,
+      "lastTotalCacheReadInputTokens": 276704097,
+      "lastTotalWebSearchRequests": 0,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1133,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0012029999999999999
+        },
+        "claude-opus-5": {
+          "inputTokens": 4084,
+          "outputTokens": 371530,
+          "cacheReadInputTokens": 276704097,
+          "cacheCreationInputTokens": 2484158,
+          "webSearchRequests": 0,
+          "costUSD": 172.5022985
+        }
+      },
+      "lastSessionId": "67b72a1c-1d3b-4999-af19-834579d7496e",
+      "lastFpsAverage": 0.16,
+      "lastFpsLow1Pct": 31.24,
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 133581,
+        "frame_duration_ms_min": 0.049099999996542465,
+        "frame_duration_ms_max": 185.91440000012517,
+        "frame_duration_ms_avg": 0.6641937738077924,
+        "frame_duration_ms_p50": 0.5366500001400709,
+        "frame_duration_ms_p95": 0.9851550001651047,
+        "frame_duration_ms_p99": 4.381627999208861,
+        "hook_duration_ms_count": 1227,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 283,
+        "hook_duration_ms_avg": 79.51507742461288,
+        "hook_duration_ms_p50": 76,
+        "hook_duration_ms_p95": 111,
+        "hook_duration_ms_p99": 123.76999999999998,
+        "pre_tool_hook_duration_ms_count": 642,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 284,
+        "pre_tool_hook_duration_ms_avg": 81.0202492211838,
+        "pre_tool_hook_duration_ms_p50": 97,
+        "pre_tool_hook_duration_ms_p95": 113.94999999999993,
+        "pre_tool_hook_duration_ms_p99": 124
+      },
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.241",
+      "hasUnseenTeamArtifacts": false,
+      "lastStartTime": 1787566188511
+    },
+    "C:/Users/rober": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "lastCost": 0.18808120000000003,
+      "lastAPIDuration": 6560,
+      "lastAPIDurationWithoutRetries": 6512,
+      "lastToolDuration": 704,
+      "lastDuration": 21266,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1405,
+      "lastTotalOutputTokens": 296,
+      "lastTotalCacheCreationInputTokens": 19242,
+      "lastTotalCacheReadInputTokens": 127351,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 8.38,
+      "lastFpsLow1Pct": 88.87,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 895,
+          "outputTokens": 12,
+          "thinkingTokens": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000955
+        },
+        "claude-opus-5-5": {
+          "inputTokens": 510,
+          "outputTokens": 284,
+          "thinkingTokens": 71,
+          "cacheReadInputTokens": 127351,
+          "cacheCreationInputTokens": 19242,
+          "webSearchRequests": 0,
+          "costUSD": 0.18712620000000002
+        }
+      },
+      "lastSessionId": "555307d5-44d2-4bee-8cd2-1e6bc17a4603",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 105,
+        "frame_duration_ms_min": 0.06790000000000873,
+        "frame_duration_ms_max": 29.655099999999948,
+        "frame_duration_ms_avg": 0.9826495238095525,
+        "frame_duration_ms_p50": 0.588900000000649,
+        "frame_duration_ms_p95": 1.5141599999993556,
+        "frame_duration_ms_p99": 10.937724000000369,
+        "hook_duration_ms_count": 2,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 499,
+        "hook_duration_ms_avg": 249.5,
+        "hook_duration_ms_p50": 249.5,
+        "hook_duration_ms_p95": 474.04999999999995,
+        "hook_duration_ms_p99": 494.01,
+        "pre_tool_hook_duration_ms_count": 1,
+        "pre_tool_hook_duration_ms_min": 2,
+        "pre_tool_hook_duration_ms_max": 2,
+        "pre_tool_hook_duration_ms_avg": 2,
+        "pre_tool_hook_duration_ms_p50": 2,
+        "pre_tool_hook_duration_ms_p95": 2,
+        "pre_tool_hook_duration_ms_p99": 2
+      },
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.283",
+      "lastStartTime": 1790443321612
+    },
+    "C:/Users/rober/Documents/GitHub/labyrica.com": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.241",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 35.916027499999984,
+      "lastAPIDuration": 2091873,
+      "lastAPIDurationWithoutRetries": 2091531,
+      "lastToolDuration": 226513,
+      "lastDuration": 804867051,
+      "lastStartTime": 1787583710782,
+      "lastLinesAdded": 2484,
+      "lastLinesRemoved": 453,
+      "lastTotalInputTokens": 2588,
+      "lastTotalOutputTokens": 154508,
+      "lastTotalCacheCreationInputTokens": 566696,
+      "lastTotalCacheReadInputTokens": 52754839,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.04,
+      "lastFpsLow1Pct": 132.86,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 918,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000998
+        },
+        "claude-opus-5": {
+          "inputTokens": 1670,
+          "outputTokens": 154492,
+          "cacheReadInputTokens": 52754839,
+          "cacheCreationInputTokens": 566696,
+          "webSearchRequests": 0,
+          "costUSD": 35.91502949999999
+        }
+      },
+      "lastSessionId": "2aa286f1-2f10-4dc4-915d-cdf88de0c2b5",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 30900,
+        "frame_duration_ms_min": 0.05730000001494773,
+        "frame_duration_ms_max": 73.06459999084473,
+        "frame_duration_ms_avg": 0.7538656148899835,
+        "frame_duration_ms_p50": 0.5723499993328005,
+        "frame_duration_ms_p95": 1.0646800000220535,
+        "frame_duration_ms_p99": 5.018579999888313,
+        "hook_duration_ms_count": 400,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1240,
+        "hook_duration_ms_avg": 101.7675,
+        "hook_duration_ms_p50": 102,
+        "hook_duration_ms_p95": 126,
+        "hook_duration_ms_p99": 369.05999999999995,
+        "pre_tool_hook_duration_ms_count": 235,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1246,
+        "pre_tool_hook_duration_ms_avg": 96.7531914893617,
+        "pre_tool_hook_duration_ms_p50": 107,
+        "pre_tool_hook_duration_ms_p95": 127.59999999999997,
+        "pre_tool_hook_duration_ms_p99": 331.9199999999996
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/longituud": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/slatestack": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "reactVulnerabilityCache": {
+        "detected": false,
+        "package": null,
+        "packageName": null,
+        "version": null,
+        "packageManager": null
+      },
+      "lastCost": 0.3499687499999999,
+      "lastAPIDuration": 72224,
+      "lastAPIDurationWithoutRetries": 72120,
+      "lastToolDuration": 21655,
+      "lastDuration": 124034,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 22969,
+      "lastTotalOutputTokens": 3199,
+      "lastTotalCacheCreationInputTokens": 29193,
+      "lastTotalCacheReadInputTokens": 183801,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 12.17,
+      "lastFpsLow1Pct": 207.16,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 22957,
+          "outputTokens": 1369,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.029802
+        },
+        "claude-opus-4-5-20251101": {
+          "inputTokens": 12,
+          "outputTokens": 1830,
+          "cacheReadInputTokens": 183801,
+          "cacheCreationInputTokens": 29193,
+          "webSearchRequests": 0,
+          "costUSD": 0.32016674999999994
+        }
+      },
+      "lastSessionId": "637ae50b-6fe8-4320-81b6-26ef449a9b7f"
+    },
+    "C:/Users/rober/Documents/GitHub/orbit": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": []
+    },
+    "C:/Users/rober/Documents/GitHub/Lhumos-alpha": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": []
+    },
+    "C:/Users/rober/Documents/GitHub/pipermap": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0.13617325,
+      "lastAPIDuration": 11967,
+      "lastAPIDurationWithoutRetries": 11966,
+      "lastToolDuration": 962,
+      "lastDuration": 80005,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 9,
+      "lastTotalOutputTokens": 267,
+      "lastTotalCacheCreationInputTokens": 17717,
+      "lastTotalCacheReadInputTokens": 37444,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 6.66,
+      "lastFpsLow1Pct": 414.25,
+      "lastModelUsage": {
+        "claude-opus-4-6[1m]": {
+          "inputTokens": 9,
+          "outputTokens": 267,
+          "cacheReadInputTokens": 37444,
+          "cacheCreationInputTokens": 17717,
+          "webSearchRequests": 0,
+          "costUSD": 0.13617325
+        }
+      },
+      "lastSessionId": "d249f57a-c2a1-47f6-9d8d-7e4f6d9ec121",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 529,
+        "frame_duration_ms_min": 0.028200000000651926,
+        "frame_duration_ms_max": 8.960700000010547,
+        "frame_duration_ms_avg": 0.4332616257089736,
+        "frame_duration_ms_p50": 0.352999999999156,
+        "frame_duration_ms_p95": 0.7867999999996743,
+        "frame_duration_ms_p99": 2.3191919999994663,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 83,
+        "hook_duration_ms_max": 83,
+        "hook_duration_ms_avg": 83,
+        "hook_duration_ms_p50": 83,
+        "hook_duration_ms_p95": 83,
+        "hook_duration_ms_p99": 83,
+        "pre_tool_hook_duration_ms_count": 2,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 0,
+        "pre_tool_hook_duration_ms_avg": 0,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0,
+        "pre_tool_hook_duration_ms_p99": 0
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/AdbMirror": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 0.059314000000000006,
+      "lastAPIDuration": 4262,
+      "lastAPIDurationWithoutRetries": 4262,
+      "lastToolDuration": 0,
+      "lastDuration": 19311,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 3,
+      "lastTotalOutputTokens": 141,
+      "lastTotalCacheCreationInputTokens": 8172,
+      "lastTotalCacheReadInputTokens": 9398,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 4.53,
+      "lastFpsLow1Pct": 116.05,
+      "lastModelUsage": {
+        "claude-opus-4-6[1m]": {
+          "inputTokens": 3,
+          "outputTokens": 141,
+          "cacheReadInputTokens": 9398,
+          "cacheCreationInputTokens": 8172,
+          "webSearchRequests": 0,
+          "costUSD": 0.059314000000000006
+        }
+      },
+      "lastSessionId": "785a1709-7f6f-4868-b0d5-b655aa70c208",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 85,
+        "frame_duration_ms_min": 0.08560000000034051,
+        "frame_duration_ms_max": 8.616700000000037,
+        "frame_duration_ms_avg": 0.5988176470587926,
+        "frame_duration_ms_p50": 0.4717999999993481,
+        "frame_duration_ms_p95": 1.466359999999986,
+        "frame_duration_ms_p99": 3.487239999999935,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 176,
+        "hook_duration_ms_max": 176,
+        "hook_duration_ms_avg": 176,
+        "hook_duration_ms_p50": 176,
+        "hook_duration_ms_p95": 176,
+        "hook_duration_ms_p99": 176
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/orchestra": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false
+    },
+    "C:/Users/rober/Desktop/ZEROTIME": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false
+    },
+    "C:/Users/rober/Documents/GitHub/clarinsclinic": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false
+    },
+    "C:/Users/rober/Documents/GitHub/LibertyGest": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastCost": 83.92509000000003,
+      "lastAPIDuration": 2262657,
+      "lastAPIDurationWithoutRetries": 2262445,
+      "lastToolDuration": 224431,
+      "lastDuration": 38896056,
+      "lastLinesAdded": 2077,
+      "lastLinesRemoved": 1473,
+      "lastTotalInputTokens": 21291,
+      "lastTotalOutputTokens": 143002,
+      "lastTotalCacheCreationInputTokens": 1919911,
+      "lastTotalCacheReadInputTokens": 38169719,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.93,
+      "lastFpsLow1Pct": 167.12,
+      "lastModelUsage": {
+        "claude-fable-5": {
+          "inputTokens": 20740,
+          "outputTokens": 142982,
+          "cacheReadInputTokens": 38169719,
+          "cacheCreationInputTokens": 1919911,
+          "webSearchRequests": 0,
+          "costUSD": 83.92443900000002
+        },
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 551,
+          "outputTokens": 20,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000651
+        }
+      },
+      "lastSessionId": "fe3a958c-6b4d-43c2-9e5a-3ea745d3b9b2",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 31333,
+        "frame_duration_ms_min": 0.05419999998412095,
+        "frame_duration_ms_max": 304.2295999999624,
+        "frame_duration_ms_avg": 1.6728066862425814,
+        "frame_duration_ms_p50": 0.865699999674689,
+        "frame_duration_ms_p95": 2.808069999911821,
+        "frame_duration_ms_p99": 7.14129599963314,
+        "hook_duration_ms_count": 346,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1279,
+        "hook_duration_ms_avg": 96.97398843930635,
+        "hook_duration_ms_p50": 84,
+        "hook_duration_ms_p95": 265,
+        "hook_duration_ms_p99": 326.95000000000033,
+        "pre_tool_hook_duration_ms_count": 226,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 351,
+        "pre_tool_hook_duration_ms_avg": 80.78761061946902,
+        "pre_tool_hook_duration_ms_p50": 84,
+        "pre_tool_hook_duration_ms_p95": 266,
+        "pre_tool_hook_duration_ms_p99": 283.25
+      },
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.198",
+      "hasUnseenTeamArtifacts": false,
+      "lastStartTime": 1783069470523
+    },
+    "C:/Users/rober/Documents/GitHub/cosyrange": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.243",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 4.843616,
+      "lastAPIDuration": 336703,
+      "lastAPIDurationWithoutRetries": 336618,
+      "lastToolDuration": 2390571,
+      "lastDuration": 655913197,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1714,
+      "lastTotalOutputTokens": 23783,
+      "lastTotalCacheCreationInputTokens": 174539,
+      "lastTotalCacheReadInputTokens": 4997858,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.05,
+      "lastFpsLow1Pct": 232.03,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 902,
+          "outputTokens": 12,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.0009620000000000001
+        },
+        "claude-opus-5": {
+          "inputTokens": 812,
+          "outputTokens": 23771,
+          "cacheReadInputTokens": 4997858,
+          "cacheCreationInputTokens": 174539,
+          "webSearchRequests": 0,
+          "costUSD": 4.842654
+        }
+      },
+      "lastSessionId": "6dd8d986-bef1-453b-bc9c-ac41108753e7",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 115351,
+        "frame_duration_ms_min": 0.07170000020414591,
+        "frame_duration_ms_max": 41.34940000064671,
+        "frame_duration_ms_avg": 0.8147828870149026,
+        "frame_duration_ms_p50": 0.8036000001011416,
+        "frame_duration_ms_p95": 1.1151849993504581,
+        "frame_duration_ms_p99": 3.350632000816985,
+        "hook_duration_ms_count": 361,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 340,
+        "hook_duration_ms_avg": 74.22160664819944,
+        "hook_duration_ms_p50": 87,
+        "hook_duration_ms_p95": 120,
+        "hook_duration_ms_p99": 140.19999999999982,
+        "pre_tool_hook_duration_ms_count": 516,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 150,
+        "pre_tool_hook_duration_ms_avg": 26.790697674418606,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 115,
+        "pre_tool_hook_duration_ms_p99": 129.85000000000002
+      },
+      "lastStartTime": 1787732664503
+    },
+    "C:/Users/rober/Documents/GitHub/spord-reboot": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": false
+    },
+    "C:/Windows": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.172",
+      "lastCost": 0.608625,
+      "lastAPIDuration": 8787,
+      "lastAPIDurationWithoutRetries": 8735,
+      "lastToolDuration": 0,
+      "lastDuration": 2543228,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 5191,
+      "lastTotalOutputTokens": 220,
+      "lastTotalCacheCreationInputTokens": 27540,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.17,
+      "lastFpsLow1Pct": 74.31,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 490,
+          "outputTokens": 15,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000565
+        },
+        "claude-fable-5": {
+          "inputTokens": 4701,
+          "outputTokens": 205,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 27540,
+          "webSearchRequests": 0,
+          "costUSD": 0.6080599999999999
+        }
+      },
+      "lastSessionId": "308b6755-0737-4d9a-ac96-13e7f604d28a",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 427,
+        "frame_duration_ms_min": 0.10719999999855645,
+        "frame_duration_ms_max": 77.30369999999994,
+        "frame_duration_ms_avg": 0.9860695550359222,
+        "frame_duration_ms_p50": 0.44549999999435386,
+        "frame_duration_ms_p95": 2.7788299999999246,
+        "frame_duration_ms_p99": 13.208931999999958,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 274,
+        "hook_duration_ms_max": 274,
+        "hook_duration_ms_avg": 274,
+        "hook_duration_ms_p50": 274,
+        "hook_duration_ms_p95": 274,
+        "hook_duration_ms_p99": 274
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/cardaria": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.190",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.52391,
+      "lastAPIDuration": 75738,
+      "lastAPIDurationWithoutRetries": 75733,
+      "lastToolDuration": 2726,
+      "lastDuration": 78047997,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 11262,
+      "lastTotalOutputTokens": 4184,
+      "lastTotalCacheCreationInputTokens": 22053,
+      "lastTotalCacheReadInputTokens": 289732,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.02,
+      "lastFpsLow1Pct": 309.13,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 519,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000599
+        },
+        "claude-opus-4-8[1m]": {
+          "inputTokens": 10743,
+          "outputTokens": 4168,
+          "cacheReadInputTokens": 289732,
+          "cacheCreationInputTokens": 22053,
+          "webSearchRequests": 0,
+          "costUSD": 0.523311
+        }
+      },
+      "lastSessionId": "70307247-89c0-4840-9e8a-68c63fbe77c8",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 1250,
+        "frame_duration_ms_min": 0.0783000000010361,
+        "frame_duration_ms_max": 10.825700000001234,
+        "frame_duration_ms_avg": 0.4657600000161583,
+        "frame_duration_ms_p50": 0.4251499999954831,
+        "frame_duration_ms_p95": 0.696164999996835,
+        "frame_duration_ms_p99": 3.0486450000031615,
+        "hook_duration_ms_count": 13,
+        "hook_duration_ms_min": 57,
+        "hook_duration_ms_max": 289,
+        "hook_duration_ms_avg": 87.84615384615384,
+        "hook_duration_ms_p50": 77,
+        "hook_duration_ms_p95": 167.79999999999973,
+        "hook_duration_ms_p99": 264.75999999999976,
+        "pre_tool_hook_duration_ms_count": 7,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 69,
+        "pre_tool_hook_duration_ms_avg": 55.285714285714285,
+        "pre_tool_hook_duration_ms_p50": 64,
+        "pre_tool_hook_duration_ms_p95": 69,
+        "pre_tool_hook_duration_ms_p99": 69
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/hightower": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.178",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 2.6591430000000007,
+      "lastAPIDuration": 447828,
+      "lastAPIDurationWithoutRetries": 447748,
+      "lastToolDuration": 20824,
+      "lastDuration": 748946,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 11486,
+      "lastTotalOutputTokens": 25932,
+      "lastTotalCacheCreationInputTokens": 70408,
+      "lastTotalCacheReadInputTokens": 2503338,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 8.03,
+      "lastFpsLow1Pct": 220.99,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 514,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000584
+        },
+        "claude-opus-4-8[1m]": {
+          "inputTokens": 10972,
+          "outputTokens": 25918,
+          "cacheReadInputTokens": 2503338,
+          "cacheCreationInputTokens": 70408,
+          "webSearchRequests": 0,
+          "costUSD": 2.658559000000001
+        }
+      },
+      "lastSessionId": "a2939832-9b5b-4e3b-8bf3-8cbb4b2297ad",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 6008,
+        "frame_duration_ms_min": 0.10180000000036671,
+        "frame_duration_ms_max": 94.50500000000466,
+        "frame_duration_ms_avg": 2.747115063248808,
+        "frame_duration_ms_p50": 0.8888500000175554,
+        "frame_duration_ms_p95": 13.668919999993513,
+        "frame_duration_ms_p99": 24.22788799998379,
+        "hook_duration_ms_count": 37,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 557,
+        "hook_duration_ms_avg": 137.02702702702703,
+        "hook_duration_ms_p50": 83,
+        "hook_duration_ms_p95": 422.99999999999983,
+        "hook_duration_ms_p99": 521.72,
+        "pre_tool_hook_duration_ms_count": 48,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 558,
+        "pre_tool_hook_duration_ms_avg": 51.541666666666664,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 355.49999999999983,
+        "pre_tool_hook_duration_ms_p99": 491.26000000000016
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/2am": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": false,
+      "lastVersionBase": "2.1.179",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.37999150000000004,
+      "lastAPIDuration": 45646,
+      "lastAPIDurationWithoutRetries": 45635,
+      "lastToolDuration": 7967,
+      "lastDuration": 246876,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 8337,
+      "lastTotalOutputTokens": 1907,
+      "lastTotalCacheCreationInputTokens": 16630,
+      "lastTotalCacheReadInputTokens": 253375,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 3.12,
+      "lastFpsLow1Pct": 224.28,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 509,
+          "outputTokens": 16,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000589
+        },
+        "claude-opus-4-8[1m]": {
+          "inputTokens": 7828,
+          "outputTokens": 1891,
+          "cacheReadInputTokens": 253375,
+          "cacheCreationInputTokens": 16630,
+          "webSearchRequests": 0,
+          "costUSD": 0.37940250000000003
+        }
+      },
+      "lastSessionId": "9912b912-fda4-495d-aafd-6b4a287d1a85",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 766,
+        "frame_duration_ms_min": 0.08520000000135042,
+        "frame_duration_ms_max": 30.343900000000303,
+        "frame_duration_ms_avg": 0.6115574412534376,
+        "frame_duration_ms_p50": 0.48634999999922,
+        "frame_duration_ms_p95": 1.1282499999992979,
+        "frame_duration_ms_p99": 3.9502699999924693,
+        "hook_duration_ms_count": 15,
+        "hook_duration_ms_min": 54,
+        "hook_duration_ms_max": 555,
+        "hook_duration_ms_avg": 109.2,
+        "hook_duration_ms_p50": 75,
+        "hook_duration_ms_p95": 258.8999999999995,
+        "hook_duration_ms_p99": 495.77999999999975,
+        "pre_tool_hook_duration_ms_count": 7,
+        "pre_tool_hook_duration_ms_min": 60,
+        "pre_tool_hook_duration_ms_max": 135,
+        "pre_tool_hook_duration_ms_avg": 73.42857142857143,
+        "pre_tool_hook_duration_ms_p50": 65,
+        "pre_tool_hook_duration_ms_p95": 114.29999999999995,
+        "pre_tool_hook_duration_ms_p99": 130.85999999999996
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/vendingmachine": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.186",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.5339295,
+      "lastAPIDuration": 86627,
+      "lastAPIDurationWithoutRetries": 86622,
+      "lastToolDuration": 180,
+      "lastDuration": 101759277,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 11200,
+      "lastTotalOutputTokens": 3562,
+      "lastTotalCacheCreationInputTokens": 30067,
+      "lastTotalCacheReadInputTokens": 181059,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.01,
+      "lastFpsLow1Pct": 287.33,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 510,
+          "outputTokens": 14,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.00058
+        },
+        "claude-opus-4-8[1m]": {
+          "inputTokens": 10690,
+          "outputTokens": 3548,
+          "cacheReadInputTokens": 181059,
+          "cacheCreationInputTokens": 30067,
+          "webSearchRequests": 0,
+          "costUSD": 0.5333495
+        }
+      },
+      "lastSessionId": "bc6db3b2-4ea4-404c-a432-fd5a64db3f88",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 1232,
+        "frame_duration_ms_min": 0.059900000007473864,
+        "frame_duration_ms_max": 7.971499999999992,
+        "frame_duration_ms_avg": 0.5122714285745139,
+        "frame_duration_ms_p50": 0.42814999999973224,
+        "frame_duration_ms_p95": 0.9754850000007883,
+        "frame_duration_ms_p99": 3.473331000132093,
+        "hook_duration_ms_count": 5,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 286,
+        "hook_duration_ms_avg": 57.2,
+        "hook_duration_ms_p50": 0,
+        "hook_duration_ms_p95": 228.79999999999995,
+        "hook_duration_ms_p99": 274.56,
+        "pre_tool_hook_duration_ms_count": 4,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 1,
+        "pre_tool_hook_duration_ms_avg": 0.25,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0.8499999999999996,
+        "pre_tool_hook_duration_ms_p99": 0.9699999999999998
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/wazzicode-unity": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.199",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 62.662735949999984,
+      "lastAPIDuration": 3533512,
+      "lastAPIDurationWithoutRetries": 3533109,
+      "lastToolDuration": 368075,
+      "lastDuration": 5758635,
+      "lastStartTime": 1783102607931,
+      "lastLinesAdded": 806,
+      "lastLinesRemoved": 102,
+      "lastTotalInputTokens": 166916,
+      "lastTotalOutputTokens": 206475,
+      "lastTotalCacheCreationInputTokens": 2119809,
+      "lastTotalCacheReadInputTokens": 18185779,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 3.6,
+      "lastFpsLow1Pct": 63.25,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 666,
+          "outputTokens": 5384,
+          "cacheReadInputTokens": 671417,
+          "cacheCreationInputTokens": 94609,
+          "webSearchRequests": 0,
+          "costUSD": 0.21298895
+        },
+        "claude-fable-5": {
+          "inputTokens": 166250,
+          "outputTokens": 201091,
+          "cacheReadInputTokens": 17514362,
+          "cacheCreationInputTokens": 2025200,
+          "webSearchRequests": 0,
+          "costUSD": 62.449746999999974
+        }
+      },
+      "lastSessionId": "22b52050-9487-4bf5-8141-5ba50124beb2",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 13588,
+        "frame_duration_ms_min": 0.04920000000129221,
+        "frame_duration_ms_max": 117.73590000002878,
+        "frame_duration_ms_avg": 1.5790717692086313,
+        "frame_duration_ms_p50": 0.5895500000333413,
+        "frame_duration_ms_p95": 5.737259999988589,
+        "frame_duration_ms_p99": 18.3125080000353,
+        "hook_duration_ms_count": 94,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 1106,
+        "hook_duration_ms_avg": 96.90425531914893,
+        "hook_duration_ms_p50": 96,
+        "hook_duration_ms_p95": 147.04999999999998,
+        "hook_duration_ms_p99": 425.239999999995,
+        "pre_tool_hook_duration_ms_count": 58,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 157,
+        "pre_tool_hook_duration_ms_avg": 63.706896551724135,
+        "pre_tool_hook_duration_ms_p50": 76.5,
+        "pre_tool_hook_duration_ms_p95": 128.04999999999998,
+        "pre_tool_hook_duration_ms_p99": 155.29
+      }
+    },
+    "C:/Users/rober/.bismuth/workspaces/nextheritage": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasUnseenTeamArtifacts": false
+    },
+    "C:/Users/rober/Documents/GitHub/Wuat": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.190",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.521438,
+      "lastAPIDuration": 53676,
+      "lastAPIDurationWithoutRetries": 53667,
+      "lastToolDuration": 3363,
+      "lastDuration": 520909635,
+      "lastLinesAdded": 1,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 476,
+      "lastTotalOutputTokens": 2359,
+      "lastTotalCacheCreationInputTokens": 26995,
+      "lastTotalCacheReadInputTokens": 380266,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0,
+      "lastFpsLow1Pct": 204.46,
+      "lastModelUsage": {
+        "claude-opus-4-8[1m]": {
+          "inputTokens": 476,
+          "outputTokens": 2359,
+          "cacheReadInputTokens": 380266,
+          "cacheCreationInputTokens": 26995,
+          "webSearchRequests": 0,
+          "costUSD": 0.521438
+        }
+      },
+      "lastSessionId": "9eefd0bb-a025-47e1-ac61-f83baf07ba6d",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 1964,
+        "frame_duration_ms_min": 0.07280000000173459,
+        "frame_duration_ms_max": 44.067800015211105,
+        "frame_duration_ms_avg": 0.6224371178185661,
+        "frame_duration_ms_p50": 0.49165000000357395,
+        "frame_duration_ms_p95": 1.0121999999970284,
+        "frame_duration_ms_p99": 4.867176001459738,
+        "hook_duration_ms_count": 32,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 302,
+        "hook_duration_ms_avg": 69.53125,
+        "hook_duration_ms_p50": 76.5,
+        "hook_duration_ms_p95": 105.14999999999999,
+        "hook_duration_ms_p99": 242.17000000000024,
+        "pre_tool_hook_duration_ms_count": 20,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 110,
+        "pre_tool_hook_duration_ms_avg": 44.45,
+        "pre_tool_hook_duration_ms_p50": 61,
+        "pre_tool_hook_duration_ms_p95": 95.75000000000001,
+        "pre_tool_hook_duration_ms_p99": 107.14999999999998
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/zerotime-dispatch": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.241",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.8540114999999999,
+      "lastAPIDuration": 67098,
+      "lastAPIDurationWithoutRetries": 67069,
+      "lastToolDuration": 2263,
+      "lastDuration": 821476998,
+      "lastStartTime": 1787567100713,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 3058,
+      "lastTotalOutputTokens": 2680,
+      "lastTotalCacheCreationInputTokens": 45815,
+      "lastTotalCacheReadInputTokens": 635119,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0,
+      "lastFpsLow1Pct": 317.76,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 932,
+          "outputTokens": 13,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000997
+        },
+        "claude-opus-5": {
+          "inputTokens": 2126,
+          "outputTokens": 2667,
+          "cacheReadInputTokens": 635119,
+          "cacheCreationInputTokens": 45815,
+          "webSearchRequests": 0,
+          "costUSD": 0.8530144999999999
+        }
+      },
+      "lastSessionId": "29d6bacd-f050-49c0-884f-8d76f076436b",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 62095,
+        "frame_duration_ms_min": 0.07869999995455146,
+        "frame_duration_ms_max": 84.21260000000075,
+        "frame_duration_ms_avg": 0.949767396734086,
+        "frame_duration_ms_p50": 0.9364500027149916,
+        "frame_duration_ms_p95": 1.2886250030249358,
+        "frame_duration_ms_p99": 3.087764000073073,
+        "hook_duration_ms_count": 276,
+        "hook_duration_ms_min": 0,
+        "hook_duration_ms_max": 2028,
+        "hook_duration_ms_avg": 52.789855072463766,
+        "hook_duration_ms_p50": 52,
+        "hook_duration_ms_p95": 83.5,
+        "hook_duration_ms_p99": 92.25,
+        "pre_tool_hook_duration_ms_count": 188,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 109,
+        "pre_tool_hook_duration_ms_avg": 28.872340425531913,
+        "pre_tool_hook_duration_ms_p50": 48.5,
+        "pre_tool_hook_duration_ms_p95": 60.30000000000001,
+        "pre_tool_hook_duration_ms_p99": 90.25999999999999
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/spordbeat": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.223",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.30373500000000003,
+      "lastAPIDuration": 19912,
+      "lastAPIDurationWithoutRetries": 19900,
+      "lastToolDuration": 6124,
+      "lastDuration": 94019131,
+      "lastStartTime": 1786082307259,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1110,
+      "lastTotalOutputTokens": 427,
+      "lastTotalCacheCreationInputTokens": 15218,
+      "lastTotalCacheReadInputTokens": 270660,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0,
+      "lastFpsLow1Pct": 167.75,
+      "lastModelUsage": {
+        "claude-opus-5": {
+          "inputTokens": 1110,
+          "outputTokens": 427,
+          "cacheReadInputTokens": 270660,
+          "cacheCreationInputTokens": 15218,
+          "webSearchRequests": 0,
+          "costUSD": 0.30373500000000003
+        }
+      },
+      "lastSessionId": "8e3aa98b-f5bb-439d-a2bc-9714fceba833",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 279,
+        "frame_duration_ms_min": 0.0610000000015134,
+        "frame_duration_ms_max": 14.110200000000077,
+        "frame_duration_ms_avg": 0.7073121862848935,
+        "frame_duration_ms_p50": 0.5868999999947846,
+        "frame_duration_ms_p95": 1.5358600000010418,
+        "frame_duration_ms_p99": 4.835135999999069,
+        "hook_duration_ms_count": 5,
+        "hook_duration_ms_min": 57,
+        "hook_duration_ms_max": 926,
+        "hook_duration_ms_avg": 405.6,
+        "hook_duration_ms_p50": 82,
+        "hook_duration_ms_p95": 917.8,
+        "hook_duration_ms_p99": 924.36,
+        "pre_tool_hook_duration_ms_count": 2,
+        "pre_tool_hook_duration_ms_min": 58,
+        "pre_tool_hook_duration_ms_max": 886,
+        "pre_tool_hook_duration_ms_avg": 472,
+        "pre_tool_hook_duration_ms_p50": 472,
+        "pre_tool_hook_duration_ms_p95": 844.5999999999999,
+        "pre_tool_hook_duration_ms_p99": 877.72
+      }
+    },
+    "C:/Users/rober/Documents/GitHub": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.281",
+      "lastCost": 0.002042,
+      "lastAPIDuration": 886,
+      "lastAPIDurationWithoutRetries": 846,
+      "lastToolDuration": 0,
+      "lastDuration": 481562,
+      "lastStartTime": 1790374581753,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1977,
+      "lastTotalOutputTokens": 13,
+      "lastTotalCacheCreationInputTokens": 0,
+      "lastTotalCacheReadInputTokens": 0,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 0.22,
+      "lastFpsLow1Pct": 168.27,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 1977,
+          "outputTokens": 13,
+          "thinkingTokens": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.002042
+        }
+      },
+      "lastSessionId": "fae6fcb0-b2b4-494c-81a2-1d6be09c8ab3",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 104,
+        "frame_duration_ms_min": 0.08120000001508743,
+        "frame_duration_ms_max": 7.427500000000009,
+        "frame_duration_ms_avg": 0.7261692307669901,
+        "frame_duration_ms_p50": 0.4357000000018161,
+        "frame_duration_ms_p95": 2.0678000000159953,
+        "frame_duration_ms_p99": 5.866035999962476,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 976,
+        "hook_duration_ms_max": 976,
+        "hook_duration_ms_avg": 976,
+        "hook_duration_ms_p50": 976,
+        "hook_duration_ms_p95": 976,
+        "hook_duration_ms_p99": 976
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/tiny-cars": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasUnseenTeamArtifacts": false
+    },
+    "C:/Users/rober/Documents/GitHub/parcelpanic": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "exampleFiles": [],
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.223",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.22225649999999997,
+      "lastAPIDuration": 10586,
+      "lastAPIDurationWithoutRetries": 10572,
+      "lastToolDuration": 334,
+      "lastDuration": 49017,
+      "lastStartTime": 1786013494953,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1030,
+      "lastTotalOutputTokens": 477,
+      "lastTotalCacheCreationInputTokens": 15378,
+      "lastTotalCacheReadInputTokens": 107579,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 3.58,
+      "lastFpsLow1Pct": 315.48,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 522,
+          "outputTokens": 15,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000597
+        },
+        "claude-opus-5": {
+          "inputTokens": 508,
+          "outputTokens": 462,
+          "cacheReadInputTokens": 107579,
+          "cacheCreationInputTokens": 15378,
+          "webSearchRequests": 0,
+          "costUSD": 0.2216595
+        }
+      },
+      "lastSessionId": "8639d646-3ba3-483c-8f42-d70dbd893352",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 140,
+        "frame_duration_ms_min": 0.06929999999920256,
+        "frame_duration_ms_max": 8.815900000000056,
+        "frame_duration_ms_avg": 0.6332314285713193,
+        "frame_duration_ms_p50": 0.5570499999985259,
+        "frame_duration_ms_p95": 1.134140000001474,
+        "frame_duration_ms_p99": 3.0646170000000965,
+        "hook_duration_ms_count": 1,
+        "hook_duration_ms_min": 688,
+        "hook_duration_ms_max": 688,
+        "hook_duration_ms_avg": 688,
+        "hook_duration_ms_p50": 688,
+        "hook_duration_ms_p95": 688,
+        "hook_duration_ms_p99": 688,
+        "pre_tool_hook_duration_ms_count": 1,
+        "pre_tool_hook_duration_ms_min": 0,
+        "pre_tool_hook_duration_ms_max": 0,
+        "pre_tool_hook_duration_ms_avg": 0,
+        "pre_tool_hook_duration_ms_p50": 0,
+        "pre_tool_hook_duration_ms_p95": 0,
+        "pre_tool_hook_duration_ms_p99": 0
+      }
+    },
+    "C:/Users/rober/Documents/GitHub/fps-kit": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": false,
+      "lastVersionBase": "2.1.258",
+      "hasUnseenTeamArtifacts": false
+    },
+    "C:/Users/rober/Documents/GitHub/catsweeper": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": false,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "hasUnseenTeamArtifacts": false
+    },
+    "C:/Users/rober/Documents/GitHub/octopus-control": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": false,
+      "lastVersionBase": "2.1.283",
+      "hasUnseenTeamArtifacts": false
+    },
+    "C:/Users/rober/Documents/GitHub/blockluck-fps": {
+      "allowedTools": [],
+      "mcpContextUris": [],
+      "mcpServers": {},
+      "enabledMcpjsonServers": [],
+      "disabledMcpjsonServers": [],
+      "hasTrustDialogAccepted": true,
+      "hasClaudeMdExternalIncludesApproved": false,
+      "hasClaudeMdExternalIncludesWarningShown": false,
+      "lastGracefulShutdown": true,
+      "lastVersionBase": "2.1.283",
+      "hasUnseenTeamArtifacts": false,
+      "lastCost": 0.2163882,
+      "lastAPIDuration": 5961,
+      "lastAPIDurationWithoutRetries": 5918,
+      "lastToolDuration": 3296,
+      "lastDuration": 19253,
+      "lastStartTime": 1790598746598,
+      "lastLinesAdded": 0,
+      "lastLinesRemoved": 0,
+      "lastTotalInputTokens": 1406,
+      "lastTotalOutputTokens": 187,
+      "lastTotalCacheCreationInputTokens": 22882,
+      "lastTotalCacheReadInputTokens": 134181,
+      "lastTotalWebSearchRequests": 0,
+      "lastFpsAverage": 7.9,
+      "lastFpsLow1Pct": 367.74,
+      "lastModelUsage": {
+        "claude-haiku-4-5-20251001": {
+          "inputTokens": 896,
+          "outputTokens": 12,
+          "thinkingTokens": 0,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.000956
+        },
+        "claude-opus-5-5": {
+          "inputTokens": 510,
+          "outputTokens": 175,
+          "thinkingTokens": 24,
+          "cacheReadInputTokens": 134181,
+          "cacheCreationInputTokens": 22882,
+          "webSearchRequests": 0,
+          "costUSD": 0.2154322
+        }
+      },
+      "lastSessionId": "34073e73-d037-4be8-8c8a-ccd5f07feaaa",
+      "lastSessionMetrics": {
+        "frame_duration_ms_count": 126,
+        "frame_duration_ms_min": 0.0981999999985419,
+        "frame_duration_ms_max": 3.3596999999990658,
+        "frame_duration_ms_avg": 0.6119119047619284,
+        "frame_duration_ms_p50": 0.5579000000007,
+        "frame_duration_ms_p95": 1.2612500000000182,
+        "frame_duration_ms_p99": 2.645024999999805,
+        "hook_duration_ms_count": 3,
+        "hook_duration_ms_min": 80,
+        "hook_duration_ms_max": 781,
+        "hook_duration_ms_avg": 317,
+        "hook_duration_ms_p50": 90,
+        "hook_duration_ms_p95": 711.9,
+        "hook_duration_ms_p99": 767.18,
+        "pre_tool_hook_duration_ms_count": 1,
+        "pre_tool_hook_duration_ms_min": 95,
+        "pre_tool_hook_duration_ms_max": 95,
+        "pre_tool_hook_duration_ms_avg": 95,
+        "pre_tool_hook_duration_ms_p50": 95,
+        "pre_tool_hook_duration_ms_p95": 95,
+        "pre_tool_hook_duration_ms_p99": 95
+      }
+    }
+  },
+  "lastReleaseNotesSeen": "2.1.283",
+  "hasShownOpus45Notice": {
+    "13e00fb8-2d35-4d77-b266-c90e72ff44b9": true
+  },
+  "s1mAccessCache": {
+    "13e00fb8-2d35-4d77-b266-c90e72ff44b9": {
+      "hasAccess": false,
+      "hasAccessNotAsDefault": false,
+      "timestamp": 1771481693939
+    }
+  },
+  "opusProMigrationComplete": true,
+  "cachedChromeExtensionInstalled": true,
+  "passesEligibilityCache": {
+    "13e00fb8-2d35-4d77-b266-c90e72ff44b9": {
+      "eligible": false,
+      "referral_code_details": null,
+      "referrer_reward": null,
+      "remaining_passes": null,
+      "timestamp": 1779263925978
+    },
+    "0dea457a-73fe-4656-8340-091c92b55722": {
+      "eligible": false,
+      "referral_code_details": null,
+      "referrer_reward": null,
+      "remaining_passes": null,
+      "limit": null,
+      "share_link": null,
+      "terms_url": null,
+      "timestamp": 1790764277245
+    },
+    "e7ea660d-e600-4002-8c24-969aded8832c": {
+      "eligible": false,
+      "referral_code_details": null,
+      "referrer_reward": null,
+      "remaining_passes": null,
+      "limit": null,
+      "share_link": null,
+      "terms_url": null,
+      "timestamp": 1788424129402
+    }
+  },
+  "groveConfigCache": {
+    "1963c866-078b-4c68-b6e9-2b33e46366a8": {
+      "grove_enabled": true,
+      "timestamp": 1779263925453
+    },
+    "cd3c6891-9265-4390-80a2-f2095adfc713": {
+      "grove_enabled": true,
+      "timestamp": 1790764277034
+    },
+    "1a53db1e-20bc-4ef6-bed8-ce6265fdf9ec": {
+      "timestamp": 1789419152167
+    }
+  },
+  "skillUsage": {
+    "gsd:new-milestone": {
+      "usageCount": 17,
+      "lastUsedAt": 1774644246932
+    },
+    "gsd:discuss-milestone": {
+      "usageCount": 5,
+      "lastUsedAt": 1768845222301
+    },
+    "gsd:plan-phase": {
+      "usageCount": 91,
+      "lastUsedAt": 1774546383350
+    },
+    "gsd:execute-phase": {
+      "usageCount": 76,
+      "lastUsedAt": 1774547163676
+    },
+    "gsd:execute-plan": {
+      "usageCount": 8,
+      "lastUsedAt": 1771754275203
+    },
+    "gsd:research-phase": {
+      "usageCount": 5,
+      "lastUsedAt": 1774278453666
+    },
+    "gsd:update": {
+      "usageCount": 10,
+      "lastUsedAt": 1776152250848
+    },
+    "gsd:new-project": {
+      "usageCount": 5,
+      "lastUsedAt": 1775941805088
+    },
+    "gsd:map-codebase": {
+      "usageCount": 2,
+      "lastUsedAt": 1774215519797
+    },
+    "gsd:audit-milestone": {
+      "usageCount": 11,
+      "lastUsedAt": 1774260250667
+    },
+    "gsd:plan-milestone-gaps": {
+      "usageCount": 3,
+      "lastUsedAt": 1771753204440
+    },
+    "gsd:complete-milestone": {
+      "usageCount": 15,
+      "lastUsedAt": 1774260536713
+    },
+    "gsd:define-requirements": {
+      "usageCount": 4,
+      "lastUsedAt": 1768835624016
+    },
+    "gsd:create-roadmap": {
+      "usageCount": 3,
+      "lastUsedAt": 1768835812483
+    },
+    "gsd:check-todos": {
+      "usageCount": 2,
+      "lastUsedAt": 1768834852209
+    },
+    "gsd:discuss-phase": {
+      "usageCount": 11,
+      "lastUsedAt": 1774361669165
+    },
+    "gsd:progress": {
+      "usageCount": 9,
+      "lastUsedAt": 1774260205510
+    },
+    "gsd:add-todo": {
+      "usageCount": 2,
+      "lastUsedAt": 1774780869487
+    },
+    "gsd:status": {
+      "usageCount": 2,
+      "lastUsedAt": 1771326997532
+    },
+    "gsd:pause-work": {
+      "usageCount": 3,
+      "lastUsedAt": 1774260196539
+    },
+    "gsd:add-phase": {
+      "usageCount": 2,
+      "lastUsedAt": 1774262727190
+    },
+    "gsd:insert-phase": {
+      "usageCount": 1,
+      "lastUsedAt": 1770134087524
+    },
+    "gsd:help": {
+      "usageCount": 1,
+      "lastUsedAt": 1773936354470
+    },
+    "simplify": {
+      "usageCount": 1,
+      "lastUsedAt": 1773936510333
+    },
+    "update-config": {
+      "usageCount": 1,
+      "lastUsedAt": 1773947038563
+    },
+    "gsd:cleanup": {
+      "usageCount": 1,
+      "lastUsedAt": 1774216577519
+    },
+    "gsd:quick": {
+      "usageCount": 2,
+      "lastUsedAt": 1774284409683
+    },
+    "schedule": {
+      "usageCount": 1,
+      "lastUsedAt": 1775581816465
+    },
+    "run": {
+      "usageCount": 1,
+      "lastUsedAt": 1782208659211
+    },
+    "dataviz": {
+      "usageCount": 1,
+      "lastUsedAt": 1783069666516
+    },
+    "code-review": {
+      "usageCount": 1,
+      "lastUsedAt": 1783106818523
+    },
+    "artifact-design": {
+      "usageCount": 1,
+      "lastUsedAt": 1788464519416
+    }
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1790434415755
+  },
+  "passesUpsellSeenCount": 4,
+  "hasVisitedPasses": false,
+  "passesLastSeenRemaining": 3,
+  "hasShownOpus46Notice": {
+    "13e00fb8-2d35-4d77-b266-c90e72ff44b9": true
+  },
+  "penguinModeOrgEnabled": false,
+  "showSpinnerTree": false,
+  "effortCalloutDismissed": true,
+  "opus46FeedSeenCount": 14,
+  "sonnet1m45MigrationComplete": true,
+  "birthdayHatAnimationCount": 3,
+  "cachedExtraUsageDisabledReason": "org_level_disabled",
+  "lastPlanModeUse": 1782565473558,
+  "toolUsage": {
+    "Bash": {
+      "usageCount": 668,
+      "lastUsedAt": 1772024866269
+    },
+    "Read": {
+      "usageCount": 622,
+      "lastUsedAt": 1772023868996
+    },
+    "Glob": {
+      "usageCount": 80,
+      "lastUsedAt": 1772010768772
+    },
+    "Grep": {
+      "usageCount": 223,
+      "lastUsedAt": 1772023507839
+    },
+    "Edit": {
+      "usageCount": 166,
+      "lastUsedAt": 1772023897094
+    },
+    "EnterPlanMode": {
+      "usageCount": 3,
+      "lastUsedAt": 1772010755422
+    },
+    "Task": {
+      "usageCount": 31,
+      "lastUsedAt": 1772010983505
+    },
+    "AskUserQuestion": {
+      "usageCount": 2,
+      "lastUsedAt": 1772006394947
+    },
+    "Write": {
+      "usageCount": 72,
+      "lastUsedAt": 1772023109662
+    },
+    "TaskCreate": {
+      "usageCount": 18,
+      "lastUsedAt": 1772011003700
+    },
+    "TaskUpdate": {
+      "usageCount": 29,
+      "lastUsedAt": 1772011157431
+    },
+    "TaskOutput": {
+      "usageCount": 9,
+      "lastUsedAt": 1771959743946
+    },
+    "TaskStop": {
+      "usageCount": 4,
+      "lastUsedAt": 1771959748272
+    }
+  },
+  "ideHintShownCount": 5,
+  "effortCalloutV2Dismissed": true,
+  "claudeAiMcpEverConnected": [
+    "claude.ai Figma",
+    "claude.ai Google Drive",
+    "claude.ai Claude Docs"
+  ],
+  "remoteDialogSeen": true,
+  "remoteControlAtStartup": false,
+  "voiceLangHintShownCount": 2,
+  "voiceLangHintLastLanguage": "en",
+  "voiceFooterHintSeenCount": 3,
+  "overageCreditGrantCache": {
+    "13e00fb8-2d35-4d77-b266-c90e72ff44b9": {
+      "info": {
+        "available": false,
+        "eligible": false,
+        "granted": false,
+        "amount_minor_units": null,
+        "currency": null
+      },
+      "timestamp": 1779263925973
+    }
+  },
+  "migrationVersion": 14,
+  "mcpServers": {
+    "playwright": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "@playwright/mcp@latest"
+      ],
+      "env": {}
+    },
+    "blender": {
+      "type": "stdio",
+      "command": "C:\\Users\\rober\\AppData\\Local\\Microsoft\\WinGet\\Packages\\astral-sh.uv_Microsoft.Winget.Source_8wekyb3d8bbwe\\uvx.exe",
+      "args": [
+        "blender-mcp"
+      ],
+      "env": {}
+    },
+    "aseprite": {
+      "type": "stdio",
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:\\Users\\rober\\aseprite-mcp",
+        "run",
+        "aseprite-mcp"
+      ],
+      "env": {}
+    }
+  },
+  "overageCreditUpsellSeenCount": 3,
+  "seenNotifications": {},
+  "cachedExperimentFeatures": [
+    "tengu_amber_prism",
+    "tengu_bridge_partial_messages",
+    "tengu_copper_wren",
+    "tengu_curious_tower_stateless_models",
+    "tengu_flint_harbor",
+    "tengu_mcp_subagent_prompt",
+    "tengu_plank_river_frost",
+    "tengu_read_dedup_killswitch",
+    "tengu_swift_lynx",
+    "tengu_ultrareview_awareness"
+  ],
+  "closedIssuesLastChecked": 1790535145448,
+  "remoteControlUpsellSeenCount": 3,
+  "cachedGrowthBookFeaturesAt": 1790764276548,
+  "tipLifetimeShownCounts": {
+    "install-github-app": 8,
+    "rename-conversation": 5,
+    "shift-enter": 7,
+    "powershell-tool-env": 7,
+    "install-slack-app": 7,
+    "permissions": 7,
+    "drag-and-drop-images": 7,
+    "double-esc-code-restore": 7,
+    "continue": 7,
+    "shift-tab": 7,
+    "plan-mode-for-complex-tasks": 13,
+    "agent-flag": 5,
+    "default-permission-mode-config": 7,
+    "theme-command": 4,
+    "enter-to-steer-in-relatime": 4,
+    "memory-command": 5,
+    "agents-view-multiclauding": 5,
+    "todo-list": 3,
+    "image-paste": 4,
+    "desktop-shortcut": 5,
+    "color-when-multi-clauding": 7,
+    "web-app": 5,
+    "git-worktrees": 7,
+    "feedback-command": 5,
+    "guest-passes": 9,
+    "remote-control": 4,
+    "no-flicker": 4,
+    "dynamic-workflows": 8,
+    "c4e-desktop": 1,
+    "subagent-fanout-nudge": 1,
+    "loop-command-nudge": 1,
+    "ctx:correction-spiral": 1,
+    "artifact-publish-plan": 3,
+    "workflow-size-prompting-ambient": 3,
+    "plugin-disuse-review": 2,
+    "ultrareview-awareness": 4,
+    "artifact-duplicate": 3,
+    "ultrareview-post-commit": 4,
+    "frontend-design-plugin": 2,
+    "web-setup-github": 1,
+    "ide-upsell-external-terminal": 1,
+    "c4e-remote-sessions": 1,
+    "goal-command-nudge": 1
+  },
+  "hasResetAutoModeOptInForDefaultOffer": true,
+  "lastShownEmergencyTip": "Claude Fable 5 is currently unavailable. Please use Opus 4.8 or another available model. Learn more: https://www.anthropic.com/news/fable-mythos-access",
+  "machineID": "7722aa8adee69b07e741cbd68679d903d3de66efe52bedfd5795cd068403c987",
+  "fullscreenUpsellSeenCount": 3,
+  "hasSeenAutoModeEntryWarning": true,
+  "announcementImpressions": {
+    "fable-5-promo-2": 13,
+    "fable-5-promo-2-2": 2,
+    "fable-5-promo-2-3": 5,
+    "fable-5-promo-2-4-max": 5,
+    "opus-5-launch": 3,
+    "fable-5-1-launch": 5,
+    "opus-5-5-launch": 7
+  },
+  "lspRecommendationIgnoredCount": 1,
+  "metricsStatusCache": {
+    "enabled": true,
+    "timestamp": 1783760783409
+  },
+  "pluginUsage": {
+    "rust-analyzer-lsp@claude-plugins-official": {
+      "usageCount": 0,
+      "lastUsedAt": 1783793881430,
+      "lastUsedNumStartups": 171
+    },
+    "telemetry@builtin": {
+      "usageCount": 0,
+      "lastUsedAt": 1790374584076,
+      "lastUsedNumStartups": 206
+    },
+    "agents-md@builtin": {
+      "usageCount": 0,
+      "lastUsedAt": 1790375059811,
+      "lastUsedNumStartups": 207
+    }
+  },
+  "pluginUsageLspGraceAppliedIds": [
+    "rust-analyzer-lsp@claude-plugins-official"
+  ],
+  "cachedExperimentData": {
+    "tengu_read_dedup_killswitch": {
+      "experimentId": "tengu_read_dedup_killswitch",
+      "variationId": 0,
+      "value": false
+    },
+    "tengu_copper_wren": {
+      "experimentId": "tengu_copper_wren",
+      "variationId": 1,
+      "value": true
+    },
+    "tengu_bridge_partial_messages": {
+      "experimentId": "tengu_bridge_partial_messages",
+      "variationId": 0,
+      "value": false
+    },
+    "tengu_amber_prism": {
+      "experimentId": "tengu_amber_prism",
+      "variationId": 0,
+      "value": false
+    },
+    "tengu_ultrareview_awareness": {
+      "experimentId": "ultrareview_cli_nudges",
+      "variationId": 1,
+      "value": {
+        "slash_menu": true,
+        "prose_pointer": true,
+        "post_commit": true,
+        "startup_tip": true
+      }
+    },
+    "tengu_mcp_subagent_prompt": {
+      "experimentId": "tengu_mcp_subagent_prompt-public",
+      "variationId": 1,
+      "value": true
+    },
+    "tengu_swift_lynx": {
+      "experimentId": "cai_giggly_dream",
+      "variationId": 1,
+      "value": {
+        "version": 2,
+        "endpoint": "/v1/code/promo/cloud_credit",
+        "webPath": "/code/claim-credit",
+        "desktopPath": "/claude-code-desktop/claim-credit",
+        "claimLinkIncludesOrganization": true,
+        "startup": {
+          "text": "You've been granted a $250 bonus credit for cloud sessions, on top of your plan limits",
+          "claimPageLine": "Get started with your $250 cloud session credit",
+          "buttonLabel": "Get started"
+        },
+        "limitWall": {
+          "noticeLine": "While you wait, start a new cloud session with a $250 credit",
+          "label": "While you wait, start a new cloud session with a $250 credit",
+          "claimPageLine": "Get started with your $250 cloud session credit"
+        },
+        "ide": {
+          "text": "While you wait, start a new cloud session with a $250 credit",
+          "buttonLabel": "Get started"
+        }
+      }
+    },
+    "tengu_plank_river_frost": {
+      "experimentId": "tengu_plank_river_frost",
+      "variationId": 0,
+      "value": "user_intent"
+    },
+    "tengu_flint_harbor": {
+      "experimentId": "tengu_flint_harbor",
+      "variationId": 1,
+      "value": false
+    },
+    "tengu_curious_tower_stateless_models": {
+      "experimentId": "tengu_tether_ns_hold_a",
+      "variationId": 0,
+      "value": "fable-5-1, opus-5, opus-4-8"
+    }
+  },
+  "subscriptionNoticeCount": 0,
+  "hasAvailableSubscription": false,
+  "oauthAccount": {
+    "accountUuid": "cd3c6891-9265-4390-80a2-f2095adfc713",
+    "emailAddress": "WARBIXD@gmail.com",
+    "organizationUuid": "0dea457a-73fe-4656-8340-091c92b55722",
+    "hasExtraUsageEnabled": false,
+    "billingType": "stripe_subscription",
+    "accountCreatedAt": "2026-04-14T06:58:49.692428Z",
+    "subscriptionCreatedAt": "2026-05-14T15:39:43.623938Z",
+    "ccOnboardingFlags": {},
+    "claudeCodeTrialEndsAt": null,
+    "claudeCodeTrialDurationDays": null,
+    "seatTier": null,
+    "displayName": "supremo",
+    "fullName": "Roberto Bendinelli",
+    "profileFetchedAt": 1790764276565,
+    "organizationRole": "admin",
+    "workspaceRole": null,
+    "organizationName": "WARBIXD@gmail.com's Organization",
+    "organizationType": "claude_max",
+    "organizationRateLimitTier": "default_claude_max_20x",
+    "userRateLimitTier": null
+  },
+  "clientDataCacheSlots": {
+    "bi1-982d8cb8c70cfd6a": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "quizzical_shore": true,
+        "tengu_luminous_whistle": true,
+        "breezy_horizon": {
+          "claude-opus-5-5": "claude-opus-4-8"
+        },
+        "tengu_toasty_thimble": {
+          "claude-opus-5-5": ""
+        },
+        "tengu_heron_brook": "# Finishing work\nEnding your turn means your work stops there until asked to continue, and you should not stop unless needed. Please avoid stopping while work the user asked for is still owed. Status notes are welcome, and so are your recommendations on open decisions, but do not stop unnecessarily and carry on with whatever does not depend on the user's answer. If you notice yourself inviting the user to redirect you or offering to wait, instead proceed on the next part of the task. You may meet ordinary obstacles like errors, timeouts, locked files, empty results or failing tools. Diagnose them first, and when they are not real blockers, work through them with the access you have (wait and retry, fix the request, use another tool or source) rather than stopping or checking in. If someone clearly decided something is a hard blocker, such as a file marked not to be touched, access that was intentionally withheld, or a safety guardrail, leave it alone, say plainly what you found, and look for another way to finish the task. Stopping before the task is complete can rarely be merited, i.e. when the task can't move forward without user input, or where the blocker is deliberate and should not be worked past. This does not override the need for confirmation on risky or destructive actions.",
+        "heather_vale": {
+          "claude-opus-5-5": 128000
+        },
+        "silent_turn_reminder": false,
+        "lucky_cerf": true,
+        "experimentKey": "claude_code_plover_quoin_experiment",
+        "atis": "7f5dd245cde54b3f",
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1790753498507,
+      "entrypoint": "sdk-cli",
+      "model": "claude-opus-5-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-f5ba4244568b8f4d": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1790535145978,
+      "entrypoint": "cli",
+      "model": "claude-opus-5-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-d6def2c60444e1e6": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1790414639165,
+      "entrypoint": "claude-desktop",
+      "model": "claude-opus-5-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-7804ffe9e6064df2": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1790374584465,
+      "entrypoint": "cli",
+      "model": "claude-opus-5-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-3d0d1894dbb31f14": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1789905408584,
+      "entrypoint": "sdk-cli",
+      "model": "claude-opus-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-52b5431157559b62": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "experimentKey": "claude_code_tarn_gimbal_experiment",
+        "quizzical_shore": true,
+        "tengu_luminous_whistle": true,
+        "breezy_horizon": {
+          "claude-fable-5-1": "claude-opus-4-8"
+        },
+        "tengu_toasty_thimble": {
+          "claude-fable-5-1": ""
+        },
+        "tengu_heron_brook": "# Finishing work\nEnding your turn means your work stops there until asked to continue, and you should not stop unless needed. Please avoid stopping while work the user asked for is still owed. Status notes are welcome, and so are your recommendations on open decisions, but do not stop unnecessarily and carry on with whatever does not depend on the user's answer. If you notice yourself inviting the user to redirect you or offering to wait, instead proceed on the next part of the task. You may meet ordinary obstacles like errors, timeouts, locked files, empty results or failing tools. Diagnose them first, and when they are not real blockers, work through them with the access you have (wait and retry, fix the request, use another tool or source) rather than stopping or checking in. If someone clearly decided something is a hard blocker, such as a file marked not to be touched, access that was intentionally withheld, or a safety guardrail, leave it alone, say plainly what you found, and look for another way to finish the task. Stopping before the task is complete can rarely be merited, i.e. when the task can't move forward without user input, or where the blocker is deliberate and should not be worked past. This does not override the need for confirmation on risky or destructive actions.",
+        "tengu_lapis_anchor": false,
+        "atis": "f775a7368a120dff",
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1789831958924,
+      "entrypoint": "sdk-cli",
+      "model": "claude-fable-5-1",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    },
+    "bi1-db72229177c81497": {
+      "data": {
+        "cedar_lagoon": {
+          "claude-fable": true,
+          "claude-mythos": true
+        },
+        "cedar_basin": "2027-08-31"
+      },
+      "at": 1789669832771,
+      "entrypoint": "cli",
+      "model": "claude-opus-5",
+      "org": "0dea457a-73fe-4656-8340-091c92b55722"
+    }
+  },
+  "additionalModelOptionsCache": [
+    {
+      "value": "claude-fable-5-1[1m]",
+      "label": "Fable",
+      "description": "Fable 5.1 · Most capable for your hardest and longest-running tasks"
+    }
+  ],
+  "additionalModelOptionsAnsweredAt": 1790753498507,
+  "additionalModelCostsCache": {},
+  "modelAccessCache": [],
+  "orgModelDefaultCache": null,
+  "autoCompactWindowsCache": null,
+  "cachedArtifactRoster": {
+    "accountUuid": "cd3c6891-9265-4390-80a2-f2095adfc713",
+    "organizationUuid": "0dea457a-73fe-4656-8340-091c92b55722",
+    "version": "0.2.60",
+    "capabilities": [
+      "artifact",
+      "assets",
+      "comments",
+      "db",
+      "downloads",
+      "files",
+      "mcp",
+      "permissions",
+      "room",
+      "sample",
+      "self",
+      "user"
+    ],
+    "fetchedAt": 1790535142757
+  },
+  "githubWebConnectionStatusCache": {
+    "accountUuid": "cd3c6891-9265-4390-80a2-f2095adfc713",
+    "orgUuid": "0dea457a-73fe-4656-8340-091c92b55722",
+    "status": "connected"
+  },
+  "promoStartupStatusCache": {
+    "accountUuid": "cd3c6891-9265-4390-80a2-f2095adfc713",
+    "endpoint": "/v1/code/promo/cloud_credit",
+    "eligible": false,
+    "claimed": true
+  },
+  "tipsHistoryByCommand": {
+    "config": {
+      "tipId": "default-permission-mode-config",
+      "numStartups": 207
+    },
+    "install-slack-app": {
+      "tipId": "install-slack-app",
+      "numStartups": 207
+    },
+    "permissions": {
+      "tipId": "permissions",
+      "numStartups": 207
+    },
+    "install-github-app": {
+      "tipId": "install-github-app",
+      "numStartups": 207
+    },
+    "tui": {
+      "tipId": "no-flicker",
+      "numStartups": 207
+    },
+    "plugin": {
+      "tipId": "plugin-disuse-review",
+      "numStartups": 212
+    }
+  }
+}

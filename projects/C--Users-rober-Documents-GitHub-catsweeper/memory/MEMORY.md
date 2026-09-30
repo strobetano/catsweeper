@@ -1,0 +1,4 @@
+- [Studio auto-checkpoints](studio-auto-checkpoints.md) — repo is auto-committed at every prompt; don't commit unasked, keep scratch files out of the repo
+- [Marketing art pipeline](marketing-art-pipeline.md) — where hero masters, store-image renderer, paw-fix and PSD scripts live and how to rerun them
+- [Check generated art anatomy](check-generated-art-anatomy.md) — user caught a three-front-paw cat; verify limbs/pose before delivering art
+- [Publisher packshot convention](publisher-packshot-convention.md) — "packshot" = 2048² layered PSD in PublisherKit/packshot, mirrors the Strobeat kit
